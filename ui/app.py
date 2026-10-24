@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import sys
 from pathlib import Path
 
@@ -10,7 +9,6 @@ from core.config import ConfigManager
 from core.logging import get_logger
 from providers.weather import WeatherProvider
 from ui.qt_compat import QApplication, QCoreApplication, QIcon
-from ui.utils import get_weather_icon_path
 from ui.widget_window import WeatherWidgetWindowQt
 
 logger = get_logger("ui.app")
@@ -52,9 +50,9 @@ def run_qt_app(
     set_language(config_manager.get("app_language", "ru"))
 
     # Set Application Icon
-    app_icon_path = get_weather_icon_path("weather-few-clouds.svg")
-    if os.path.exists(app_icon_path):
-        app.setWindowIcon(QIcon(app_icon_path))
+    app_icon_path = Path(__file__).parent.parent / "assets" / "icons" / "info-weather.svg"
+    if app_icon_path.is_file():
+        app.setWindowIcon(QIcon(str(app_icon_path)))
 
     # Load QSS Stylesheet
     qss_path = Path(__file__).parent / "style.qss"

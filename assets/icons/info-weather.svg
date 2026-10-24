@@ -1,11 +1,35 @@
-<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="24" cy="24" r="10" fill="#FFB800"/>
-  <circle cx="24" cy="24" r="10" fill="url(#paint0_radial)"/>
-  <path d="M24 6V10M24 38V42M6 24H10M38 24H42M11.27 11.27L14.1 14.1M33.9 33.9L36.73 36.73M11.27 36.73L14.1 33.9M33.9 14.1L36.73 11.27" stroke="#FFB800" stroke-width="3" stroke-linecap="round"/>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <radialGradient id="paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(21 21) rotate(45) scale(14)">
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="128" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#4A90D9"/>
+      <stop offset="1" stop-color="#24518F"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(52 50) rotate(45) scale(30)">
       <stop stop-color="#FFE600"/>
       <stop offset="1" stop-color="#FF9900"/>
     </radialGradient>
   </defs>
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="url(#bg)"/>
+  <g stroke="#FFC400" stroke-width="6" stroke-linecap="round">
+    <line x1="52" y1="18" x2="52" y2="30"/>
+    <line x1="52" y1="70" x2="52" y2="82"/>
+    <line x1="20" y1="50" x2="32" y2="50"/>
+    <line x1="72" y1="50" x2="84" y2="50"/>
+    <line x1="29" y1="27" x2="38" y2="36"/>
+    <line x1="66" y1="64" x2="75" y2="73"/>
+    <line x1="75" y1="27" x2="66" y2="36"/>
+    <line x1="38" y1="64" x2="29" y2="73"/>
+  </g>
+  <circle cx="52" cy="50" r="22" fill="url(#sun)"/>
+  <g fill="#FFFFFF" opacity="0.96">
+    <circle cx="60" cy="82" r="17"/>
+    <circle cx="80" cy="76" r="21"/>
+    <circle cx="97" cy="84" r="15"/>
+    <rect x="55" y="80" width="60" height="22" rx="11"/>
+  </g>
+  <g stroke="#7FD4FF" stroke-width="5" stroke-linecap="round">
+    <line x1="66" y1="106" x2="62" y2="115"/>
+    <line x1="80" y1="106" x2="76" y2="115"/>
+    <line x1="94" y1="106" x2="90" y2="115"/>
+  </g>
 </svg>
