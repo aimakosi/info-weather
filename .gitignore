@@ -1,0 +1,113 @@
+# ==============================================================================
+# .gitignore for info-weather (Python / PySide6 / Linux Desktop)
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# Bytecode and Python cache
+# ------------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ------------------------------------------------------------------------------
+# Virtual environments
+# ------------------------------------------------------------------------------
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# ------------------------------------------------------------------------------
+# Testing, Linters and Coverage
+# ------------------------------------------------------------------------------
+.pytest_cache/
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+
+# ------------------------------------------------------------------------------
+# Packaging, Distribution and Build
+# ------------------------------------------------------------------------------
+build/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+*.whl
+*.tar.gz
+*.deb
+*.pkg.tar.*
+packaging/arch/src/
+packaging/arch/pkg/
+
+# ------------------------------------------------------------------------------
+# Local application cache, logs, temporary config & backups
+# ------------------------------------------------------------------------------
+cache/
+*.log
+*.tmp
+*.bak
+*.corrupted.*
+config.json
+config_*.json
+
+# ------------------------------------------------------------------------------
+# Scratch, temporary test artifacts and screenshots
+# ------------------------------------------------------------------------------
+scratch/
+tmp/
+temp/
+Screenshot_*.png
+
+# ------------------------------------------------------------------------------
+# IDE and Editor artifacts
+# ------------------------------------------------------------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# ------------------------------------------------------------------------------
+# Operating System artifacts
+# ------------------------------------------------------------------------------
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+
+# Personal agent skills (not part of the project)
+.agents/

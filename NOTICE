@@ -1,0 +1,62 @@
+# NOTICE & LEGAL ATTRIBUTIONS
+
+info-weather is free and open source software licensed under the
+GNU General Public License v3.0 or later (GPL-3.0-or-later).
+
+Copyright (C) 2026 info-weather contributors.
+
+--------------------------------------------------------------------------------
+1. COPERNICUS CLIMATE CHANGE SERVICE (C3S) / ERA5 CLIMATOLOGY
+--------------------------------------------------------------------------------
+This product contains modified Copernicus Climate Change Service information [2026].
+Neither the European Commission nor the European Centre for Medium-Range Weather
+Forecasts (ECMWF) is responsible for any use that may be made of the Copernicus
+information or the data it contains.
+
+Historical monthly and daily climate normals (1991–2020 baseline) bundled in
+`data/resources/era5_baseline.json` were derived from ERA5 reanalysis data
+provided by Copernicus Climate Change Service (C3S) under the Copernicus License.
+
+Reference:
+Hersbach, H., et al. (2020): The ERA5 global reanalysis.
+Quarterly Journal of the Royal Meteorological Society, 146(730), 1999–2049.
+
+--------------------------------------------------------------------------------
+2. METEOROLOGICAL API PROVIDERS
+--------------------------------------------------------------------------------
+info-weather relies on publicly accessible weather forecasts and climatological models:
+
+* Open-Meteo Weather API
+  Provided by Open-Meteo.com under Creative Commons Attribution 4.0 International (CC-BY 4.0).
+  URL: https://open-meteo.com/
+
+* Norwegian Meteorological Institute (MET Norway / yr.no)
+  Weather forecast data provided under the Norwegian License for Open Government Data (NLOD)
+  and Creative Commons 4.0 BY International.
+  URL: https://www.met.no/ and https://api.met.no/
+
+* wttr.in
+  Console-oriented weather forecast service by Igor Chubin, licensed under the
+  Apache License 2.0.
+  URL: https://github.com/chubin/wttr.in
+
+--------------------------------------------------------------------------------
+3. GRAPHICS & ASSETS
+--------------------------------------------------------------------------------
+* Meteorological vector icons located in `assets/icons/weather/` and application
+  icon `assets/icons/info-weather.svg`:
+  Created specifically for the info-weather project.
+  Licensed under GPL-3.0-or-later.
+
+* Bundled icon theme `assets/icons/themes/Meteocons_monochrome/`:
+  Meteocons Monochrome by Bas Milius (https://meteocons.com), MIT License.
+
+* Bundled icon theme `assets/icons/themes/WeatherIcons/`:
+  Weather Icons by Erik Flowers (https://erikflowers.github.io/weather-icons/),
+  licensed under the SIL Open Font License 1.1.
+
+* High-resolution lunar surface albedo texture (`assets/icons/weather/moon_surface.png`):
+  Derived from NASA Goddard Space Flight Center Scientific Visualization Studio (SVS)
+  CGI Moon Kit (Lunar Reconnaissance Orbiter / LROC Wide Angle Camera).
+  Public Domain / US Government Work.
+  URL: https://svs.gsfc.nasa.gov/4720

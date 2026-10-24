@@ -1,0 +1,11 @@
+[General]
+count=1
+rules=1
+
+[1]
+Description=info-weather: не сворачивать виджет при «Показать рабочий стол» (Meta+D)
+wmclass=info-weather
+wmclasscomplete=false
+wmclassmatch=2
+ignoreminimize=true
+ignoreminimizerule=3

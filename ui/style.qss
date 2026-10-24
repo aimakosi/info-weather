@@ -1,0 +1,672 @@
+/* info-weather PySide6 / Qt6 Stylesheet (KDE Plasma Optimized) */
+
+/* Main Translucent Widget Window (Blue gradient with top-to-bottom transparency gradient) */
+QWidget#WeatherWidgetContainer {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 rgba(16, 19, 24, 0.52),
+        stop:0.45 rgba(10, 12, 16, 0.78),
+        stop:1 rgba(5, 6, 8, 0.96));
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, 0.20);
+}
+
+QWidget#WeatherWidgetContainer.light-theme {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 rgba(196, 228, 252, 0.60),
+        stop:0.45 rgba(157, 211, 248, 0.84),
+        stop:1 rgba(121, 190, 244, 0.96));
+    border-radius: 18px;
+    border: 1px solid rgba(2, 132, 199, 0.30);
+}
+
+/* Typography & Labels */
+/* Font family is inherited from the widget / system (KDE Application Style)
+   so the user-selected main font in Appearance takes effect. */
+QLabel {
+    color: #f8fafc;
+}
+
+QWidget#WeatherWidgetContainer.light-theme QLabel {
+    color: #0f172a;
+}
+
+QLabel.text-secondary {
+    color: #94a3b8;
+}
+
+QWidget#WeatherWidgetContainer.light-theme QLabel.text-secondary {
+    color: #475569;
+}
+
+QLabel.text-muted {
+    color: #64748b;
+}
+
+QWidget#WeatherWidgetContainer.light-theme QLabel.text-muted {
+    color: #94a3b8;
+}
+
+/* Header Block */
+QLabel#HeaderDate {
+    font-size: 12px;
+    font-weight: bold;
+    color: #f8fafc;
+}
+
+QLabel#HeaderCity {
+    font-size: 18px;
+    font-weight: bold;
+    color: #f8fafc;
+}
+
+QLabel#HeaderTemp {
+    font-size: 32px;
+    font-weight: bold;
+    color: #f8fafc;
+}
+
+QLabel#HeaderCondition {
+    font-size: 12px;
+    color: #cbd5e1;
+}
+
+/* Daily Forecast Block (Matching Gis-Weather Reference) */
+QWidget.daily-col {
+    padding: 2px 2px;
+    border-radius: 6px;
+}
+
+QWidget.daily-col:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+QLabel#DailyDay {
+    font-size: 12px;
+    font-weight: bold;
+    color: #f8fafc;
+}
+
+QLabel#DailyDay.weekend {
+    color: #fb923c !important;
+}
+
+QLabel#DailyTempMax {
+    font-size: 15px;
+    font-weight: bold;
+    color: #ffffff;
+}
+
+QLabel#DailyTempMin {
+    font-size: 12px;
+    font-weight: normal;
+    color: #94a3b8;
+}
+
+QLabel#DailyCondition {
+    font-size: 11px;
+    color: #cbd5e1;
+    padding-bottom: 0px;
+}
+
+/* Wind block */
+QLabel#WindText {
+    font-size: 11px;
+    font-weight: bold;
+    color: #f8fafc;
+}
+
+QWidget#WeatherWidgetContainer.light-theme QLabel#WindText {
+    color: #0f172a;
+}
+
+/* Periods Block (Night, Morning, Day, Evening) */
+QWidget.period-cell {
+    padding: 2px 4px;
+    border-radius: 6px;
+}
+
+QLabel#PeriodHeader {
+    font-size: 11px;
+    font-weight: bold;
+    color: #38bdf8;
+}
+
+QWidget#WeatherWidgetContainer.light-theme QLabel#PeriodHeader {
+    color: #0369a1;
+}
+
+QLabel#PeriodTitle {
+    font-size: 10px;
+    font-weight: bold;
+    color: #94a3b8;
+}
+
+QWidget#WeatherWidgetContainer.light-theme QLabel#PeriodTitle {
+    color: #475569;
+}
+
+QLabel#PeriodTemp {
+    font-size: 11px;
+    font-weight: bold;
+    color: #f8fafc;
+}
+
+QLabel#PeriodWind {
+    font-size: 9px;
+    color: #64748b;
+}
+
+/* Astronomy & Metrics */
+QLabel#AstroLabel {
+    font-size: 10px;
+    font-weight: 600;
+    color: #f1f5f9;
+}
+
+QWidget#WeatherWidgetContainer.light-theme QLabel#AstroLabel {
+    color: #0f172a;
+}
+
+QLabel#MetricValue {
+    font-size: 12px;
+    font-weight: bold;
+    color: #f8fafc;
+}
+
+QWidget#WeatherWidgetContainer.light-theme QLabel#MetricValue {
+    color: #0f172a;
+}
+
+QLabel#MetricCaption {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+/* Separator Line */
+QFrame#BlockSeparator {
+    background-color: rgba(255, 255, 255, 0.15);
+    max-height: 1px;
+    border: none;
+}
+
+QWidget#WeatherWidgetContainer.light-theme QFrame#BlockSeparator {
+    background-color: rgba(15, 23, 42, 0.15);
+}
+
+/* Landmark Theme (Day Theme Scenic Photo Background) */
+/* Optimized for high contrast and readability over photography */
+QWidget#WeatherWidgetContainer.landmark-theme QLabel {
+    color: #ffffff;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#HeaderCity {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#HeaderDate {
+    color: #f8fafc;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#HeaderTemp {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#HeaderCondition {
+    color: #f1f5f9;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel.text-secondary {
+    color: #e2e8f0;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel.text-muted {
+    color: #cbd5e1;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#DailyDay {
+    color: #f8fafc;
+    font-weight: bold;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#DailyDay.weekend {
+    color: #fb923c !important;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#DailyTempMax {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#DailyTempMin {
+    color: #cbd5e1;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#DailyCondition {
+    color: #e2e8f0;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#WindText {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#PeriodHeader {
+    color: #38bdf8;
+    font-weight: bold;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#PeriodTitle {
+    color: #e2e8f0;
+    font-weight: bold;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#PeriodTemp {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#PeriodWind {
+    color: #cbd5e1;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#AstroLabel {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#MetricValue {
+    color: #ffffff;
+    font-weight: bold;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QLabel#MetricCaption {
+    color: #cbd5e1;
+}
+
+QWidget#WeatherWidgetContainer.landmark-theme QFrame#BlockSeparator {
+    background-color: rgba(255, 255, 255, 0.25);
+    max-height: 1px;
+    border: none;
+}
+
+/* Settings Dialog & Qt Controls (Synchronized with Theme) */
+QDialog {
+    background-color: #1e293b;
+    color: #f8fafc;
+}
+
+QDialog[theme="light"] {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+QTabWidget::pane {
+    background-color: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 6px;
+}
+
+QTabWidget[theme="light"]::pane {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 6px;
+}
+
+QTabBar::tab {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    padding: 8px 16px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    margin-right: 4px;
+}
+
+QTabBar::tab:selected {
+    background-color: #38bdf8;
+    color: #0f172a;
+    font-weight: bold;
+}
+
+QTabWidget[theme="light"] QTabBar::tab {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+QTabWidget[theme="light"] QTabBar::tab:selected {
+    background-color: #0284c7;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Tab Content: Dark Theme (Default)                                         */
+/* ------------------------------------------------------------------------- */
+QScrollArea#TabScroll,
+QScrollArea#TabScroll > QWidget,
+QScrollArea#TabScroll > QWidget > QWidget,
+QWidget#TabContainer {
+    background-color: #0f172a;
+    background: #0f172a;
+    border: none;
+    color: #f8fafc;
+}
+
+QWidget#TabContainer QLabel {
+    color: #f8fafc;
+}
+
+QWidget#TabContainer QGroupBox {
+    background-color: rgba(30, 41, 59, 0.50);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    margin-top: 14px;
+    font-weight: bold;
+    padding-top: 14px;
+    color: #f8fafc;
+}
+
+QWidget#TabContainer QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 6px;
+    color: #38bdf8;
+    font-weight: bold;
+}
+
+QWidget#TabContainer QComboBox,
+QWidget#TabContainer QSpinBox,
+QWidget#TabContainer QDoubleSpinBox,
+QWidget#TabContainer QLineEdit {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: #f8fafc;
+}
+
+QWidget#TabContainer QComboBox:hover,
+QWidget#TabContainer QSpinBox:hover,
+QWidget#TabContainer QDoubleSpinBox:hover,
+QWidget#TabContainer QLineEdit:focus {
+    border-color: #38bdf8;
+}
+
+QWidget#TabContainer QComboBox QAbstractItemView {
+    background-color: #1e293b;
+    color: #f8fafc;
+    selection-background-color: #0284c7;
+    selection-color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.20);
+}
+
+QWidget#TabContainer QPushButton {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: #f8fafc;
+}
+
+QWidget#TabContainer QPushButton:hover {
+    background-color: rgba(56, 189, 248, 0.20);
+    border-color: #38bdf8;
+}
+
+QWidget#TabContainer QPushButton:pressed {
+    background-color: rgba(56, 189, 248, 0.40);
+}
+
+QWidget#TabContainer QCheckBox {
+    color: #f8fafc;
+    spacing: 6px;
+}
+
+QWidget#TabContainer QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #94a3b8;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+QWidget#TabContainer QCheckBox::indicator:hover {
+    border-color: #38bdf8;
+}
+
+QWidget#TabContainer QCheckBox::indicator:checked {
+    background-color: #38bdf8;
+    border-color: #38bdf8;
+    image: url("__CHECK_ICON__");
+}
+
+QWidget#TabContainer QSlider::groove:horizontal {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+}
+
+QWidget#TabContainer QSlider::sub-page:horizontal {
+    background: #38bdf8;
+    border-radius: 3px;
+}
+
+QWidget#TabContainer QSlider::handle:horizontal {
+    background: #38bdf8;
+    border: 2px solid #0f172a;
+    width: 14px;
+    margin-top: -4px;
+    margin-bottom: -4px;
+    border-radius: 7px;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Tab Content: Light Theme (Synchronized when Light Theme is active)        */
+/* ------------------------------------------------------------------------- */
+QScrollArea#TabScroll[theme="light"],
+QScrollArea#TabScroll[theme="light"] > QWidget,
+QScrollArea#TabScroll[theme="light"] > QWidget > QWidget,
+QWidget#TabContainer[theme="light"] {
+    background-color: #ffffff;
+    background: #ffffff;
+    border: none;
+    color: #0f172a;
+}
+
+QWidget#TabContainer[theme="light"] QLabel {
+    color: #0f172a;
+}
+
+QWidget#TabContainer[theme="light"] QGroupBox {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    margin-top: 14px;
+    font-weight: bold;
+    padding-top: 14px;
+    color: #0f172a;
+}
+
+QWidget#TabContainer[theme="light"] QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 0 6px;
+    color: #0284c7;
+    font-weight: bold;
+}
+
+QWidget#TabContainer[theme="light"] QComboBox,
+QWidget#TabContainer[theme="light"] QSpinBox,
+QWidget#TabContainer[theme="light"] QDoubleSpinBox,
+QWidget#TabContainer[theme="light"] QLineEdit {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: #0f172a;
+}
+
+QWidget#TabContainer[theme="light"] QComboBox:hover,
+QWidget#TabContainer[theme="light"] QSpinBox:hover,
+QWidget#TabContainer[theme="light"] QDoubleSpinBox:hover,
+QWidget#TabContainer[theme="light"] QLineEdit:focus {
+    border-color: #0284c7;
+}
+
+QWidget#TabContainer[theme="light"] QComboBox QAbstractItemView {
+    background-color: #ffffff;
+    color: #0f172a;
+    selection-background-color: #e0f2fe;
+    selection-color: #0369a1;
+    border: 1px solid #cbd5e1;
+}
+
+QWidget#TabContainer[theme="light"] QPushButton {
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: #0f172a;
+    font-weight: 500;
+}
+
+QWidget#TabContainer[theme="light"] QPushButton:hover {
+    background-color: #e2e8f0;
+    border-color: #0284c7;
+}
+
+QWidget#TabContainer[theme="light"] QPushButton:pressed {
+    background-color: #cbd5e1;
+}
+
+QWidget#TabContainer[theme="light"] QCheckBox {
+    color: #0f172a;
+    spacing: 6px;
+}
+
+QWidget#TabContainer[theme="light"] QCheckBox::indicator {
+    width: 14px;
+    height: 14px;
+    border: 1px solid #94a3b8;
+    border-radius: 4px;
+    background-color: #ffffff;
+}
+
+QWidget#TabContainer[theme="light"] QCheckBox::indicator:hover {
+    border-color: #0284c7;
+}
+
+QWidget#TabContainer[theme="light"] QCheckBox::indicator:checked {
+    background-color: #0284c7;
+    border-color: #0284c7;
+    image: url("__CHECK_ICON__");
+}
+
+QWidget#TabContainer[theme="light"] QSlider::groove:horizontal {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+}
+
+QWidget#TabContainer[theme="light"] QSlider::sub-page:horizontal {
+    background: #0284c7;
+    border-radius: 3px;
+}
+
+QWidget#TabContainer[theme="light"] QSlider::handle:horizontal {
+    background: #0284c7;
+    border: 2px solid #ffffff;
+    width: 14px;
+    margin-top: -4px;
+    margin-bottom: -4px;
+    border-radius: 7px;
+}
+
+/* Default / Dialog Bottom Controls */
+QPushButton {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 6px 14px;
+    color: #f8fafc;
+}
+
+QPushButton:hover {
+    background-color: rgba(56, 189, 248, 0.20);
+    border-color: #38bdf8;
+}
+
+QPushButton:pressed {
+    background-color: rgba(56, 189, 248, 0.40);
+}
+
+QDialog[theme="light"] QPushButton {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 14px;
+    color: #0f172a;
+    font-weight: 500;
+}
+
+QDialog[theme="light"] QPushButton:hover {
+    background-color: #f1f5f9;
+    border-color: #0284c7;
+    color: #0284c7;
+}
+
+QDialog[theme="light"] QPushButton:pressed {
+    background-color: #e2e8f0;
+}
+
+/* Primary prominent Close / Action buttons in Dialogs */
+QPushButton#BtnSettingsClose,
+QPushButton#BtnCloseDialog {
+    background-color: #0284c7;
+    border: 1px solid #0284c7;
+    border-radius: 6px;
+    padding: 7px 26px;
+    color: #ffffff;
+    font-weight: 600;
+    min-width: 80px;
+}
+
+QPushButton#BtnSettingsClose:hover,
+QPushButton#BtnCloseDialog:hover {
+    background-color: #0369a1;
+    border-color: #0284c7;
+}
+
+QPushButton#BtnSettingsClose:pressed,
+QPushButton#BtnCloseDialog:pressed {
+    background-color: #075985;
+}
+
+/* High contrast Close button in Light Theme Settings / Dialogs */
+QDialog[theme="light"] QPushButton#BtnSettingsClose,
+QDialog[theme="light"] QPushButton#BtnCloseDialog {
+    background-color: #0284c7;
+    border: 1px solid #0284c7;
+    border-radius: 6px;
+    padding: 7px 26px;
+    color: #ffffff;
+    font-weight: 600;
+    min-width: 80px;
+}
+
+QDialog[theme="light"] QPushButton#BtnSettingsClose:hover,
+QDialog[theme="light"] QPushButton#BtnCloseDialog:hover {
+    background-color: #0369a1;
+    border-color: #0369a1;
+    color: #ffffff;
+}
+
+QDialog[theme="light"] QPushButton#BtnSettingsClose:pressed,
+QDialog[theme="light"] QPushButton#BtnCloseDialog:pressed {
+    background-color: #0c4a6e;
+    color: #ffffff;
+}
+

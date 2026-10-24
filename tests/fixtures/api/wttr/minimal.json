@@ -1,0 +1,28 @@
+{
+  "current_condition": [
+    {
+      "temp_C": "11",
+      "FeelsLikeC": "10",
+      "humidity": "62",
+      "pressure": "1018",
+      "weatherCode": "116",
+      "winddir16Point": "WSW",
+      "windspeedKmph": "15"
+    }
+  ],
+  "weather": [
+    {
+      "date": "2026-10-14",
+      "maxtempC": "14",
+      "mintempC": "4",
+      "hourly": [
+        {
+          "time": "300",
+          "temp_C": "7",
+          "weatherCode": "116",
+          "chanceofrain": "10"
+        }
+      ]
+    }
+  ]
+}

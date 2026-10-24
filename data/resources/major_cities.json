@@ -1,0 +1,2238 @@
+{
+  "нью-йорк": {
+    "name_ru": "Нью-Йорк",
+    "name_en": "New York",
+    "lat": 40.7128,
+    "lon": -74.006,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "ny",
+      "new york",
+      "нью йорк"
+    ]
+  },
+  "новокузнецк": {
+    "name_ru": "Новокузнецк",
+    "name_en": "Novokuznetsk",
+    "lat": 53.7557,
+    "lon": 87.1099,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "кузня",
+      "nvkz"
+    ]
+  },
+  "москва": {
+    "name_ru": "Москва",
+    "name_en": "Moscow",
+    "lat": 55.752,
+    "lon": 37.6178,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "мск",
+      "moscow"
+    ]
+  },
+  "санкт-петербург": {
+    "name_ru": "Санкт-Петербург",
+    "name_en": "Saint Petersburg",
+    "lat": 59.9386,
+    "lon": 30.3141,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "питер",
+      "спб"
+    ]
+  },
+  "новосибирск": {
+    "name_ru": "Новосибирск",
+    "name_en": "Novosibirsk",
+    "lat": 55.0415,
+    "lon": 82.9346,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "нск",
+      "сиб"
+    ]
+  },
+  "екатеринбург": {
+    "name_ru": "Екатеринбург",
+    "name_en": "Yekaterinburg",
+    "lat": 56.8389,
+    "lon": 60.6057,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "екб"
+    ]
+  },
+  "казань": {
+    "name_ru": "Казань",
+    "name_en": "Kazan",
+    "lat": 55.7887,
+    "lon": 49.1221,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "kzn"
+    ]
+  },
+  "нижний новгород": {
+    "name_ru": "Нижний Новгород",
+    "name_en": "Nizhny Novgorod",
+    "lat": 56.3269,
+    "lon": 44.0059,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "нн"
+    ]
+  },
+  "челябинск": {
+    "name_ru": "Челябинск",
+    "name_en": "Chelyabinsk",
+    "lat": 55.1644,
+    "lon": 61.4368,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "члб"
+    ]
+  },
+  "самара": {
+    "name_ru": "Самара",
+    "name_en": "Samara",
+    "lat": 53.2001,
+    "lon": 50.15,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "омск": {
+    "name_ru": "Омск",
+    "name_en": "Omsk",
+    "lat": 54.9885,
+    "lon": 73.3242,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "ростов-на-дону": {
+    "name_ru": "Ростов-на-Дону",
+    "name_en": "Rostov-on-Don",
+    "lat": 47.2357,
+    "lon": 39.7015,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "ростов"
+    ]
+  },
+  "уфа": {
+    "name_ru": "Уфа",
+    "name_en": "Ufa",
+    "lat": 54.7388,
+    "lon": 55.9721,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "красноярск": {
+    "name_ru": "Красноярск",
+    "name_en": "Krasnoyarsk",
+    "lat": 56.0153,
+    "lon": 92.8932,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "крск"
+    ]
+  },
+  "воронеж": {
+    "name_ru": "Воронеж",
+    "name_en": "Voronezh",
+    "lat": 51.672,
+    "lon": 39.1843,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "пермь": {
+    "name_ru": "Пермь",
+    "name_en": "Perm",
+    "lat": 58.0105,
+    "lon": 56.2502,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "волгоград": {
+    "name_ru": "Волгоград",
+    "name_en": "Volgograd",
+    "lat": 48.708,
+    "lon": 44.5133,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "краснодар": {
+    "name_ru": "Краснодар",
+    "name_en": "Krasnodar",
+    "lat": 45.0355,
+    "lon": 38.9753,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "крд"
+    ]
+  },
+  "саратов": {
+    "name_ru": "Саратов",
+    "name_en": "Saratov",
+    "lat": 51.5406,
+    "lon": 46.0086,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "тюмень": {
+    "name_ru": "Тюмень",
+    "name_en": "Tyumen",
+    "lat": 57.1522,
+    "lon": 65.5272,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "тольятти": {
+    "name_ru": "Тольятти",
+    "name_en": "Tolyatti",
+    "lat": 53.5303,
+    "lon": 49.3461,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "барнаул": {
+    "name_ru": "Барнаул",
+    "name_en": "Barnaul",
+    "lat": 53.3606,
+    "lon": 83.7636,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "ижевск": {
+    "name_ru": "Ижевск",
+    "name_en": "Izhevsk",
+    "lat": 56.8498,
+    "lon": 53.2045,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "ульяновск": {
+    "name_ru": "Ульяновск",
+    "name_en": "Ulyanovsk",
+    "lat": 54.3282,
+    "lon": 48.3866,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "иркутск": {
+    "name_ru": "Иркутск",
+    "name_en": "Irkutsk",
+    "lat": 52.2978,
+    "lon": 104.2964,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "хабаровск": {
+    "name_ru": "Хабаровск",
+    "name_en": "Khabarovsk",
+    "lat": 48.4827,
+    "lon": 135.0838,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "ярославль": {
+    "name_ru": "Ярославль",
+    "name_en": "Yaroslavl",
+    "lat": 57.6261,
+    "lon": 39.8845,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "владивосток": {
+    "name_ru": "Владивосток",
+    "name_en": "Vladivostok",
+    "lat": 43.1155,
+    "lon": 131.8855,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "вдк"
+    ]
+  },
+  "томск": {
+    "name_ru": "Томск",
+    "name_en": "Tomsk",
+    "lat": 56.4977,
+    "lon": 84.9744,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "кемерово": {
+    "name_ru": "Кемерово",
+    "name_en": "Kemerovo",
+    "lat": 55.3333,
+    "lon": 86.0833,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "сочи": {
+    "name_ru": "Сочи",
+    "name_en": "Sochi",
+    "lat": 43.6028,
+    "lon": 39.7342,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "калининград": {
+    "name_ru": "Калининград",
+    "name_en": "Kaliningrad",
+    "lat": 54.7104,
+    "lon": 20.4522,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "клд"
+    ]
+  },
+  "онтарио": {
+    "name_ru": "Онтарио",
+    "name_en": "Ontario",
+    "lat": 43.6532,
+    "lon": -79.3832,
+    "country_ru": "Канада",
+    "country_en": "Canada",
+    "keywords": [
+      "ontario"
+    ]
+  },
+  "лондон": {
+    "name_ru": "Лондон",
+    "name_en": "London",
+    "lat": 51.5074,
+    "lon": -0.1278,
+    "country_ru": "Великобритания",
+    "country_en": "UK",
+    "keywords": [
+      "london"
+    ]
+  },
+  "париж": {
+    "name_ru": "Париж",
+    "name_en": "Paris",
+    "lat": 48.8566,
+    "lon": 2.3522,
+    "country_ru": "Франция",
+    "country_en": "France",
+    "keywords": [
+      "paris"
+    ]
+  },
+  "токио": {
+    "name_ru": "Токио",
+    "name_en": "Tokyo",
+    "lat": 35.6762,
+    "lon": 139.6503,
+    "country_ru": "Япония",
+    "country_en": "Japan",
+    "keywords": [
+      "tokyo"
+    ]
+  },
+  "берлин": {
+    "name_ru": "Берлин",
+    "name_en": "Berlin",
+    "lat": 52.52,
+    "lon": 13.405,
+    "country_ru": "Германия",
+    "country_en": "Germany",
+    "keywords": [
+      "berlin"
+    ]
+  },
+  "рим": {
+    "name_ru": "Рим",
+    "name_en": "Rome",
+    "lat": 41.9028,
+    "lon": 12.4964,
+    "country_ru": "Италия",
+    "country_en": "Italy",
+    "keywords": [
+      "rome"
+    ]
+  },
+  "дубай": {
+    "name_ru": "Дубай",
+    "name_en": "Dubai",
+    "lat": 25.2048,
+    "lon": 55.2708,
+    "country_ru": "ОАЭ",
+    "country_en": "UAE",
+    "keywords": [
+      "dubai"
+    ]
+  },
+  "минск": {
+    "name_ru": "Минск",
+    "name_en": "Minsk",
+    "lat": 53.9045,
+    "lon": 27.5615,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "minsk"
+    ]
+  },
+  "алматы": {
+    "name_ru": "Алматы",
+    "name_en": "Almaty",
+    "lat": 43.222,
+    "lon": 76.8512,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "almaty",
+      "алмата"
+    ]
+  },
+  "астана": {
+    "name_ru": "Астана",
+    "name_en": "Astana",
+    "lat": 51.1694,
+    "lon": 71.4491,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "astana"
+    ]
+  },
+  "ташкент": {
+    "name_ru": "Ташкент",
+    "name_en": "Tashkent",
+    "lat": 41.2995,
+    "lon": 69.2401,
+    "country_ru": "Узбекистан",
+    "country_en": "Uzbekistan",
+    "keywords": [
+      "tashkent"
+    ]
+  },
+  "тбилиси": {
+    "name_ru": "Тбилиси",
+    "name_en": "Tbilisi",
+    "lat": 41.7151,
+    "lon": 44.8271,
+    "country_ru": "Грузия",
+    "country_en": "Georgia",
+    "keywords": [
+      "tbilisi"
+    ]
+  },
+  "ереван": {
+    "name_ru": "Ереван",
+    "name_en": "Yerevan",
+    "lat": 40.1792,
+    "lon": 44.4991,
+    "country_ru": "Армения",
+    "country_en": "Armenia",
+    "keywords": [
+      "yerevan"
+    ]
+  },
+  "стамбул": {
+    "name_ru": "Стамбул",
+    "name_en": "Istanbul",
+    "lat": 41.0082,
+    "lon": 28.9784,
+    "country_ru": "Турция",
+    "country_en": "Turkey",
+    "keywords": [
+      "istanbul"
+    ]
+  },
+  "пекин": {
+    "name_ru": "Пекин",
+    "name_en": "Beijing",
+    "lat": 39.9042,
+    "lon": 116.4074,
+    "country_ru": "Китай",
+    "country_en": "China",
+    "keywords": [
+      "beijing"
+    ]
+  },
+  "сеул": {
+    "name_ru": "Сеул",
+    "name_en": "Seoul",
+    "lat": 37.5665,
+    "lon": 126.978,
+    "country_ru": "Южная Корея",
+    "country_en": "South Korea",
+    "keywords": [
+      "seoul"
+    ]
+  },
+  "бангкок": {
+    "name_ru": "Бангкок",
+    "name_en": "Bangkok",
+    "lat": 13.7563,
+    "lon": 100.5018,
+    "country_ru": "Таиланд",
+    "country_en": "Thailand",
+    "keywords": [
+      "bangkok"
+    ]
+  },
+  "пхукет": {
+    "name_ru": "Пхукет",
+    "name_en": "Phuket",
+    "lat": 7.8804,
+    "lon": 98.3923,
+    "country_ru": "Таиланд",
+    "country_en": "Thailand",
+    "keywords": [
+      "phuket"
+    ]
+  },
+  "лос-анджелес": {
+    "name_ru": "Лос-Анджелес",
+    "name_en": "Los Angeles",
+    "lat": 34.0522,
+    "lon": -118.2437,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "la",
+      "los angeles"
+    ]
+  },
+  "вашингтон": {
+    "name_ru": "Вашингтон",
+    "name_en": "Washington D.C.",
+    "lat": 38.8951,
+    "lon": -77.0364,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "washington",
+      "dc",
+      "d.c.",
+      "вашингтон"
+    ]
+  },
+  "чикаго": {
+    "name_ru": "Чикаго",
+    "name_en": "Chicago",
+    "lat": 41.8781,
+    "lon": -87.6298,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "chicago",
+      "чикаго"
+    ]
+  },
+  "майами": {
+    "name_ru": "Майами",
+    "name_en": "Miami",
+    "lat": 25.7617,
+    "lon": -80.1918,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "miami",
+      "майами"
+    ]
+  },
+  "сан-франциско": {
+    "name_ru": "Сан-Франциско",
+    "name_en": "San Francisco",
+    "lat": 37.7749,
+    "lon": -122.4194,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "sf",
+      "san francisco",
+      "сан франциско"
+    ]
+  },
+  "бостон": {
+    "name_ru": "Бостон",
+    "name_en": "Boston",
+    "lat": 42.3601,
+    "lon": -71.0589,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "boston",
+      "бостон"
+    ]
+  },
+  "сиэтл": {
+    "name_ru": "Сиэтл",
+    "name_en": "Seattle",
+    "lat": 47.6062,
+    "lon": -122.3321,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "seattle",
+      "сиэтл"
+    ]
+  },
+  "лас-вегас": {
+    "name_ru": "Лас-Вегас",
+    "name_en": "Las Vegas",
+    "lat": 36.1716,
+    "lon": -115.1391,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "vegas",
+      "las vegas",
+      "вегас",
+      "лас вегас"
+    ]
+  },
+  "хьюстон": {
+    "name_ru": "Хьюстон",
+    "name_en": "Houston",
+    "lat": 29.7604,
+    "lon": -95.3698,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "houston",
+      "хьюстон"
+    ]
+  },
+  "даллас": {
+    "name_ru": "Даллас",
+    "name_en": "Dallas",
+    "lat": 32.7767,
+    "lon": -96.797,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "dallas",
+      "даллас"
+    ]
+  },
+  "атланта": {
+    "name_ru": "Атланта",
+    "name_en": "Atlanta",
+    "lat": 33.749,
+    "lon": -84.388,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "atlanta",
+      "атланта"
+    ]
+  },
+  "филадельфия": {
+    "name_ru": "Филадельфия",
+    "name_en": "Philadelphia",
+    "lat": 39.9526,
+    "lon": -75.1652,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "philly",
+      "philadelphia",
+      "филадельфия"
+    ]
+  },
+  "сан-диего": {
+    "name_ru": "Сан-Диего",
+    "name_en": "San Diego",
+    "lat": 32.7157,
+    "lon": -117.1611,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "san diego",
+      "сан диего"
+    ]
+  },
+  "денвер": {
+    "name_ru": "Денвер",
+    "name_en": "Denver",
+    "lat": 39.7392,
+    "lon": -104.9903,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "denver",
+      "денвер"
+    ]
+  },
+  "остин": {
+    "name_ru": "Остин",
+    "name_en": "Austin",
+    "lat": 30.2672,
+    "lon": -97.7431,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "austin",
+      "остин"
+    ]
+  },
+  "финикс": {
+    "name_ru": "Финикс",
+    "name_en": "Phoenix",
+    "lat": 33.4484,
+    "lon": -112.074,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "phoenix",
+      "финикс"
+    ]
+  },
+  "орландо": {
+    "name_ru": "Орландо",
+    "name_en": "Orlando",
+    "lat": 28.5383,
+    "lon": -81.3792,
+    "country_ru": "США",
+    "country_en": "USA",
+    "keywords": [
+      "orlando",
+      "орландо"
+    ]
+  },
+  "торонто": {
+    "name_ru": "Торонто",
+    "name_en": "Toronto",
+    "lat": 43.6532,
+    "lon": -79.3832,
+    "country_ru": "Канада",
+    "country_en": "Canada",
+    "keywords": [
+      "toronto",
+      "торонто"
+    ]
+  },
+  "ванкувер": {
+    "name_ru": "Ванкувер",
+    "name_en": "Vancouver",
+    "lat": 49.2827,
+    "lon": -123.1207,
+    "country_ru": "Канада",
+    "country_en": "Canada",
+    "keywords": [
+      "vancouver",
+      "ванкувер"
+    ]
+  },
+  "монреаль": {
+    "name_ru": "Монреаль",
+    "name_en": "Montreal",
+    "lat": 45.5017,
+    "lon": -73.5673,
+    "country_ru": "Канада",
+    "country_en": "Canada",
+    "keywords": [
+      "montreal",
+      "монреаль"
+    ]
+  },
+  "сидней": {
+    "name_ru": "Сидней",
+    "name_en": "Sydney",
+    "lat": -33.8688,
+    "lon": 151.2093,
+    "country_ru": "Австралия",
+    "country_en": "Australia",
+    "keywords": [
+      "sydney",
+      "сидней"
+    ]
+  },
+  "мельбурн": {
+    "name_ru": "Мельбурн",
+    "name_en": "Melbourne",
+    "lat": -37.8136,
+    "lon": 144.9631,
+    "country_ru": "Австралия",
+    "country_en": "Australia",
+    "keywords": [
+      "melbourne",
+      "мельбурн"
+    ]
+  },
+  "мадрид": {
+    "name_ru": "Мадрид",
+    "name_en": "Madrid",
+    "lat": 40.4168,
+    "lon": -3.7038,
+    "country_ru": "Испания",
+    "country_en": "Spain",
+    "keywords": [
+      "madrid",
+      "мадрид"
+    ]
+  },
+  "барселона": {
+    "name_ru": "Барселона",
+    "name_en": "Barcelona",
+    "lat": 41.3879,
+    "lon": 2.1699,
+    "country_ru": "Испания",
+    "country_en": "Spain",
+    "keywords": [
+      "barcelona",
+      "барселона"
+    ]
+  },
+  "амстердам": {
+    "name_ru": "Амстердам",
+    "name_en": "Amsterdam",
+    "lat": 52.3676,
+    "lon": 4.9041,
+    "country_ru": "Нидерланды",
+    "country_en": "Netherlands",
+    "keywords": [
+      "amsterdam",
+      "амстердам"
+    ]
+  },
+  "вена": {
+    "name_ru": "Вена",
+    "name_en": "Vienna",
+    "lat": 48.2082,
+    "lon": 16.3738,
+    "country_ru": "Австрия",
+    "country_en": "Austria",
+    "keywords": [
+      "vienna",
+      "вена"
+    ]
+  },
+  "прага": {
+    "name_ru": "Прага",
+    "name_en": "Prague",
+    "lat": 50.0755,
+    "lon": 14.4378,
+    "country_ru": "Чехия",
+    "country_en": "Czech Republic",
+    "keywords": [
+      "prague",
+      "прага"
+    ]
+  },
+  "варшава": {
+    "name_ru": "Варшава",
+    "name_en": "Warsaw",
+    "lat": 52.2297,
+    "lon": 21.0122,
+    "country_ru": "Польша",
+    "country_en": "Poland",
+    "keywords": [
+      "warsaw",
+      "варшава"
+    ]
+  },
+  "лиссабон": {
+    "name_ru": "Лиссабон",
+    "name_en": "Lisbon",
+    "lat": 38.7223,
+    "lon": -9.1393,
+    "country_ru": "Португалия",
+    "country_en": "Portugal",
+    "keywords": [
+      "lisbon",
+      "лиссабон",
+      "lissabon"
+    ]
+  },
+  "караганда": {
+    "name_ru": "Караганда",
+    "name_en": "Karaganda",
+    "lat": 49.8019,
+    "lon": 73.1021,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "karaganda",
+      "крг",
+      "караганды"
+    ]
+  },
+  "шымкент": {
+    "name_ru": "Шымкент",
+    "name_en": "Shymkent",
+    "lat": 42.3417,
+    "lon": 69.5901,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "shymkent",
+      "чимкент"
+    ]
+  },
+  "актобе": {
+    "name_ru": "Актобе",
+    "name_en": "Aktobe",
+    "lat": 50.2839,
+    "lon": 57.167,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "aktobe",
+      "актюбинск"
+    ]
+  },
+  "тараз": {
+    "name_ru": "Тараз",
+    "name_en": "Taraz",
+    "lat": 42.9,
+    "lon": 71.3667,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "taraz",
+      "джамбул"
+    ]
+  },
+  "павлодар": {
+    "name_ru": "Павлодар",
+    "name_en": "Pavlodar",
+    "lat": 52.2878,
+    "lon": 76.9674,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "pavlodar"
+    ]
+  },
+  "усть-каменогорск": {
+    "name_ru": "Усть-Каменогорск",
+    "name_en": "Oskemen",
+    "lat": 49.9714,
+    "lon": 82.6059,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "ука",
+      "оскемен",
+      "oskemen",
+      "ust-kamenogorsk"
+    ]
+  },
+  "семей": {
+    "name_ru": "Семей",
+    "name_en": "Semey",
+    "lat": 50.4111,
+    "lon": 80.2275,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "semey",
+      "семипалатинск"
+    ]
+  },
+  "атырау": {
+    "name_ru": "Атырау",
+    "name_en": "Atyrau",
+    "lat": 47.1167,
+    "lon": 51.8833,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "atyrau",
+      "гурьев"
+    ]
+  },
+  "костанай": {
+    "name_ru": "Костанай",
+    "name_en": "Kostanay",
+    "lat": 53.2144,
+    "lon": 63.6246,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "kostanay",
+      "кустанай"
+    ]
+  },
+  "кызылорда": {
+    "name_ru": "Кызылорда",
+    "name_en": "Kyzylorda",
+    "lat": 44.8528,
+    "lon": 65.5092,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "kyzylorda",
+      "кзыл-орда"
+    ]
+  },
+  "уральск": {
+    "name_ru": "Уральск",
+    "name_en": "Oral",
+    "lat": 51.2333,
+    "lon": 51.3667,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "oral",
+      "uralsk"
+    ]
+  },
+  "петропавловск": {
+    "name_ru": "Петропавловск",
+    "name_en": "Petropavl",
+    "lat": 54.8753,
+    "lon": 69.1636,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "petropavl"
+    ]
+  },
+  "актау": {
+    "name_ru": "Актау",
+    "name_en": "Aktau",
+    "lat": 43.65,
+    "lon": 51.1667,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "aktau",
+      "шевченко"
+    ]
+  },
+  "темиртау": {
+    "name_ru": "Темиртау",
+    "name_en": "Temirtau",
+    "lat": 50.0549,
+    "lon": 72.9646,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "temirtau"
+    ]
+  },
+  "туркестан": {
+    "name_ru": "Туркестан",
+    "name_en": "Turkistan",
+    "lat": 43.2974,
+    "lon": 68.2518,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "turkistan"
+    ]
+  },
+  "кокшетау": {
+    "name_ru": "Кокшетау",
+    "name_en": "Kokshetau",
+    "lat": 53.2833,
+    "lon": 69.3833,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "kokshetau",
+      "кокчетав"
+    ]
+  },
+  "талдыкорган": {
+    "name_ru": "Талдыкорган",
+    "name_en": "Taldykorgan",
+    "lat": 45.0167,
+    "lon": 78.3667,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "taldykorgan"
+    ]
+  },
+  "экибастуз": {
+    "name_ru": "Экибастуз",
+    "name_en": "Ekibastuz",
+    "lat": 51.7231,
+    "lon": 75.3228,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "ekibastuz"
+    ]
+  },
+  "рудный": {
+    "name_ru": "Рудный",
+    "name_en": "Rudny",
+    "lat": 52.9628,
+    "lon": 63.1292,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "rudny"
+    ]
+  },
+  "жезказган": {
+    "name_ru": "Жезказган",
+    "name_en": "Zhezkazgan",
+    "lat": 47.7833,
+    "lon": 67.7667,
+    "country_ru": "Казахстан",
+    "country_en": "Kazakhstan",
+    "keywords": [
+      "zhezkazgan",
+      "джезказган"
+    ]
+  },
+  "гомель": {
+    "name_ru": "Гомель",
+    "name_en": "Gomel",
+    "lat": 52.4345,
+    "lon": 30.9754,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "gomel"
+    ]
+  },
+  "могилев": {
+    "name_ru": "Могилев",
+    "name_en": "Mogilev",
+    "lat": 53.8981,
+    "lon": 30.3325,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "mogilev",
+      "магілёў"
+    ]
+  },
+  "витебск": {
+    "name_ru": "Витебск",
+    "name_en": "Vitebsk",
+    "lat": 55.1904,
+    "lon": 30.2049,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "vitebsk",
+      "віцебск"
+    ]
+  },
+  "гродно": {
+    "name_ru": "Гродно",
+    "name_en": "Grodno",
+    "lat": 53.6884,
+    "lon": 23.8258,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "grodno",
+      "гродна"
+    ]
+  },
+  "брест": {
+    "name_ru": "Брест",
+    "name_en": "Brest",
+    "lat": 52.0976,
+    "lon": 23.7341,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "brest"
+    ]
+  },
+  "бобруйск": {
+    "name_ru": "Бобруйск",
+    "name_en": "Babruysk",
+    "lat": 53.1384,
+    "lon": 29.2214,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "bobruisk",
+      "babruysk"
+    ]
+  },
+  "барановичи": {
+    "name_ru": "Барановичи",
+    "name_en": "Baranovichi",
+    "lat": 53.1327,
+    "lon": 26.0139,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "baranovichi"
+    ]
+  },
+  "пинск": {
+    "name_ru": "Пинск",
+    "name_en": "Pinsk",
+    "lat": 52.1153,
+    "lon": 26.1031,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "pinsk"
+    ]
+  },
+  "борисов": {
+    "name_ru": "Борисов",
+    "name_en": "Barysaw",
+    "lat": 54.2276,
+    "lon": 28.505,
+    "country_ru": "Беларусь",
+    "country_en": "Belarus",
+    "keywords": [
+      "borisov",
+      "barysaw"
+    ]
+  },
+  "бишкек": {
+    "name_ru": "Бишкек",
+    "name_en": "Bishkek",
+    "lat": 42.8746,
+    "lon": 74.5698,
+    "country_ru": "Кыргызстан",
+    "country_en": "Kyrgyzstan",
+    "keywords": [
+      "bishkek",
+      "фрунзе"
+    ]
+  },
+  "ош": {
+    "name_ru": "Ош",
+    "name_en": "Osh",
+    "lat": 40.514,
+    "lon": 72.8161,
+    "country_ru": "Кыргызстан",
+    "country_en": "Kyrgyzstan",
+    "keywords": [
+      "osh"
+    ]
+  },
+  "душанбе": {
+    "name_ru": "Душанбе",
+    "name_en": "Dushanbe",
+    "lat": 38.5598,
+    "lon": 68.787,
+    "country_ru": "Таджикистан",
+    "country_en": "Tajikistan",
+    "keywords": [
+      "dushanbe",
+      "сталинабад"
+    ]
+  },
+  "худжанд": {
+    "name_ru": "Худжанд",
+    "name_en": "Khujand",
+    "lat": 40.2826,
+    "lon": 69.6222,
+    "country_ru": "Таджикистан",
+    "country_en": "Tajikistan",
+    "keywords": [
+      "khujand",
+      "ленинабад"
+    ]
+  },
+  "самарканд": {
+    "name_ru": "Самарканд",
+    "name_en": "Samarkand",
+    "lat": 39.6542,
+    "lon": 66.9597,
+    "country_ru": "Узбекистан",
+    "country_en": "Uzbekistan",
+    "keywords": [
+      "samarkand"
+    ]
+  },
+  "бухара": {
+    "name_ru": "Бухара",
+    "name_en": "Bukhara",
+    "lat": 39.7747,
+    "lon": 64.4286,
+    "country_ru": "Узбекистан",
+    "country_en": "Uzbekistan",
+    "keywords": [
+      "bukhara"
+    ]
+  },
+  "андижан": {
+    "name_ru": "Андижан",
+    "name_en": "Andijan",
+    "lat": 40.7821,
+    "lon": 72.3442,
+    "country_ru": "Узбекистан",
+    "country_en": "Uzbekistan",
+    "keywords": [
+      "andijan"
+    ]
+  },
+  "ашхабад": {
+    "name_ru": "Ашхабад",
+    "name_en": "Ashgabat",
+    "lat": 37.9601,
+    "lon": 58.3261,
+    "country_ru": "Туркменистан",
+    "country_en": "Turkmenistan",
+    "keywords": [
+      "ashgabat"
+    ]
+  },
+  "баку": {
+    "name_ru": "Баку",
+    "name_en": "Baku",
+    "lat": 40.4093,
+    "lon": 49.8671,
+    "country_ru": "Азербайджан",
+    "country_en": "Azerbaijan",
+    "keywords": [
+      "baku"
+    ]
+  },
+  "гянджа": {
+    "name_ru": "Гянджа",
+    "name_en": "Ganja",
+    "lat": 40.6828,
+    "lon": 46.3606,
+    "country_ru": "Азербайджан",
+    "country_en": "Azerbaijan",
+    "keywords": [
+      "ganja",
+      "кировабад"
+    ]
+  },
+  "батуми": {
+    "name_ru": "Батуми",
+    "name_en": "Batumi",
+    "lat": 41.6416,
+    "lon": 41.6359,
+    "country_ru": "Грузия",
+    "country_en": "Georgia",
+    "keywords": [
+      "batumi"
+    ]
+  },
+  "кутаиси": {
+    "name_ru": "Кутаиси",
+    "name_en": "Kutaisi",
+    "lat": 42.2679,
+    "lon": 42.6946,
+    "country_ru": "Грузия",
+    "country_en": "Georgia",
+    "keywords": [
+      "kutaisi"
+    ]
+  },
+  "гюмри": {
+    "name_ru": "Гюмри",
+    "name_en": "Gyumri",
+    "lat": 40.7929,
+    "lon": 43.8465,
+    "country_ru": "Армения",
+    "country_en": "Armenia",
+    "keywords": [
+      "gyumri",
+      "ленинакан"
+    ]
+  },
+  "прокопьевск": {
+    "name_ru": "Прокопьевск",
+    "name_en": "Prokopyevsk",
+    "lat": 53.8833,
+    "lon": 86.7167,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "прокопа"
+    ]
+  },
+  "бийск": {
+    "name_ru": "Бийск",
+    "name_en": "Biysk",
+    "lat": 52.5364,
+    "lon": 85.2072,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "братск": {
+    "name_ru": "Братск",
+    "name_en": "Bratsk",
+    "lat": 56.1325,
+    "lon": 101.6142,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "ангарск": {
+    "name_ru": "Ангарск",
+    "name_en": "Angarsk",
+    "lat": 52.5444,
+    "lon": 103.8882,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "абакан": {
+    "name_ru": "Абакан",
+    "name_en": "Abakan",
+    "lat": 53.7167,
+    "lon": 91.4292,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "abakan",
+      "khakassia",
+      "хакасия"
+    ]
+  },
+  "чита": {
+    "name_ru": "Чита",
+    "name_en": "Chita",
+    "lat": 52.0317,
+    "lon": 113.5009,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "улан-удэ": {
+    "name_ru": "Улан-Удэ",
+    "name_en": "Ulan-Ude",
+    "lat": 51.8348,
+    "lon": 107.5845,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "уланудэ"
+    ]
+  },
+  "якутск": {
+    "name_ru": "Якутск",
+    "name_en": "Yakutsk",
+    "lat": 62.0355,
+    "lon": 129.6755,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "южно-сахалинск": {
+    "name_ru": "Южно-Сахалинск",
+    "name_en": "Yuzhno-Sakhalinsk",
+    "lat": 46.9541,
+    "lon": 142.736,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "сахалин",
+      "южный"
+    ]
+  },
+  "петропавловск-камчатский": {
+    "name_ru": "Петропавловск-Камчатский",
+    "name_en": "Petropavlovsk-Kamchatsky",
+    "lat": 53.0452,
+    "lon": 158.6508,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "камчатка",
+      "пк"
+    ]
+  },
+  "магадан": {
+    "name_ru": "Магадан",
+    "name_en": "Magadan",
+    "lat": 59.5638,
+    "lon": 150.8036,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "норильск": {
+    "name_ru": "Норильск",
+    "name_en": "Norilsk",
+    "lat": 69.3535,
+    "lon": 88.2027,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "сургут": {
+    "name_ru": "Сургут",
+    "name_en": "Surgut",
+    "lat": 61.25,
+    "lon": 73.4167,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "нижневартовск": {
+    "name_ru": "Нижневартовск",
+    "name_en": "Nizhnevartovsk",
+    "lat": 60.9344,
+    "lon": 76.5585,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "вартовск"
+    ]
+  },
+  "курган": {
+    "name_ru": "Курган",
+    "name_en": "Kurgan",
+    "lat": 55.4411,
+    "lon": 65.3411,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "магнитогорск": {
+    "name_ru": "Магнитогорск",
+    "name_en": "Magnitogorsk",
+    "lat": 53.4186,
+    "lon": 58.9703,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "магнитка"
+    ]
+  },
+  "нижний тагил": {
+    "name_ru": "Нижний Тагил",
+    "name_en": "Nizhny Tagil",
+    "lat": 57.9194,
+    "lon": 59.965,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "тагил"
+    ]
+  },
+  "стерлитамак": {
+    "name_ru": "Стерлитамак",
+    "name_en": "Sterlitamak",
+    "lat": 53.6333,
+    "lon": 55.95,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "оренбург": {
+    "name_ru": "Оренбург",
+    "name_en": "Orenburg",
+    "lat": 51.7727,
+    "lon": 55.0988,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "сызрань": {
+    "name_ru": "Сызрань",
+    "name_en": "Syzran",
+    "lat": 53.1558,
+    "lon": 48.4681,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "энгельс": {
+    "name_ru": "Энгельс",
+    "name_en": "Engels",
+    "lat": 51.5033,
+    "lon": 46.1219,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "волжский": {
+    "name_ru": "Волжский",
+    "name_en": "Volzhsky",
+    "lat": 48.7858,
+    "lon": 44.7797,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "астрахань": {
+    "name_ru": "Астрахань",
+    "name_en": "Astrakhan",
+    "lat": 46.3497,
+    "lon": 48.0408,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "таганрог": {
+    "name_ru": "Таганрог",
+    "name_en": "Taganrog",
+    "lat": 47.2362,
+    "lon": 38.8969,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "шахты": {
+    "name_ru": "Шахты",
+    "name_en": "Shakhty",
+    "lat": 47.7086,
+    "lon": 40.2161,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "новочеркасск": {
+    "name_ru": "Новочеркасск",
+    "name_en": "Novocherkassk",
+    "lat": 47.4222,
+    "lon": 40.0928,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "новороссийск": {
+    "name_ru": "Новороссийск",
+    "name_en": "Novorossiysk",
+    "lat": 44.7239,
+    "lon": 37.7689,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "армавир": {
+    "name_ru": "Армавир",
+    "name_en": "Armavir",
+    "lat": 44.9892,
+    "lon": 41.1233,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "ставрополь": {
+    "name_ru": "Ставрополь",
+    "name_en": "Stavropol",
+    "lat": 45.0448,
+    "lon": 41.969,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "пятигорск": {
+    "name_ru": "Пятигорск",
+    "name_en": "Pyatigorsk",
+    "lat": 44.0486,
+    "lon": 43.0594,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "кисловодск": {
+    "name_ru": "Кисловодск",
+    "name_en": "Kislovodsk",
+    "lat": 43.9133,
+    "lon": 42.7208,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "нальчик": {
+    "name_ru": "Нальчик",
+    "name_en": "Nalchik",
+    "lat": 43.4981,
+    "lon": 43.6189,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "владикавказ": {
+    "name_ru": "Владикавказ",
+    "name_en": "Vladikavkaz",
+    "lat": 43.0367,
+    "lon": 44.6678,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "грозный": {
+    "name_ru": "Грозный",
+    "name_en": "Grozny",
+    "lat": 43.3178,
+    "lon": 45.6983,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "махачкала": {
+    "name_ru": "Махачкала",
+    "name_en": "Makhachkala",
+    "lat": 42.9831,
+    "lon": 47.5047,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "севастополь": {
+    "name_ru": "Севастополь",
+    "name_en": "Sevastopol",
+    "lat": 44.6167,
+    "lon": 33.5254,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "симферополь": {
+    "name_ru": "Симферополь",
+    "name_en": "Simferopol",
+    "lat": 44.9521,
+    "lon": 34.1024,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "белгород": {
+    "name_ru": "Белгород",
+    "name_en": "Belgorod",
+    "lat": 50.5954,
+    "lon": 36.5873,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "старый оскол": {
+    "name_ru": "Старый Оскол",
+    "name_en": "Stary Oskol",
+    "lat": 51.2969,
+    "lon": 37.8344,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "оскол"
+    ]
+  },
+  "курск": {
+    "name_ru": "Курск",
+    "name_en": "Kursk",
+    "lat": 51.7374,
+    "lon": 36.1874,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "липецк": {
+    "name_ru": "Липецк",
+    "name_en": "Lipetsk",
+    "lat": 52.6103,
+    "lon": 39.5947,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "тамбов": {
+    "name_ru": "Тамбов",
+    "name_en": "Tambov",
+    "lat": 52.7317,
+    "lon": 41.4433,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "рязань": {
+    "name_ru": "Рязань",
+    "name_en": "Ryazan",
+    "lat": 54.6269,
+    "lon": 39.6916,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "тула": {
+    "name_ru": "Тула",
+    "name_en": "Tula",
+    "lat": 54.1961,
+    "lon": 37.6182,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "калуга": {
+    "name_ru": "Калуга",
+    "name_en": "Kaluga",
+    "lat": 54.5293,
+    "lon": 36.2754,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "брянск": {
+    "name_ru": "Брянск",
+    "name_en": "Bryansk",
+    "lat": 53.2521,
+    "lon": 34.3717,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "орел": {
+    "name_ru": "Орел",
+    "name_en": "Oryol",
+    "lat": 52.9651,
+    "lon": 36.0785,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "орёл"
+    ]
+  },
+  "смоленск": {
+    "name_ru": "Смоленск",
+    "name_en": "Smolensk",
+    "lat": 54.7818,
+    "lon": 32.0401,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "тверь": {
+    "name_ru": "Тверь",
+    "name_en": "Tver",
+    "lat": 56.8587,
+    "lon": 35.9176,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "владимир": {
+    "name_ru": "Владимир",
+    "name_en": "Vladimir",
+    "lat": 56.129,
+    "lon": 40.4066,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "иваново": {
+    "name_ru": "Иваново",
+    "name_en": "Ivanovo",
+    "lat": 56.9972,
+    "lon": 40.9714,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "кострома": {
+    "name_ru": "Кострома",
+    "name_en": "Kostroma",
+    "lat": 57.7679,
+    "lon": 40.9269,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "рыбинск": {
+    "name_ru": "Рыбинск",
+    "name_en": "Rybinsk",
+    "lat": 58.0483,
+    "lon": 38.8583,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "вологда": {
+    "name_ru": "Вологда",
+    "name_en": "Vologda",
+    "lat": 59.2239,
+    "lon": 39.884,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "череповец": {
+    "name_ru": "Череповец",
+    "name_en": "Cherepovets",
+    "lat": 59.1328,
+    "lon": 37.9094,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "архангельск": {
+    "name_ru": "Архангельск",
+    "name_en": "Arkhangelsk",
+    "lat": 64.5401,
+    "lon": 40.5433,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "северодвинск": {
+    "name_ru": "Северодвинск",
+    "name_en": "Severodvinsk",
+    "lat": 64.5635,
+    "lon": 39.8302,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "мурманск": {
+    "name_ru": "Мурманск",
+    "name_en": "Murmansk",
+    "lat": 68.9585,
+    "lon": 33.0827,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "петрозаводск": {
+    "name_ru": "Петрозаводск",
+    "name_en": "Petrozavodsk",
+    "lat": 61.7849,
+    "lon": 34.3469,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "птз"
+    ]
+  },
+  "великий новгород": {
+    "name_ru": "Великий Новгород",
+    "name_en": "Veliky Novgorod",
+    "lat": 58.5213,
+    "lon": 31.271,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "новгород"
+    ]
+  },
+  "псков": {
+    "name_ru": "Псков",
+    "name_en": "Pskov",
+    "lat": 57.8136,
+    "lon": 28.3496,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "чебоксары": {
+    "name_ru": "Чебоксары",
+    "name_en": "Cheboksary",
+    "lat": 56.1322,
+    "lon": 47.2519,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "йошкар-ола": {
+    "name_ru": "Йошкар-Ола",
+    "name_en": "Yoshkar-Ola",
+    "lat": 56.6344,
+    "lon": 47.8999,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "саранск": {
+    "name_ru": "Саранск",
+    "name_en": "Saransk",
+    "lat": 54.1838,
+    "lon": 45.1838,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "пенза": {
+    "name_ru": "Пенза",
+    "name_en": "Penza",
+    "lat": 53.2007,
+    "lon": 45.0183,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "киров": {
+    "name_ru": "Киров",
+    "name_en": "Kirov",
+    "lat": 58.6035,
+    "lon": 49.6679,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "вятка"
+    ]
+  },
+  "сыктывкар": {
+    "name_ru": "Сыктывкар",
+    "name_en": "Syktyvkar",
+    "lat": 61.6688,
+    "lon": 50.8354,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "набережные челны": {
+    "name_ru": "Набережные Челны",
+    "name_en": "Naberezhnye Chelny",
+    "lat": 55.7436,
+    "lon": 52.4078,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "челны"
+    ]
+  },
+  "нижнекамск": {
+    "name_ru": "Нижнекамск",
+    "name_en": "Nizhnekamsk",
+    "lat": 55.6358,
+    "lon": 51.8214,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "комсомольск-на-амуре": {
+    "name_ru": "Комсомольск-на-Амуре",
+    "name_en": "Komsomolsk-on-Amur",
+    "lat": 50.5503,
+    "lon": 137.0094,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "комсомольск"
+    ]
+  },
+  "благовещенск": {
+    "name_ru": "Благовещенск",
+    "name_en": "Blagoveshchensk",
+    "lat": 50.2796,
+    "lon": 127.5405,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": []
+  },
+  "горно-алтайск": {
+    "name_ru": "Горно-Алтайск",
+    "name_en": "Gorno-Altaysk",
+    "lat": 51.9583,
+    "lon": 85.9603,
+    "country_ru": "Россия",
+    "country_en": "Russia",
+    "keywords": [
+      "алтай"
+    ]
+  },
+  "анталья": {
+    "name_ru": "Анталья",
+    "name_en": "Antalya",
+    "lat": 36.8841,
+    "lon": 30.7056,
+    "country_ru": "Турция",
+    "country_en": "Turkey",
+    "keywords": [
+      "antalya"
+    ]
+  },
+  "анкара": {
+    "name_ru": "Анкара",
+    "name_en": "Ankara",
+    "lat": 39.9334,
+    "lon": 32.8597,
+    "country_ru": "Турция",
+    "country_en": "Turkey",
+    "keywords": [
+      "ankara"
+    ]
+  },
+  "абу-даби": {
+    "name_ru": "Абу-Даби",
+    "name_en": "Abu Dhabi",
+    "lat": 24.4539,
+    "lon": 54.3773,
+    "country_ru": "ОАЭ",
+    "country_en": "UAE",
+    "keywords": [
+      "abu dhabi"
+    ]
+  },
+  "доха": {
+    "name_ru": "Доха",
+    "name_en": "Doha",
+    "lat": 25.2854,
+    "lon": 51.531,
+    "country_ru": "Катар",
+    "country_en": "Qatar",
+    "keywords": [
+      "doha"
+    ]
+  },
+  "милан": {
+    "name_ru": "Милан",
+    "name_en": "Milan",
+    "lat": 45.4642,
+    "lon": 9.19,
+    "country_ru": "Италия",
+    "country_en": "Italy",
+    "keywords": [
+      "milan",
+      "milano"
+    ]
+  },
+  "стокгольм": {
+    "name_ru": "Стокгольм",
+    "name_en": "Stockholm",
+    "lat": 59.3293,
+    "lon": 18.0686,
+    "country_ru": "Швеция",
+    "country_en": "Sweden",
+    "keywords": [
+      "stockholm"
+    ]
+  },
+  "осло": {
+    "name_ru": "Осло",
+    "name_en": "Oslo",
+    "lat": 59.9139,
+    "lon": 10.7522,
+    "country_ru": "Норвегия",
+    "country_en": "Norway",
+    "keywords": [
+      "oslo"
+    ]
+  },
+  "хельсинки": {
+    "name_ru": "Хельсинки",
+    "name_en": "Helsinki",
+    "lat": 60.1699,
+    "lon": 24.9384,
+    "country_ru": "Финляндия",
+    "country_en": "Finland",
+    "keywords": [
+      "helsinki"
+    ]
+  },
+  "копенгаген": {
+    "name_ru": "Копенгаген",
+    "name_en": "Copenhagen",
+    "lat": 55.6761,
+    "lon": 12.5683,
+    "country_ru": "Дания",
+    "country_en": "Denmark",
+    "keywords": [
+      "copenhagen"
+    ]
+  },
+  "рейкьявик": {
+    "name_ru": "Рейкьявик",
+    "name_en": "Reykjavik",
+    "lat": 64.1466,
+    "lon": -21.9426,
+    "country_ru": "Исландия",
+    "country_en": "Iceland",
+    "keywords": [
+      "reykjavik"
+    ]
+  },
+  "Киев": {
+    "name_ru": "Киев",
+    "name_en": "Kyiv",
+    "name_uk": "Київ",
+    "lat": 50.4501,
+    "lon": 30.5234,
+    "country_ru": "Украина",
+    "country_en": "Ukraine",
+    "country_uk": "Україна",
+    "keywords": [
+      "киев",
+      "kyiv",
+      "kiev",
+      "київ"
+    ]
+  },
+  "Харьков": {
+    "name_ru": "Харьков",
+    "name_en": "Kharkiv",
+    "name_uk": "Харків",
+    "lat": 49.9935,
+    "lon": 36.2304,
+    "country_ru": "Украина",
+    "country_en": "Ukraine",
+    "country_uk": "Україна",
+    "keywords": [
+      "харьков",
+      "kharkiv",
+      "харків"
+    ]
+  },
+  "Одесса": {
+    "name_ru": "Одесса",
+    "name_en": "Odesa",
+    "name_uk": "Одеса",
+    "lat": 46.4825,
+    "lon": 30.7233,
+    "country_ru": "Украина",
+    "country_en": "Ukraine",
+    "country_uk": "Україна",
+    "keywords": [
+      "одесса",
+      "odesa",
+      "odessa",
+      "одеса"
+    ]
+  },
+  "Днепр": {
+    "name_ru": "Днепр",
+    "name_en": "Dnipro",
+    "name_uk": "Дніпро",
+    "lat": 48.4647,
+    "lon": 35.0462,
+    "country_ru": "Украина",
+    "country_en": "Ukraine",
+    "country_uk": "Україна",
+    "keywords": [
+      "днепр",
+      "dnipro",
+      "дніпро"
+    ]
+  },
+  "Львов": {
+    "name_ru": "Львов",
+    "name_en": "Lviv",
+    "name_uk": "Львів",
+    "lat": 49.8397,
+    "lon": 24.0297,
+    "country_ru": "Украина",
+    "country_en": "Ukraine",
+    "country_uk": "Україна",
+    "keywords": [
+      "львов",
+      "lviv",
+      "львів"
+    ]
+  }
+}

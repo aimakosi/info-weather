@@ -1,0 +1,55 @@
+# Maintainer: aimakosi <aimakosi@users.noreply.github.com>
+pkgname=info-weather
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Modern desktop weather widget for Linux (KDE Plasma) with consensus providers"
+arch=('any')
+url="https://github.com/aimakosi/info-weather"
+license=('GPL-3.0-or-later')
+depends=('python>=3.10' 'pyside6' 'python-pillow')
+optdepends=(
+    'kwin: for desktop pinning rules on KDE Plasma'
+    'qt5-tools: for qdbus rule reconfigure in KDE Plasma 5'
+    'qt6-tools: for qdbus6 rule reconfigure in KDE Plasma 6'
+)
+install="info-weather.install"
+source=("info-weather-0.1.0.tar.gz")
+sha256sums=('3a7914b2f8bb28f20a0f78f97ad8f40701b464504d1c9c82e8af5a58497fa62a')
+
+package() {
+    cd "$srcdir/${pkgname}-${pkgver}"
+
+    # 1. Install application modules and assets
+    install -dm755 "$pkgdir/usr/share/info-weather"
+    cp -r core models providers data ui assets main.py NOTICE README.md "$pkgdir/usr/share/info-weather/"
+    find "$pkgdir/usr/share/info-weather" -type d -exec chmod 755 {} +
+    find "$pkgdir/usr/share/info-weather" -type f -exec chmod 644 {} +
+    chmod 755 "$pkgdir/usr/share/info-weather/main.py"
+
+    # 2. Install KDE window rule helper
+    install -dm755 "$pkgdir/usr/share/info-weather/packaging/kde"
+    install -m644 packaging/kde/info-weather.kwinrule "$pkgdir/usr/share/info-weather/packaging/kde/"
+    install -m755 packaging/kde/install_kwinrule.sh "$pkgdir/usr/share/info-weather/packaging/kde/"
+
+    # 3. Create executable launcher in /usr/bin
+    install -dm755 "$pkgdir/usr/bin"
+    cat << 'EOF' > "$pkgdir/usr/bin/info-weather"
+#!/bin/sh
+exec python3 /usr/share/info-weather/main.py "$@"
+EOF
+    chmod 755 "$pkgdir/usr/bin/info-weather"
+
+    # 4. Install desktop entry
+    install -Dm644 packaging/info-weather.desktop "$pkgdir/usr/share/applications/info-weather.desktop"
+
+    # 4b. Install AppStream metadata
+    install -Dm644 packaging/io.github.aimakosi.info_weather.metainfo.xml "$pkgdir/usr/share/metainfo/io.github.aimakosi.info_weather.metainfo.xml"
+
+    # 5. Install application icon
+    install -Dm644 assets/icons/info-weather.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/info-weather.svg"
+
+    # 6. Install documentation & license
+    install -Dm644 NOTICE "$pkgdir/usr/share/licenses/info-weather/NOTICE"
+    install -Dm644 LICENSE "$pkgdir/usr/share/licenses/info-weather/LICENSE"
+    install -Dm644 README.md "$pkgdir/usr/share/doc/info-weather/README.md"
+}

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.aimakosi.info_weather</id>
+  <name>Info Weather</name>
+  <name xml:lang="ru">Информер погоды</name>
+  <name xml:lang="uk">Інформер погоди</name>
+  <summary>Modern desktop weather widget for Linux</summary>
+  <summary xml:lang="ru">Современный виджет погоды для рабочего стола Linux</summary>
+  <summary xml:lang="uk">Сучасний віджет погоди для робочого столу Linux</summary>
+  <developer id="io.github.aimakosi">
+    <name>aimakosi</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <description>
+    <p>
+      Frameless desktop weather widget for KDE Plasma that replaces the legacy
+      gis-weather informer. Forecasts are synthesized from three independent
+      providers (Open-Meteo, MET Norway, wttr.in) using a deterministic
+      consensus algorithm, with an honest offline mode based on Copernicus
+      ERA5 climate normals.
+    </p>
+    <p xml:lang="ru">
+      Безрамочный виджет погоды для рабочего стола KDE Plasma, созданный как
+      замена устаревшему информеру gis-weather. Прогноз синтезируется из трёх
+      независимых источников (Open-Meteo, MET Norway, wttr.in) по
+      детерминированным правилам консенсуса, с честным офлайн-режимом на
+      основе климатических норм Copernicus ERA5.
+    </p>
+    <p xml:lang="uk">
+      Безрамковий віджет погоди для робочого столу KDE Plasma, створений як
+      заміна застарілому інформеру gis-weather. Прогноз синтезується з трьох
+      незалежних джерел (Open-Meteo, MET Norway, wttr.in) за детермінованими
+      правилами консенсусу, з чесним офлайн-режимом на основі кліматичних норм
+      Copernicus ERA5.
+    </p>
+  </description>
+  <launchable type="desktop-id">info-weather.desktop</launchable>
+  <provides>
+    <binary>info-weather</binary>
+  </provides>
+  <url type="homepage">https://github.com/aimakosi/info-weather</url>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="0.1.0" date="2026-10-24"/>
+  </releases>
+</component>

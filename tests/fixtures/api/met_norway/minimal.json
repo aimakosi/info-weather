@@ -1,0 +1,37 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Point",
+    "coordinates": [
+      73.1,
+      49.8,
+      550
+    ]
+  },
+  "properties": {
+    "meta": {
+      "updated_at": "2026-10-14T10:00:00Z"
+    },
+    "timeseries": [
+      {
+        "time": "2026-10-14T12:00:00Z",
+        "data": {
+          "instant": {
+            "details": {
+              "air_pressure_at_sea_level": 1018.2,
+              "air_temperature": 11.0,
+              "relative_humidity": 65.0,
+              "wind_from_direction": 235.0,
+              "wind_speed": 4.0
+            }
+          },
+          "next_1_hours": {
+            "summary": {
+              "symbol_code": "partlycloudy_day"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
