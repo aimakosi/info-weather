@@ -111,3 +111,6 @@ $RECYCLE.BIN/
 
 # Personal agent skills (not part of the project)
 .agents/
+
+# Personal working notes (specs, plans)
+thoughts/
