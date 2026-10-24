@@ -85,7 +85,13 @@ cd info-weather
 ```
 
 ### Arch Linux
-The release ships an AUR-ready source tarball and `PKGBUILD` (`packaging/arch/`):
+Download the latest `.pkg.tar.zst` from [GitHub Releases](https://github.com/aimakosi/info-weather/releases) and install:
+
+```bash
+sudo pacman -U info-weather-0.1.0-1-any.pkg.tar.zst
+```
+
+Or build from the AUR-ready source tarball and `PKGBUILD` (`packaging/arch/`):
 
 ```bash
 cd packaging/arch
