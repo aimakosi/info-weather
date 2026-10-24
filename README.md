@@ -52,8 +52,6 @@
 
 ## 📚 Documentation
 
-*(Available in Russian)*
-
 - [📖 **User Guide**](docs/user_guide.md) — detailed description of the interface, charts, wind rose, city management and settings.
 - [📐 **Project Architecture**](docs/architecture.md) — overview of the core, provider consensus, ERA5 climatology, Bézier splines and vector rendering.
 - [⚙️ **Configuration Reference**](docs/configuration.md) — full description of the `config.json` structure and parameters.

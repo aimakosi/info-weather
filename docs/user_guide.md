@@ -1,181 +1,181 @@
-# Руководство пользователя info-weather 🌤️
+# info-weather User Guide 🌤️
 
-**info-weather** — современный, легковесный и функциональный виджет погоды для рабочего стола Linux (KDE Plasma, GNOME, XFCE и др.) на базе Qt / PySide6.
-
----
-
-## Содержание
-1. [Установка и запуск](#установка-и-запуск)
-2. [Интерфейс виджета и управление](#интерфейс-виджета-и-управление)
-3. [Окно подробного прогноза](#окно-подробного-прогноза)
-   - [Экран 1: Температура и давление](#экран-1-температура-и-давление)
-   - [Экран 2: Климатические нормы и комфорт](#экран-2-климатические-нормы-и-комфорт)
-   - [Экран 3: Роза ветров (Wind Rose)](#экран-3-роза-ветров-wind-rose)
-4. [Управление локациями (Города)](#управление-локациями-города)
-5. [Настройки приложения](#настройки-приложения)
-   - [Общие (General)](#вкладка-общие)
-   - [Оформление и темы](#вкладка-вид-и-оформление)
-   - [Раскладка блоков](#вкладка-раскладка)
-   - [Провайдеры и сеть](#вкладка-провайдеры)
-   - [Уведомления](#вкладка-уведомления)
-6. [Горячие клавиши и управление мышью](#горячие-клавиши-и-управление-мышью)
-7. [Работа в офлайн-режиме](#работа-в-офлайн-режиме)
+**info-weather** — a modern, lightweight and feature-rich weather widget for the Linux desktop (KDE Plasma, GNOME, XFCE and others) built on Qt / PySide6.
 
 ---
 
-## Установка и запуск
+## Contents
+1. [Installation and Launch](#installation-and-launch)
+2. [Widget Interface and Controls](#widget-interface-and-controls)
+3. [Detailed Forecast Window](#detailed-forecast-window)
+   - [Screen 1: Temperature and Pressure](#screen-1-temperature-and-pressure)
+   - [Screen 2: Climate Normals and Comfort](#screen-2-climate-normals-and-comfort)
+   - [Screen 3: Wind Rose](#screen-3-wind-rose)
+4. [Managing Locations (Cities)](#managing-locations-cities)
+5. [Application Settings](#application-settings)
+   - [General](#general-tab)
+   - [View and Appearance](#view-and-appearance-tab)
+   - [Layout](#layout-tab)
+   - [Providers](#providers-tab)
+   - [Notifications](#notifications-tab)
+6. [Keyboard and Mouse Shortcuts](#keyboard-and-mouse-shortcuts)
+7. [Offline Mode](#offline-mode)
 
-### Системные требования
-- **ОС:** Linux (KDE Plasma 5/6, GNOME, XFCE и др.)
-- **Python:** $\ge$ 3.10
-- **Библиотеки:** PySide6 $\ge$ 6.5 (`pip install PySide6`, либо на Debian/Ubuntu: `python3-pyside6.qtwidgets python3-pyside6.qtsvg`)
+---
 
-### Быстрая установка
+## Installation and Launch
+
+### System Requirements
+- **OS:** Linux (KDE Plasma 5/6, GNOME, XFCE and others)
+- **Python:** >= 3.10
+- **Libraries:** PySide6 >= 6.5 (`pip install PySide6`, or on Debian/Ubuntu: `python3-pyside6.qtwidgets python3-pyside6.qtsvg`)
+
+### Quick Install
 ```bash
 git clone https://github.com/aimakosi/info-weather.git
 cd info-weather
 ./packaging/scripts/install.sh
 ```
 
-### Запуск
+### Launch
 ```bash
-# Стандартный запуск виджета:
+# Standard widget launch:
 python3 main.py
 
-# Или через установленную команду:
+# Or via the installed command:
 info-weather
 ```
 
 ---
 
-## Интерфейс виджета и управление
+## Widget Interface and Controls
 
-Виджет отображается непосредственно на рабочем столе как аккуратное безрамочное полупрозрачное окно.
+The widget is displayed directly on the desktop as a neat frameless translucent window.
 
-### Основные действия мышью
-- **Перемещение (Drag & Drop):** зажмите левую кнопку мыши (ЛКМ) на свободном месте виджета и перетащите его в желаемую позицию. Координаты автоматически сохраняются в конфигурации.
-- **Подробный прогноз:** кликните один раз ЛКМ по виджету, чтобы открыть окно расширенного прогноза.
-- **Смена сохраненных городов:** прокрутите колесо мыши над виджетом вверх или вниз для быстрого перелистывания локаций. Предусмотрен debounce-таймер (400 мс), защищающий от случайных частых срабатываний.
-- **Контекстное меню (ПКМ):**
-  - **Подробный прогноз…** — открывает аналитическое окно.
-  - **Обновить сейчас** — принудительный параллельный запрос данных из сети.
-  - **Города…** — диалог добавления, удаления и выбора городов.
-  - **Тема ▸** — быстрое переключение режима оформления:
-    - *По солнцу (Auto Solar)* — автоматическая смена дня и ночи по расчету положения солнца для текущей локации.
-    - *День (Light)* — светлая тема оформления.
-    - *Ночь (Dark)* — темная контрастная тема оформления.
-  - **Настройки…** — диалог параметров приложения.
-  - **Закрыть** — корректный выход из программы с сохранением состояния.
-
----
-
-## Окно подробного прогноза
-
-Диалог подробного прогноза вызывается кликом ЛКМ по виджету. Окно включает три полноэкранных аналитических раздела с удобной навигацией кликом по фону или переключателем в заголовке:
-
-### Экран 1: Температура и давление
-В верхней части расположен переключатель периода:
-- **«24ч.» (Почасовой прогноз):**
-  - Плавный сплайн температуры на следующие 24 часа с точками, значениями градусов, иконками погодных явлений и ощущаемой температурой («Ощущается как»).
-  - Почасовой график барометрического давления с расчетом краткосрочной тенденции (растет / стабильно / падает).
-- **«X дней» (Многодневный прогноз):**
-  - Количество дней настраивается в опциях блока (от 3 до 10 дней).
-  - **Две независимые температурные кривые:**
-    - **Дневная температура (макс.):** теплая янтарно-оранжевая кривая (`● День`), иконки погоды и значения над точками.
-    - **Ночная температура (мин.):** сине-голубая кривая (`● Ночь`) со значениями под точками.
-    - Между кривыми отображается мягкое полупрозрачное градиентное заполнение диапазона суточных температур.
-  - **Многодневный барометр:** линия динамики давления по дням недели с точками, числовыми метками на графике и индикатором тенденции.
-  - **Интерактивный скруббер:** при наведении курсора мыши на график отображается информационная подсказка с подробными данными для выбранного дня/часа.
-
-### Экран 2: Климатические нормы и комфорт
-- Сопоставление фактической температуры и осадков с многолетней климатической нормой глобального реанализа **Copernicus ERA5** (1991–2020 гг.) для координат выбранного города.
-- Индикаторы отклонения от нормы и сезонных аномалий.
-
-### Экран 3: Роза ветров (Wind Rose)
-- Функциональная **16-румбовая роза ветров** с радиальным накоплением скоростей (stacked radial wedges).
-- Вкладки переключения временного среза: **«24ч.»** и **«X дней»**.
-- Градация скоростей ветра по международной шкале Бофорта:
-  - $0–2$ м/с — синий (штиль/тихий)
-  - $2–4$ м/с — бирюзовый (легкий)
-  - $4–6$ м/с — изумрудный (слабый)
-  - $6–8$ м/с — желтый (умеренный)
-  - $8–11$ м/с — оранжевый (свежий)
-  - $> 11$ м/с — красный (сильный/штормовой)
-- Концентрические процентные кольца распределения времени, стрелка преобладающего и текущего направления ветра, пиковые порывы.
+### Basic Mouse Actions
+- **Move (Drag & Drop):** press and hold the left mouse button (LMB) on an empty area of the widget and drag it to the desired position. Coordinates are saved to the configuration automatically.
+- **Detailed forecast:** click the widget once with the LMB to open the extended forecast window.
+- **Switch saved cities:** scroll the mouse wheel up or down over the widget to quickly flip through locations. A debounce timer (400 ms) protects against accidental rapid triggers.
+- **Context menu (RMB):**
+  - **Detailed forecast…** — opens the analysis window.
+  - **Refresh now** — forces a parallel network data fetch.
+  - **Cities…** — dialog for adding, removing and selecting cities.
+  - **Theme ▸** — quick switch of the appearance mode:
+    - *By Sun (Auto Solar)* — automatic day/night switching based on the sun position calculated for the current location.
+    - *Day (Light)* — light appearance theme.
+    - *Night (Dark)* — dark high-contrast appearance theme.
+  - **Settings…** — the application options dialog.
+  - **Quit** — cleanly exits the program, saving the state.
 
 ---
 
-## Управление локациями (Города)
+## Detailed Forecast Window
 
-Диалог **«Города»** (доступен через ПКМ → «Города…» или в Настройках):
-- **Добавление нового города:** введите название города на русском, украинском или английском языке. Встроенный геокодер Open-Meteo предложит варианты с указанием страны, региона и координат.
-- **Локализация:** названия городов автоматически локализуются в соответствии с выбранным языком интерфейса.
-- **Домашний город («Home»):** кнопка с домиком назначает город стартовым по умолчанию.
-- **Упорядочивание:** стрелки перемещения вверх/вниз для настройки порядка прокрутки колесиком мыши.
-- **Удаление:** кнопка удаления локации из списка избранного.
+The detailed forecast dialog is opened by an LMB click on the widget. The window contains three full-screen analytical sections with convenient navigation by clicking the background or using the header switcher:
 
----
+### Screen 1: Temperature and Pressure
+The period switcher is located at the top:
+- **"24h" (Hourly forecast):**
+  - A smooth temperature spline for the next 24 hours with data points, degree values, weather icons and feels-like temperature ("Feels like").
+  - An hourly barometric pressure chart with a short-term trend calculation (rising / steady / falling).
+- **"X days" (Multi-day forecast):**
+  - The number of days is configurable in the block options (from 3 to 10 days).
+  - **Two independent temperature curves:**
+    - **Day temperature (max):** warm amber-orange curve (`● Day`), weather icons and values above the points.
+    - **Night temperature (min):** blue curve (`● Night`) with values below the points.
+    - Between the curves, a soft translucent gradient fills the daily temperature range.
+  - **Multi-day barometer:** a pressure trend line over the days of the week with points, numeric labels and a trend indicator.
+  - **Interactive scrubber:** hovering the mouse over the chart shows a tooltip with detailed data for the selected day/hour.
 
-## Настройки приложения
+### Screen 2: Climate Normals and Comfort
+- Comparison of the actual temperature and precipitation with the long-term climate normals of the global **Copernicus ERA5** reanalysis (1991–2020) for the coordinates of the selected city.
+- Indicators of deviation from the norm and seasonal anomalies.
 
-Окно настроек скомпоновано по логическим вкладкам и при открытии позиционируется рядом с виджетом, не перекрывая его.
-
-### Вкладка «Общие»
-- **Язык интерфейса:** русский (`ru`), украинский (`uk`), английский (`en`).
-- **Автозапуск:** включение/выключение автоматического старта приложения при входе в систему (поддерживает XDG Autostart с задержкой в секундах).
-- **Интервал обновления:** период автоматического опроса метеослужб (по умолчанию 60 минут).
-- **Смена городов колесом мыши:** возможность включить/отключить переключение локаций скроллом и настроить debounce-интервал.
-
-### Вкладка «Вид и оформление»
-- **Тема оформления:** «По солнцу (Auto Solar)», «День (Light)», «Ночь (Dark)».
-- **Набор иконок:**
-  - **svg** — собственный цветной набор проекта (по умолчанию).
-  - **Meteocons** (Monochrome) — современные контурные погодные пиктограммы (Bas Milius, MIT).
-  - **Weather Icons** — классический контурный набор (Erik Flowers, SIL OFL 1.1).
-- **Масштаб виджета:** от 80% до 150% для мониторов разного разрешения (HiDPI / 4K).
-- **Прозрачность фона:** плавная регулировка непрозрачности подложки виджета (0–100%).
-- **Цветовые акценты:** выбор цвета выходных дней в календаре и цвета указателя розы ветров.
-- **Живые погодные эффекты:** анимированный дождь, падающий снег, туман, солнечные блики и мерцающие звезды с оптимизацией CPU (< 1%).
-- **Фоновые достопримечательности (Landmark):** подложка с силуэтами или фотореалистичными видами городов с авто-затемнением в ночное время.
-
-### Вкладка «Раскладка»
-- Включение, выключение и изменение порядка информационных блоков виджета:
-  - *Шапка («Сейчас»)*: температура, ощущаемая температура, погодный код, иконка, город.
-  - *Прогноз на сегодня / завтра*: краткая сводка по периодам суток (утро, день, вечер, ночь).
-  - *Многодневный прогноз*: выбор количества отображаемых суток (от 3 до 10 дней).
-  - *Компактная роза ветров*: мини-компас текущего направления и скорости ветра.
-  - *Астрономия*: восход, закат, продолжительность светового дня, фаза Луны.
-  - *Дополнительные метрики*: влажность, давление (мм рт. ст. или гПа), точка росы, УФ-индекс, видимость.
-
-### Вкладка «Провайдеры»
-- **Источники данных:** Open-Meteo, MET Norway (yr.no), wttr.in.
-- **Режим консенсуса:** автоматический синтез согласованного прогноза (медиана температур, мажоритарное голосование явлений).
-- **Сетевые параметры:** таймаут HTTP-запроса, DNS-таймаут, число повторов, предпочтение IPv4 перед IPv6.
-
-### Вкладка «Уведомления»
-- Предупреждения о начале дождя/снега в ближайший час.
-- Предупреждения о заморозках ($t < 0^\circ\text{C}$) и сильном ветре ($> 10$ м/с).
-- Режим «Тихие часы» (например, запрет звуков и всплывающих окон с 23:00 до 08:00).
+### Screen 3: Wind Rose
+- A functional **16-point wind rose** with radial speed accumulation (stacked radial wedges).
+- Time-slice switch tabs: **"24h"** and **"X days"**.
+- Wind speed gradation on the international Beaufort scale:
+  - 0–2 m/s — blue (calm)
+  - 2–4 m/s — turquoise (light)
+  - 4–6 m/s — emerald (gentle)
+  - 6–8 m/s — yellow (moderate)
+  - 8–11 m/s — orange (fresh)
+  - > 11 m/s — red (strong/gale)
+- Concentric percentage rings of time distribution, an arrow for the prevailing and current wind direction, peak gusts.
 
 ---
 
-## Горячие клавиши и управление мышью
+## Managing Locations (Cities)
 
-| Действие | Управление |
+The **"Cities"** dialog (available via RMB → "Cities…" or in Settings):
+- **Add a new city:** enter the city name in Russian, Ukrainian or English. The built-in Open-Meteo geocoder suggests options with country, region and coordinates.
+- **Localization:** city names are automatically localized according to the selected interface language.
+- **Home city:** the house button assigns a city as the startup default.
+- **Ordering:** up/down arrows adjust the order used by mouse-wheel scrolling.
+- **Removal:** the delete button removes a location from the favorites list.
+
+---
+
+## Application Settings
+
+The settings window is organized into logical tabs and positions itself next to the widget when opened, without covering it.
+
+### "General" Tab
+- **Interface language:** Russian (`ru`), Ukrainian (`uk`), English (`en`).
+- **Autostart:** enable/disable automatic launch at login (supports XDG Autostart with a delay in seconds).
+- **Refresh interval:** the period of automatic weather-service polling (60 minutes by default).
+- **Switch cities with the mouse wheel:** enable/disable location switching by scrolling and configure the debounce interval.
+
+### "View and Appearance" Tab
+- **Appearance theme:** "By Sun (Auto Solar)", "Day (Light)", "Night (Dark)".
+- **Icon set:**
+  - **svg** — the project's own colored set (default).
+  - **Meteocons** (Monochrome) — modern outline weather pictograms (Bas Milius, MIT).
+  - **Weather Icons** — a classic outline set (Erik Flowers, SIL OFL 1.1).
+- **Widget scale:** from 80% to 150% for monitors of different resolutions (HiDPI / 4K).
+- **Background opacity:** smooth adjustment of the widget backdrop opacity (0–100%).
+- **Color accents:** the weekend color in the calendar and the wind-rose arrow color.
+- **Live weather effects:** animated rain, falling snow, fog, sun glints and twinkling stars with CPU optimization (< 1%).
+- **Landmark backgrounds:** a backdrop with silhouettes or photorealistic city views with automatic dimming at night.
+
+### "Layout" Tab
+- Enable, disable and reorder the informational blocks of the widget:
+  - *Header ("Now")*: temperature, feels-like temperature, weather code, icon, city.
+  - *Today / Tomorrow forecast*: a brief summary by day periods (morning, afternoon, evening, night).
+  - *Multi-day forecast*: choose the number of displayed days (3 to 10).
+  - *Compact wind rose*: a mini-compass of the current wind direction and speed.
+  - *Astronomy*: sunrise, sunset, daylight duration, moon phase.
+  - *Additional metrics*: humidity, pressure (mmHg or hPa), dew point, UV index, visibility.
+
+### "Providers" Tab
+- **Data sources:** Open-Meteo, MET Norway (yr.no), wttr.in.
+- **Consensus mode:** automatic synthesis of an agreed forecast (temperature median, majority voting for phenomena).
+- **Network parameters:** HTTP request timeout, DNS timeout, retry count, IPv4 preference over IPv6.
+
+### "Notifications" Tab
+- Alerts about rain/snow starting within the next hour.
+- Alerts about frost (t < 0 °C) and strong wind (> 10 m/s).
+- "Quiet hours" mode (e.g. no sounds or popups from 23:00 to 08:00).
+
+---
+
+## Keyboard and Mouse Shortcuts
+
+| Action | Control |
 |---|---|
-| Перемещение виджета | Зажать ЛКМ и тянуть |
-| Подробный прогноз | Клик ЛКМ по виджету |
-| Перелистывание экранов прогноза | Клик ЛКМ по свободному фону диалога прогноза |
-| Смена периода прогноза (24ч / X дн.) | Клик по кнопкам «24ч.» / «X дней» на Экране 1 и 3 |
-| Интерактивный замер на графике | Наведение курсора мыши на сплайн температуры |
-| Смена локаций (городов) | Прокрутка колеса мыши над виджетом |
-| Контекстное меню | Клик ПКМ по виджету |
-| Закрытие диалоговых окон | Клавиша `Esc` |
+| Move the widget | Hold LMB and drag |
+| Detailed forecast | LMB click on the widget |
+| Flip forecast screens | LMB click on the empty background of the forecast dialog |
+| Switch forecast period (24h / X days) | Click the "24h" / "X days" buttons on Screens 1 and 3 |
+| Interactive chart inspection | Hover the mouse over the temperature spline |
+| Switch locations (cities) | Scroll the mouse wheel over the widget |
+| Context menu | RMB click on the widget |
+| Close dialogs | `Esc` key |
 
 ---
 
-## Работа в офлайн-режиме
+## Offline Mode
 
-При отсутствии подключения к сети Интернет виджет автоматически переходит в отказоустойчивый режим:
-1. **Уровень S1 (Кэш):** отображаются последние успешно полученные данные с пометкой «(кэш)» и временем последнего обновления.
-2. **Уровень S0 (Климатология ERA5):** если кэш отсутствует (например, первый запуск на новой системе без интернета), активируется встроенный массив среднесуточных климатических норм **Copernicus ERA5** (1991–2020 гг.). Виджет честно показывает климатическую норму для координат города без падений и пустых экранов.
+When there is no internet connection, the widget automatically switches to a resilient mode:
+1. **Level S1 (Cache):** the last successfully fetched data is displayed with a "(cache)" marker and the time of the last update.
+2. **Level S0 (ERA5 Climatology):** if there is no cache (e.g. a first launch on a new system without internet), the built-in array of daily climate normals from **Copernicus ERA5** (1991–2020) is activated. The widget honestly shows the climate normal for the city coordinates without crashes or empty screens.

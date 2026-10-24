@@ -1,12 +1,12 @@
-# Архитектура проекта info-weather 📐
+# info-weather Project Architecture 📐
 
-Документ описывает программную архитектуру, ключевые подсистемы, модель данных и принципы построения приложения **info-weather**.
+This document describes the software architecture, key subsystems, data model and design principles of the **info-weather** application.
 
 ---
 
-## 1. Обзор архитектуры
+## 1. Architecture Overview
 
-Приложение построено по модульному принципу с разделением ответственности:
+The application follows a modular design with separation of concerns:
 
 ```mermaid
 graph TD
@@ -21,89 +21,89 @@ graph TD
     Providers --> Net[HTTP Client: IPv4/IPv6, DNS Guard]
 ```
 
-### Структура пакетов
-- [`core/`](../core/): базовые сервисы (конфигурация, кэширование, астрономия, геомагнитная активность, единицы измерения, i18n-локализация, HTTP-клиент, автозапуск, системные уведомления).
-- [`models/`](../models/): типизированные структуры данных метеорологических наблюдений и прогнозов.
-- [`providers/`](../providers/): клиенты погодных API и алгоритм многопровайдерного консенсуса.
-- [`ui/`](../ui/): главное безрамочное окно виджета ([`widget_window.py`](../ui/widget_window.py)), менеджер стилей, вспомогательные функции.
-  - [`ui/blocks/`](../ui/blocks/): независимые подключаемые блоки виджета (шапка, периоды суток, дни, роза ветров, астрономия, метрики).
-  - [`ui/dialogs/`](../ui/dialogs/): диалоговые окна (подробный прогноз с 3 экранами, настройки, поиск городов).
-  - [`ui/effects/`](../ui/effects/): процедурные микроанимации погодных эффектов.
-- [`data/`](../data/): встроенные статические данные (ERA5 климатические нормы, WMO-коды).
-- [`assets/`](../assets/): векторные и растровые ресурсы (собственные иконки, Meteocons, Weather Icons, фоны городов).
+### Package Structure
+- [`core/`](../core/): base services (configuration, caching, astronomy, geomagnetic activity, units, i18n localization, HTTP client, autostart, system notifications).
+- [`models/`](../models/): typed data structures for meteorological observations and forecasts.
+- [`providers/`](../providers/): weather API clients and the multi-provider consensus algorithm.
+- [`ui/`](../ui/): the main frameless widget window ([`widget_window.py`](../ui/widget_window.py)), the style manager, and helper functions.
+  - [`ui/blocks/`](../ui/blocks/): independent pluggable widget blocks (header, day periods, days, wind rose, astronomy, metrics).
+  - [`ui/dialogs/`](../ui/dialogs/): dialogs (detailed forecast with 3 screens, settings, city search).
+  - [`ui/effects/`](../ui/effects/): procedural micro-animations of weather effects.
+- [`data/`](../data/): bundled static data (ERA5 climate normals, WMO codes).
+- [`assets/`](../assets/): vector and raster resources (own icons, Meteocons, Weather Icons, city backgrounds).
 
 ---
 
-## 2. Модель данных (`models/weather.py`)
+## 2. Data Model (`models/weather.py`)
 
-Данные нормализуются в строгие структуры данных `dataclass`:
-- **`CurrentConditions`**: температура, ощущаемая температура, влажность, давление (гПа и мм рт. ст.), скорость/порывы/направление ветра, точка росы, погодный код WMO, флаг дня/ночи.
-- **`HourlyForecast`**: почасовой срез на 24–48 часов (температура, осадки, вероятность осадков, давление, вектор ветра, погодный код).
-- **`DailyForecast`**: суточный прогноз (максимальная и минимальная температура, код явления, вероятность осадков, восход/закат).
-- **`DayDetailedForecast`**: расширенная суточная статистика для розы ветров и климатического анализа.
-- **`WeatherForecastData`**: агрегированный контейнер данных для города, содержащий метаданные локации (широта, долгота, смещение UTC), текущие условия и прогнозы.
+Data is normalized into strict `dataclass` structures:
+- **`CurrentConditions`**: temperature, feels-like temperature, humidity, pressure (hPa and mmHg), wind speed/gusts/direction, dew point, WMO weather code, day/night flag.
+- **`HourlyForecast`**: an hourly slice for 24–48 hours (temperature, precipitation, precipitation probability, pressure, wind vector, weather code).
+- **`DailyForecast`**: daily forecast (max and min temperature, phenomenon code, precipitation probability, sunrise/sunset).
+- **`DayDetailedForecast`**: extended daily statistics for the wind rose and climate analysis.
+- **`WeatherForecastData`**: an aggregated data container for a city, holding location metadata (latitude, longitude, UTC offset), current conditions and forecasts.
 
 ---
 
-## 3. Многопровайдерный консенсус (S3 → S2 → S1 → S0)
+## 3. Multi-Provider Consensus (S3 → S2 → S1 → S0)
 
-Система сбора данных реализует четыре уровня отказоустойчивости:
+The data collection system implements four resilience levels:
 
 ```mermaid
 flowchart TD
-    Req([Запрос погоды]) --> P{Параллельный опрос API}
+    Req([Weather request]) --> P{Parallel API polling}
     P --> OM[Open-Meteo]
     P --> YR[MET Norway]
     P --> WT[wttr.in]
-    
+
     OM & YR & WT --> Merge[Consensus Merger]
-    Merge -->|>= 2 источника| S3[Уровень S3: Полный консенсус]
-    Merge -->|1 источник| S2[Уровень S2: Одиночный источник]
-    
-    P -.->|Сетевой сбой| CacheCheck{Проверка кэша}
-    CacheCheck -->|Кэш актуален| S1[Уровень S1: Локальный кэш]
-    CacheCheck -->|Кэш пуст/устарел| S0[Уровень S0: Климатология ERA5]
+    Merge -->|>= 2 sources| S3[Level S3: Full consensus]
+    Merge -->|1 source| S2[Level S2: Single source]
+
+    P -.->|Network failure| CacheCheck{Cache check}
+    CacheCheck -->|Cache fresh| S1[Level S1: Local cache]
+    CacheCheck -->|Cache empty/stale| S0[Level S0: ERA5 Climatology]
 ```
 
-### Алгоритм консенсуса:
-1. **Непрерывные физические величины** (температура, точка росы, влажность, давление, скорость ветра):
-   - Вычисляется статистическая **медиана** среди ответивших провайдеров, исключая выбросы отдельных сервисов.
-2. **Вектор ветра** (направление в градусах):
-   - Вычисляется круговая средняя (circular mean) через тригонометрические проекции ($\sin \theta, \cos \theta$).
-3. **Погодные явления и код WMO**:
-   - Применяется приоритет осадков: если хотя бы один авторитетный источник фиксирует осадки (дождь, гроза, снегопад), явление сохраняется с мажоритарным выбором интенсивности.
+### Consensus Algorithm:
+1. **Continuous physical quantities** (temperature, dew point, humidity, pressure, wind speed):
+   - A statistical **median** is computed among the responding providers, excluding outliers of individual services.
+2. **Wind vector** (direction in degrees):
+   - A circular mean is computed via trigonometric projections ($\sin \theta, \cos \theta$).
+3. **Weather phenomena and the WMO code**:
+   - A precipitation priority is applied: if at least one authoritative source reports precipitation (rain, thunderstorm, snowfall), the phenomenon is kept with a majority vote for intensity.
 
 ---
 
-## 4. Отрисовка графиков и сплайнов (Detailed Forecast Dialog)
+## 4. Chart and Spline Rendering (Detailed Forecast Dialog)
 
-Диалог [`DetailedForecastDialogQt`](../ui/dialogs/detailed_forecast_dialog.py) содержит процедурную векторную отрисовку через `QPainter`:
+The [`DetailedForecastDialogQt`](../ui/dialogs/detailed_forecast_dialog.py) dialog performs procedural vector rendering via `QPainter`:
 
-### Сплайны Безье температурного графика
-В [`HourlySplineChartWidget`](../ui/dialogs/detailed_forecast_dialog.py) сглаживание точек выполняется с помощью **кубических кривых Безье** (`cubicTo`):
-- Для каждой пары соседних точек $P_i$ и $P_{i+1}$ контрольные точки рассчитываются на основе наклона хорды:
+### Bézier Splines of the Temperature Chart
+In [`HourlySplineChartWidget`](../ui/dialogs/detailed_forecast_dialog.py), point smoothing is done with **cubic Bézier curves** (`cubicTo`):
+- For each pair of neighboring points $P_i$ and $P_{i+1}$, the control points are computed from the chord slope:
   $$C_1 = \left(x_i + \frac{\Delta x}{3}, y_i + \frac{m_i \Delta x}{3}\right), \quad C_2 = \left(x_{i+1} - \frac{\Delta x}{3}, y_{i+1} - \frac{m_{i+1} \Delta x}{3}\right)$$
-- Применяется ограничение (clamping) для предотвращения овершутов (ложных локальных экстремумов между близкими температурами).
-- **Многодневный режим:** параллельно строятся две кривые (дневная макс. и ночная мин.). Область между кривыми заполняется градиентным полигоном `QPainterPath` с плавной прозрачностью.
+- Clamping is applied to prevent overshoots (false local extrema between close temperatures).
+- **Multi-day mode:** two curves are built in parallel (day max and night min). The area between the curves is filled with a gradient polygon `QPainterPath` with smooth transparency.
 
-### Роза ветров (Wind Rose)
-В [`FullWindRoseWidget`](../ui/dialogs/wind_rose_widget.py):
-- Расчет 16 румбов (секторов по $22.5^\circ$).
-- Радиальное накопление долей времени по диапазонам Бофорта через составные дуговые сегменты (`drawPie` / `addPolygon`).
-- Отрисовка концентрических колец повторяемости (5%, 10%, 15%, 20%, 25%) и центрального круга штиля.
-
----
-
-## 5. Система тем и адаптивного оформления
-
-- **Астрономический расчет (`auto_solar`):** модуль [`core/astronomy.py`](../core/astronomy.py) рассчитывает солнечное склонение, истинный полдень и моменты восхода/заката для точных координат города по формулам NOAA Solar Calculator.
-- **Векторная перекраска иконок:** модуль [`ui/utils.py`](../ui/utils.py) адаптирует SVG-пиктограммы под цветовую гамму текущей темы (инверсия монохромных символов, динамические градиенты для светлой и темной темы).
-- **Живые эффекты погоды:** процедурная анимация в [`ui/effects/weather_effects.py`](../ui/effects/weather_effects.py) с контролем частоты кадров и переходом в спящий режим при скрытии окна.
+### Wind Rose
+In [`FullWindRoseWidget`](../ui/dialogs/wind_rose_widget.py):
+- Calculation of 16 points (22.5° sectors).
+- Radial accumulation of time shares by Beaufort ranges via compound arc segments (`drawPie` / `addPolygon`).
+- Rendering of concentric frequency rings (5%, 10%, 15%, 20%, 25%) and a central calm circle.
 
 ---
 
-## 6. Сетевой уровень и безопасность
+## 5. Theme System and Adaptive Appearance
 
-- Защита от зависания DNS: отдельный поток разрешения доменных имен с таймаутом `dns_timeout_seconds`.
-- IPv4 Fallback: приоритет IPv4-стека предотвращает задержки при некорректно настроенном провайдерском IPv6.
-- Атомарное сохранение кэша: запись во временный файл с последующим атомарным `os.replace` защищает кэш от повреждения при внезапном завершении питания.
+- **Astronomical calculation (`auto_solar`):** the [`core/astronomy.py`](../core/astronomy.py) module calculates the solar declination, true noon and the sunrise/sunset moments for the exact city coordinates using NOAA Solar Calculator formulas.
+- **Vector icon recoloring:** the [`ui/utils.py`](../ui/utils.py) module adapts SVG pictograms to the current theme palette (inversion of monochrome glyphs, dynamic gradients for light and dark themes).
+- **Live weather effects:** procedural animation in [`ui/effects/weather_effects.py`](../ui/effects/weather_effects.py) with frame-rate control and sleep mode when the window is hidden.
+
+---
+
+## 6. Network Layer and Security
+
+- DNS hang protection: a dedicated thread resolves domain names with the `dns_timeout_seconds` timeout.
+- IPv4 fallback: IPv4-stack preference prevents delays caused by a misconfigured provider IPv6.
+- Atomic cache saves: writing to a temporary file followed by an atomic `os.replace` protects the cache from corruption on sudden power loss.

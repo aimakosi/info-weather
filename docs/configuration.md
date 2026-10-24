@@ -1,14 +1,14 @@
-# Справочник конфигурации config.json ⚙️
+# config.json Configuration Reference ⚙️
 
-Конфигурационный файл приложения хранится по пути:
+The application configuration file is stored at:
 - **Linux:** `~/.config/info-weather/config.json`
 - **Windows:** `%LOCALAPPDATA%\info-weather\config.json`
 
-Файл автоматически создается при первом запуске со значениями по умолчанию. При изменении настроек через графический интерфейс файл перезаписывается атомарно.
+The file is created automatically on the first launch with default values. When settings are changed through the GUI, the file is rewritten atomically.
 
 ---
 
-## Пример полной конфигурации
+## Full Configuration Example
 
 ```json
 {
@@ -20,17 +20,17 @@
   "open_meteo_model": "best_match",
   "update_interval_minutes": 60,
   "max_consensus_age_minutes": 120,
-  "home_city": "Абакан",
-  "current_city": "Абакан",
+  "home_city": "Abakan",
+  "current_city": "Abakan",
   "cities": [
     {
-      "name": "Абакан",
+      "name": "Abakan",
       "lat": 53.7167,
       "lon": 91.4292,
       "country": "RU"
     },
     {
-      "name": "Санкт-Петербург",
+      "name": "Saint Petersburg",
       "lat": 59.9386,
       "lon": 30.3141,
       "country": "RU"
@@ -109,59 +109,59 @@
 
 ---
 
-## Описание параметров
+## Parameter Reference
 
-### Основные настройки
-- **`app_language`** (`string`, `"ru"` | `"uk"` | `"en"`): язык элементов пользовательского интерфейса, диалогов и системных сообщений.
-- **`weather_language`** (`string`): язык текстовых описаний погоды («Пасмурно», «Ясно», «Небольшой дождь»).
-- **`update_interval_minutes`** (`integer`, по умолчанию `60`): период автоматического обновления данных в минутах.
-- **`max_consensus_age_minutes`** (`integer`, по умолчанию `120`): максимальный возраст кэшированных данных до признания их устаревшими.
-- **`home_city`** (`string`): название домашнего города, отображаемого при первом старте.
-- **`cities`** (`list[object]`): список сохраненных городов. Каждый объект содержит поля:
-  - `name`: название населенного пункта.
-  - `lat`: географическая широта (число с плавающей точкой).
-  - `lon`: географическая долгота (число с плавающей точкой).
-  - `country`: двухбуквенный ISO-код страны.
+### Core Settings
+- **`app_language`** (`string`, `"ru"` | `"uk"` | `"en"`): language of the UI elements, dialogs and system messages.
+- **`weather_language`** (`string`): language of the textual weather descriptions ("Overcast", "Clear", "Light rain").
+- **`update_interval_minutes`** (`integer`, default `60`): automatic data refresh period in minutes.
+- **`max_consensus_age_minutes`** (`integer`, default `120`): maximum age of cached data before it is considered stale.
+- **`home_city`** (`string`): the home city shown at startup.
+- **`cities`** (`list[object]`): the list of saved cities. Each object contains:
+  - `name`: the locality name.
+  - `lat`: geographical latitude (floating point).
+  - `lon`: geographical longitude (floating point).
+  - `country`: two-letter ISO country code.
 
-### Оформление (`skin`)
+### Appearance (`skin`)
 - **`theme_mode`** (`string`):
-  - `"auto_solar"` — автоматическое переключение светлой/темной темы по расчету восхода и заката для координат города.
-  - `"light"` — светлая тема.
-  - `"dark"` — темная тема.
-- **`icons_name`** (`string`): набор погодных иконок (`"svg"` — собственный набор по умолчанию, `"Meteocons_monochrome"`, `"WeatherIcons"`).
-- **`scale`** (`float`, `0.8` – `1.5`): коэффициент масштабирования виджета.
-- **`opacity`** (`float`, `0.1` – `1.0`): непрозрачность фона виджета.
-- **`weekend_color`** (`string`, hex-код): цвет выделения субботы и воскресенья в календаре.
-- **`wind_arrow_color`** (`string`, hex-код): цвет указателя направления ветра на компасе.
+  - `"auto_solar"` — automatic light/dark theme switching based on the sunrise/sunset calculation for the city coordinates.
+  - `"light"` — light theme.
+  - `"dark"` — dark theme.
+- **`icons_name`** (`string`): the weather icon set (`"svg"` — the project's own default set, `"Meteocons_monochrome"`, `"WeatherIcons"`).
+- **`scale`** (`float`, `0.8` – `1.5`): widget scaling factor.
+- **`opacity`** (`float`, `0.1` – `1.0`): widget background opacity.
+- **`weekend_color`** (`string`, hex code): highlight color for Saturday and Sunday in the calendar.
+- **`wind_arrow_color`** (`string`, hex code): wind direction arrow color on the compass.
 
-### Блоки виджета (`view_blocks`)
-Каждый блок управляется отдельным ключом с параметром `"enabled"` (`true` / `false`):
-- **`now`**: текущая температура, состояние погоды и город.
-- **`today`**: краткий прогноз на текущие сутки.
-- **`day_periods`**: температура и осадки по периодам суток (утро, день, вечер, ночь).
-- **`daily`**: прогноз на несколько дней. Параметр `"days"` (`integer`, `3` – `10`) задает количество дней.
-- **`hourly`**: компактный почасовой блок на виджете.
-- **`wind`**: компактная роза ветров с направлением и скоростью.
-- **`astronomy`**: время восхода/заката, фаза Луны.
-- **`metrics`**: ключевые параметры атмосферы (влажность, давление, точка росы).
-- **`additional_info`**: расширенные метеорологические параметры.
+### Widget Blocks (`view_blocks`)
+Each block is controlled by a separate key with an `"enabled"` parameter (`true` / `false`):
+- **`now`**: current temperature, weather condition and city.
+- **`today`**: brief forecast for the current day.
+- **`day_periods`**: temperature and precipitation by day periods (morning, afternoon, evening, night).
+- **`daily`**: multi-day forecast. The `"days"` parameter (`integer`, `3` – `10`) sets the number of days.
+- **`hourly`**: compact hourly block on the widget.
+- **`wind`**: compact wind rose with direction and speed.
+- **`astronomy`**: sunrise/sunset times, moon phase.
+- **`metrics`**: key atmospheric parameters (humidity, pressure, dew point).
+- **`additional_info`**: extended meteorological parameters.
 
-### Единицы измерения (`units`)
-- **`temp`**: `"C"` (градусы Цельсия) или `"F"` (градусы Фаренгейта).
-- **`wind`**: `"m/s"` (метры в секунду), `"km/h"` (км/ч), `"mph"` (мили/ч), `"knots"` (узлы).
-- **`pressure`**: `"mmHg"` (миллиметры ртутного столба) или `"hPa"` (гектопаскали / миллибары).
-- **`distance`**: `"km"` (километры) или `"mi"` (мили).
+### Units (`units`)
+- **`temp`**: `"C"` (Celsius) or `"F"` (Fahrenheit).
+- **`wind`**: `"m/s"` (meters per second), `"km/h"`, `"mph"`, `"knots"`.
+- **`pressure`**: `"mmHg"` (millimeters of mercury) or `"hPa"` (hectopascals / millibars).
+- **`distance`**: `"km"` (kilometers) or `"mi"` (miles).
 
-### Сеть и отказоустойчивость (`network`)
-- **`timeout_seconds`** (`float`): таймаут одного HTTP-запроса (сек).
-- **`dns_timeout_seconds`** (`float`): лимит времени на DNS-резолвинг.
-- **`retries`** (`integer`): количество повторных попыток при сбое.
-- **`prefer_ipv4`** (`boolean`): приоритет соединения по протоколу IPv4.
-- **`fetch_timeout_seconds`** (`float`): максимальное общее время цикла сбора консенсуса.
+### Network and Resilience (`network`)
+- **`timeout_seconds`** (`float`): timeout of a single HTTP request (seconds).
+- **`dns_timeout_seconds`** (`float`): DNS resolution time limit.
+- **`retries`** (`integer`): number of retries on failure.
+- **`prefer_ipv4`** (`boolean`): IPv4 connection preference.
+- **`fetch_timeout_seconds`** (`float`): maximum total time of one consensus collection cycle.
 
-### Поведение окна (`window_behavior` и `window_position`)
-- **`lock_position`** (`boolean`): запрет случайного перемещения виджета мышью.
-- **`on_all_desktops`** (`boolean`): отображение виджета на всех виртуальных рабочих столах.
-- **`always_on_top`** (`boolean`): закрепление поверх других окон.
-- **`show_in_taskbar`** (`boolean`): отображение кнопки виджета на панели задач (по умолчанию `false`).
-- **`save_position`** (`boolean`): сохранение и восстановление координат `(x, y)` на экране.
+### Window Behavior (`window_behavior` and `window_position`)
+- **`lock_position`** (`boolean`): prevent accidental mouse movement of the widget.
+- **`on_all_desktops`** (`boolean`): show the widget on all virtual desktops.
+- **`always_on_top`** (`boolean`): pin above other windows.
+- **`show_in_taskbar`** (`boolean`): show the widget button on the taskbar (default `false`).
+- **`save_position`** (`boolean`): save and restore the `(x, y)` coordinates on the screen.
