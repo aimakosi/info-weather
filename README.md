@@ -1,6 +1,6 @@
 # info-weather 🌤️
 
-> **info-weather** — современный виджет погоды для рабочего стола Linux (Qt / PySide6, KDE Plasma), созданный как полноценная, надежная и быстрая замена устаревшего `gis-weather`.
+> **info-weather** — a modern desktop weather widget for Linux (Qt / PySide6, KDE Plasma), built as a complete, reliable and fast replacement for the outdated `gis-weather`.
 
 [![CI](https://github.com/aimakosi/info-weather/actions/workflows/ci.yml/badge.svg)](https://github.com/aimakosi/info-weather/actions/workflows/ci.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -8,124 +8,141 @@
 
 ---
 
-## ✨ Ключевые особенности
+## ✨ Key Features
 
-1. **Детерминированный консенсус провайдеров (S3 → S2 → S1 → S0)**
-   - Параллельный опрос трех независимых источников данных: **Open-Meteo**, **MET Norway (yr.no)** и **wttr.in**.
-   - Синтез по строгим метеорологическим правилам: медианы для непрерывных величин (температура, давление, влажность), мажоритарное голосование для погодных явлений (WMO-коды), приоритет для осадков.
-   - Защита от гонок и устаревших ответов (`request_id`).
+1. **Deterministic provider consensus (S3 → S2 → S1 → S0)**
+   - Parallel polling of three independent data sources: **Open-Meteo**, **MET Norway (yr.no)** and **wttr.in**.
+   - Synthesis by strict meteorological rules: medians for continuous values (temperature, pressure, humidity), majority voting for weather phenomena (WMO codes), priority for precipitation.
+   - Race protection and stale-response rejection (`request_id`).
 
-2. **Честный офлайн-режим на базе климатологии ERA5 (Уровень S0)**
-   - Встроенный справочник суточных и месячных климатических норм на базе глобального реанализа **Copernicus ERA5** (базовый период 1991–2020 гг., сетка $0.25^\circ$).
-   - При отсутствии сети или кэша виджет честно предупреждает пользователя и отображает климатическую норму для заданных координат, а не фиктивные данные.
+2. **Honest offline mode based on ERA5 climatology (Level S0)**
+   - Bundled daily and monthly climate normals based on the global **Copernicus ERA5** reanalysis (1991–2020 baseline, 0.25° grid).
+   - With no network or cache, the widget honestly warns the user and shows the climate normal for the given coordinates instead of fake data.
 
-3. **Нативное закрепление на рабочем столе KDE Plasma (KWin)**
-   - Безрамочный плавающий виджет на рабочем столе.
-   - Специальное правило KWin (`packaging/kde/info-weather.kwinrule`) предотвращает нежелательное сворачивание виджета при нажатии **Meta+D** («Показать рабочий стол»).
+3. **Native KDE Plasma desktop pinning (KWin)**
+   - Frameless floating desktop widget.
+   - A dedicated KWin rule (`packaging/kde/info-weather.kwinrule`) keeps the widget from being minimized by **Meta+D** ("Show Desktop").
 
-4. **Детальный аналитический прогноз (3 полноэкранных раздела)**
-   - Окно глубокого анализа метеоусловий с переключением экранов по клику:
-     1. **Температура и давление**:
-        - Вкладка **24ч.**: почасовой сплайн температуры с ощущаемой температурой, осадками и 24-часовой барометр.
-        - Вкладка **X дней**: две независимые сплайн-кривые — **Дневная макс.** (янтарно-оранжевая) и **Ночная мин.** (сине-голубая) с погодными иконками, легендой `● День` / `● Ночь`, интерактивным скруббером и графиком суточного давления.
-     2. **Климатические нормы и комфорт**: сопоставление с климатологической нормой ERA5 по месяцам и оценка температурных аномалий.
-     3. **Роза ветров (Wind Rose)**: интерактивная 16-румбовая роза ветров с радиальным накоплением скоростей (24ч / X дней), шкала Бофорта, преобладающий румб и текущие порывы.
+4. **Detailed analytical forecast (3 full-screen sections)**
+   - A deep weather analysis window with click-switchable sections:
+     1. **Temperature & Pressure**:
+        - **24h** tab: hourly temperature spline with feels-like temperature, precipitation and a 24-hour barometer.
+        - **X days** tab: two independent spline curves — **Day max.** (amber-orange) and **Night min.** (blue) with weather icons, `● Day` / `● Night` legend, an interactive scrubber and a daily pressure chart.
+     2. **Climate Normals & Comfort**: comparison with the monthly ERA5 climate normals and temperature anomaly assessment.
+     3. **Wind Rose**: an interactive 16-point wind rose with radial speed accumulation (24h / X days), Beaufort scale, prevailing direction and current gusts.
 
-5. **Темы оформления, иконки и живые эффекты**
-   - Режимы темы: **По солнцу (auto_solar)** с автоматическим расчетом дня/ночи по формулам NOAA, **День (Light)** и **Ночь (Dark)**.
-   - Полноценные наборы иконок: собственный цветной набор **svg** (по умолчанию), **Meteocons** (Monochrome), **Weather Icons**.
-   - Настраиваемое оформление: масштаб (0.8x–1.5x), прозрачность фона, цвет выходных дней и цвет стрелки компаса.
-   - Атмосферные микроанимации (Live Weather Effects: дождь, снег, туман, солнечные блики, мерцающие звезды) с режимами энергосбережения (< 1% CPU).
-   - Фоновые достопримечательности (Landmark Backgrounds) с фотореалистичными силуэтами и автозатемнением.
+5. **Themes, icon sets and live effects**
+   - Theme modes: **By Sun (auto_solar)** with automatic day/night calculation using NOAA formulas, **Day (Light)** and **Night (Dark)**.
+   - Full icon sets: the project's own colored **svg** set (default), **Meteocons** (Monochrome), **Weather Icons**.
+   - Customizable appearance: scale (0.8x–1.5x), background opacity, weekend color and compass-arrow color.
+   - Atmospheric micro-animations (Live Weather Effects: rain, snow, fog, sun glints, twinkling stars) with power-saving modes (< 1% CPU).
+   - Landmark backgrounds with photorealistic silhouettes and automatic night dimming.
 
-6. **Умный интерфейс и диалоги**
-   - Окно настроек с вкладкой «Общие» на первом месте для быстрого доступа к языку и параметрам.
-   - Интеллектуальное позиционирование: диалоги настроек, прогноза и городов открываются рядом с виджетом, не закрывая и не перекрывая его.
-   - Управление городами с автоматическим геокодированием и локализацией названий при переключении языка (RU, UK, EN).
+6. **Smart interface and dialogs**
+   - A settings window with the "General" tab first for quick access to language and parameters.
+   - Intelligent positioning: settings, forecast and city dialogs open next to the widget without covering it.
+   - City management with automatic geocoding and name localization when switching languages (RU, UK, EN).
 
-7. **Локальные метео-уведомления (FR-11)**
-   - Детекция опасных и значимых явлений: начало дождя в ближайший час, заморозки ($t < 0^\circ\text{C}$), штормовой ветер ($> 10\text{ м/с}$), перепады температуры, высокий УФ.
-   - Дедупликация событий по устойчивым ID через перезапуски.
-   - Настраиваемые «тихие часы» (например, с 23:00 до 08:00).
-
----
-
-## 📚 Документация
-
-- [📖 **Руководство пользователя**](docs/user_guide.md) — подробное описание интерфейса, графиков, розы ветров, управления городами и настроек.
-- [📐 **Архитектура проекта**](docs/architecture.md) — обзор ядра, консенсуса метеослужб, климатологии ERA5, сплайнов Безье и векторной отрисовки.
-- [⚙️ **Справочник конфигурации**](docs/configuration.md) — полное описание структуры и параметров `config.json`.
+7. **Local weather notifications (FR-11)**
+   - Detection of significant events: rain starting within the next hour, frost (t < 0 °C), storm wind (> 10 m/s), temperature swings, high UV.
+   - Event deduplication by stable IDs across restarts.
+   - Configurable "quiet hours" (e.g. 23:00–08:00).
 
 ---
 
-## 🚀 Установка и запуск
+## 📚 Documentation
 
-### Требования
-- Python $\ge$ 3.10
-- PySide6 $\ge$ 6.5 (`pip install PySide6`, либо на Debian/Ubuntu: `python3-pyside6.qtwidgets python3-pyside6.qtsvg`)
+*(Available in Russian)*
 
-### Быстрый старт на Linux (Ubuntu / Debian / Linux Mint)
+- [📖 **User Guide**](docs/user_guide.md) — detailed description of the interface, charts, wind rose, city management and settings.
+- [📐 **Project Architecture**](docs/architecture.md) — overview of the core, provider consensus, ERA5 climatology, Bézier splines and vector rendering.
+- [⚙️ **Configuration Reference**](docs/configuration.md) — full description of the `config.json` structure and parameters.
+
+---
+
+## 🚀 Installation
+
+### Requirements
+- Python >= 3.10
+- PySide6 >= 6.5 (`pip install PySide6`, or on Debian/Ubuntu: `python3-pyside6.qtwidgets python3-pyside6.qtsvg`)
+
+### From packages (Debian / Ubuntu)
+Download the latest `.deb` from [GitHub Releases](https://github.com/aimakosi/info-weather/releases) and install:
+
+```bash
+sudo apt install ./info-weather_0.1.0-1_all.deb
+```
+
+### Quick start (install script, any distro)
 ```bash
 sudo apt update
 sudo apt install python3 python3-pip python3-pyside6.qtwidgets python3-pyside6.qtsvg
 
-# Клонирование и установка
+# Clone and install
 git clone https://github.com/aimakosi/info-weather.git
 cd info-weather
 
-# Запуск скрипта установки
+# Run the installer (optionally with --with-autostart)
 ./packaging/scripts/install.sh
 ```
 
-### Запуск через Python
+### Arch Linux
+The release ships an AUR-ready source tarball and `PKGBUILD` (`packaging/arch/`):
+
+```bash
+cd packaging/arch
+makepkg -si
+```
+
+### Running from source
 ```bash
 python3 main.py
 ```
 
-### Удаление
+### Uninstall
 ```bash
-# Удалить приложение, сохранив настройки:
+# Remove the app, keep your settings:
 ./packaging/scripts/uninstall.sh
 
-# Полная очистка с конфигурацией и кэшем:
+# Full purge of configuration and cache:
 ./packaging/scripts/uninstall.sh --purge
 ```
 
 ---
 
-## 🖥️ Использование из командной строки (CLI)
+## 🖥️ Command Line Usage (CLI)
 
-`info-weather` может работать полностью автономно без графической оболочки (например, на серверах или по SSH):
+`info-weather` can run fully headless (e.g. on servers or over SSH):
 
 ```bash
-# Вывести подробный метеоотчет для текущего города в терминал:
+# Print a detailed weather report for the current city:
 info-weather --headless
 
-# Запросить погоду для конкретного города или координат:
-info-weather --city "Новосибирск" --headless
+# Weather for a specific city or coordinates:
+info-weather --city "Novosibirsk" --headless
 info-weather --city "55.75,37.61" --headless
 
-# Поиск городов по геокодеру и локальному справочнику:
-info-weather --search "Сочи"
+# Search cities via geocoder and the local catalog:
+info-weather --search "Sochi"
 
-# Воспроизвести консенсус из сохраненных ответов кэша (офлайн):
+# Replay consensus from cached responses (offline):
 info-weather --replay
 
-# Запуск в режиме автозапуска (без перехвата фокуса):
+# Launch in autostart mode (without stealing focus):
 info-weather --autostart --delay 3
 
-# Принудительный запуск через X11 (xcb) вместо нативного Wayland:
+# Force the X11 (xcb) backend instead of native Wayland:
 info-weather --xcb
 
-# Сброс настроек на заводские:
+# Reset settings to factory defaults:
 info-weather --reset-config
 ```
 
 ---
 
-## 🌐 Сетевые настройки
+## 🌐 Network Settings
 
-Параметры доступны в **Настройки → Провайдеры → Сеть** и применяются сразу. Они же хранятся в `~/.config/info-weather/config.json` в секции `network`:
+Available in **Settings → Providers → Network** and applied immediately. Stored in `~/.config/info-weather/config.json` under the `network` section:
 
 ```json
 {
@@ -139,43 +156,43 @@ info-weather --reset-config
 }
 ```
 
-- `timeout_seconds` — таймаут одного HTTP-запроса.
-- `dns_timeout_seconds` — предел ожидания DNS-резолвинга (защита от «зависшего» DNS).
-- `retries` — число повторов запроса при ошибке.
-- `prefer_ipv4` — пытаться подключаться по IPv4 раньше IPv6 (помогает при сломанном IPv6).
-- `fetch_timeout_seconds` — общий предел одного цикла обновления: по его истечении используются уже полученные источники.
+- `timeout_seconds` — timeout of a single HTTP request.
+- `dns_timeout_seconds` — DNS resolution limit (protection against a "stuck" DNS).
+- `retries` — number of request retries on error.
+- `prefer_ipv4` — try IPv4 before IPv6 (helps with broken IPv6).
+- `fetch_timeout_seconds` — overall limit of one refresh cycle: once expired, already fetched sources are used.
 
 ---
 
-## ⚙️ Управление виджетом
+## ⚙️ Widget Controls
 
-- **Перемещение**: зажмите левую кнопку мыши и перетащите виджет в удобное место на рабочем столе. Позиция запоминается и восстанавливается при следующем запуске.
-- **Поведение окна** (вкладка «Вид»): блокировка позиции (текущее место фиксируется и восстанавливается при запуске), показ на всех рабочих столах (X11), режим «поверх всех окон» и показ на панели задач. По умолчанию виджет на панели задач не отображается.
-- **Смена городов**: прокручивайте колесо мыши над виджетом (с настраиваемым debounce-таймером).
-- **Подробный прогноз**: кликните левой кнопкой мыши по виджету или выберите соответствующий пункт в контекстном меню (открывает окно с 3 аналитическими разделами).
-- **Контекстное меню (ПКМ)**:
-  - *Подробный прогноз…* — открывает окно расширенного прогноза (температура/давление, климатология, роза ветров).
-  - *Обновить сейчас* — принудительный опрос сети.
-  - *Города…* — добавление, удаление, сортировка и установка домашнего города.
-  - *Тема* — переключение режимов оформления (По солнцу / День / Ночь).
-  - *Настройки…* — окно параметров (общие, вид и оформление, раскладка блоков, единицы, уведомления, автозапуск).
-  - *Закрыть* — корректное завершение приложения с сохранением позиции.
+- **Move**: press and hold the left mouse button and drag the widget to a convenient spot. The position is remembered and restored on the next launch.
+- **Window behavior** ("View" tab): position lock, show on all desktops (X11), "always on top" mode and taskbar visibility. The widget is hidden from the taskbar by default.
+- **Switch cities**: scroll the mouse wheel over the widget (with a configurable debounce timer).
+- **Detailed forecast**: left-click the widget or use the context menu item (opens the window with 3 analytical sections).
+- **Context menu (right-click)**:
+  - *Detailed forecast…* — opens the extended forecast (temperature/pressure, climatology, wind rose).
+  - *Refresh now* — forces a network poll.
+  - *Cities…* — add, remove, sort cities and pin the home city.
+  - *Theme* — switch appearance modes (By Sun / Day / Night).
+  - *Settings…* — options window (general, view & appearance, block layout, units, notifications, autostart).
+  - *Quit* — cleanly exits the application, saving the position.
 
 ---
 
-## 🧪 Тестирование
+## 🧪 Testing
 
-Проект содержит всесторонний набор автоматических тестов ядра (консенсус, геокодирование, астрономия, конвертация единиц, устойчивость к сбоям API, валидация конфигурации, скины):
+The project ships a comprehensive automated test suite for the core (consensus, geocoding, astronomy, unit conversion, API failure resilience, config validation, icon resolution):
 
 ```bash
 pip install .[dev]
-ruff check .                                     # линтер (CI-гейт)
-QT_QPA_PLATFORM=offscreen python -m pytest -q    # тесты (CI-гейт)
+ruff check .                                     # linter (CI gate)
+QT_QPA_PLATFORM=offscreen python -m pytest -q    # tests (CI gate)
 ```
 
 ---
 
-## 📄 Лицензия и атрибуция
+## 📄 License & Attribution
 
-Проект распространяется под свободной лицензией **GNU General Public License v3.0 or later (GPL-3.0-or-later)**.
-Полный текст лицензии и официальные атрибуции поставщиков данных (Copernicus Climate Change Service / ERA5 Climatology, Open-Meteo, MET Norway, wttr.in, NASA Moon Kit) доступны в файле [NOTICE](NOTICE).
+The project is distributed under the **GNU General Public License v3.0 or later (GPL-3.0-or-later)**.
+The full license text and official attributions of the data providers (Copernicus Climate Change Service / ERA5 Climatology, Open-Meteo, MET Norway, wttr.in, NASA Moon Kit) are available in [NOTICE](NOTICE).

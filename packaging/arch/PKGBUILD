@@ -14,7 +14,7 @@ optdepends=(
 )
 install="info-weather.install"
 source=("info-weather-0.1.0.tar.gz")
-sha256sums=('3a7914b2f8bb28f20a0f78f97ad8f40701b464504d1c9c82e8af5a58497fa62a')
+sha256sums=('4d43c3439afb8f50549efe345dabc44581e766306bedb4c79a13ee0ca6eb18d5')
 
 package() {
     cd "$srcdir/${pkgname}-${pkgver}"
