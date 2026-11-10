@@ -33,7 +33,7 @@ if app is None:
 
 # Qt widgets below need an existing QApplication instance (created above)
 from core.config import ConfigManager  # noqa: E402
-from core.i18n import t  # noqa: E402
+from core.i18n import set_language, t  # noqa: E402
 from models.weather import (  # noqa: E402
     CurrentConditions,
     DailyForecast,
@@ -360,6 +360,10 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
         self.cfg = ConfigManager(Path(self._tmp_dir) / "config.json")
         self.cfg.set("app_language", "ru")
         self.cfg.set("weather_language", "ru")
+        # Pin the global i18n language: these tests assert Russian strings
+        # and the module default follows the system locale (en), which made
+        # them depend on other tests' leftovers when run in isolation.
+        set_language("ru")
         self.provider = MagicMock()
         self.provider.get_active_city_info.return_value = {
             "name": "Абакан",
@@ -949,6 +953,49 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
         self.assertEqual(dlg.lbl_spline_title.text(), "Temperature Spline (24h)")
         self.assertEqual(dlg.lbl_baro_title.text(), "24h Barometric Trend")
         self.assertIn("1/3", dlg.lbl_screen_badge.text())
+        dlg.close()
+
+    def test_detailed_dialog_does_not_clip_charts(self):
+        """Regression: adding the geomagnetic card must not squeeze the charts.
+
+        The Temperature & Pressure page stacks spline, barometer and
+        geomagnetic cards vertically; a fixed 620 px window height clipped
+        them. The dialog now sizes to content, so every card must be at
+        least its minimum height and fully inside the window.
+        """
+        dlg = DetailedForecastDialogQt(
+            parent=None, config_manager=self.cfg, data=self.data
+        )
+        dlg.show()
+        app.processEvents()
+
+        for frame in (dlg.frame_spline, dlg.frame_baro, dlg.frame_geomag):
+            min_h = frame.minimumSizeHint().height()
+            self.assertGreaterEqual(
+                frame.height(),
+                min_h,
+                f"{frame.objectName() or 'card'} clipped: {frame.height()} < {min_h}",
+            )
+
+        # The last card must be fully inside the window on a big enough
+        # screen; on small screens the window is capped and the scroll area
+        # must take over instead of clipping.
+        bottom = dlg.frame_geomag.mapTo(dlg, dlg.frame_geomag.rect().bottomLeft()).y()
+        if bottom <= dlg.height():
+            self.assertFalse(dlg.scroll_hourly.verticalScrollBar().isVisible())
+        else:
+            self.assertTrue(dlg.scroll_hourly.verticalScrollBar().isVisible())
+
+        # The page is scrollable, so shrinking the window degrades to
+        # scrolling instead of hiding content.
+        self.assertTrue(dlg.scroll_hourly.widget() is dlg.page_hourly)
+
+        # Shrinking must not clip: the scroll area takes over.
+        dlg.resize(dlg.width(), 520)
+        app.processEvents()
+        self.assertTrue(dlg.scroll_hourly.verticalScrollBar().isVisible())
+        for frame in (dlg.frame_spline, dlg.frame_baro, dlg.frame_geomag):
+            self.assertGreaterEqual(frame.height(), frame.minimumSizeHint().height())
         dlg.close()
 
     def test_geomagnetic_forecast_on_temp_press_screens(self):

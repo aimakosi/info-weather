@@ -1164,8 +1164,52 @@ class DetailedForecastDialogQt(QDialog):
         self._last_switch_ts: float = 0.0
 
         self._build_ui()
+        self._fit_to_content()
         if self._data:
             self.update_data(self._data)
+
+    def _fit_to_content(self) -> None:
+        """Resize the window so the stacked pages are not clipped.
+
+        The Temperature & Pressure page stacks three charts vertically
+        (spline, barometer, geomagnetic), which no longer fits the legacy
+        fixed 620 px height: the charts were squeezed below their minimums
+        and cut off. Measure the tallest page directly (unwrapping scroll
+        areas, whose own minimum is deliberately tiny), size the window to
+        it, and cap by the available screen — the scroll area keeps the
+        window usable when it cannot grow that tall.
+        """
+        lay = self.layout()
+        if lay is None:
+            return
+
+        # Height of the tallest page content.
+        stack_h = 0
+        for i in range(self.stack.count()):
+            page = self.stack.widget(i)
+            content = page.widget() if isinstance(page, QScrollArea) else page
+            if content is not None:
+                stack_h = max(stack_h, content.minimumSizeHint().height())
+        if stack_h <= 0:
+            return
+
+        margins = lay.contentsMargins()
+        header_h = max(
+            (w.sizeHint().height() for w in self._header_widgets),
+            default=30,
+        )
+        # A few spare pixels keep the scroll viewport from showing a 1 px
+        # scrollbar when the window is exactly content-sized.
+        needed_h = margins.top() + header_h + lay.spacing() + stack_h + margins.bottom() + 6
+
+        height = needed_h
+        screen = self.screen()
+        if screen is not None:
+            avail = screen.availableGeometry()
+            # Leave a margin so the title bar and bottom edge stay reachable.
+            height = min(height, max(520, avail.height() - 60))
+
+        self.resize(max(760, self.width()), height)
 
     def _get_forecast_days_count(self) -> int:
         """Read configured multi-day forecast length from Options."""
@@ -1231,6 +1275,15 @@ class DetailedForecastDialogQt(QDialog):
         self.btn_close.setCursor(Qt.CursorShape.PointingHandCursor)
         self.btn_close.clicked.connect(self.accept)
         header_row.addWidget(self.btn_close)
+
+        # Kept for _fit_to_content(): the header contributes to the window
+        # height that the stacked pages need.
+        self._header_widgets = [
+            self.lbl_city_title,
+            self.lbl_cond_summary,
+            self.lbl_screen_badge,
+            self.btn_close,
+        ]
 
         main_layout.addLayout(header_row)
 
@@ -1371,7 +1424,17 @@ class DetailedForecastDialogQt(QDialog):
         l_fg.addWidget(self.geomag_widget)
         l_hourly.addWidget(self.frame_geomag)
 
-        self.stack.addWidget(self.page_hourly)
+        # The page stacks three charts vertically (~800 px). Wrap it in a
+        # scroll area so shrinking the window scrolls instead of clipping
+        # the temperature/pressure charts.
+        self.scroll_hourly = QScrollArea()
+        self.scroll_hourly.setWidgetResizable(True)
+        self.scroll_hourly.setFrameShape(QFrame.Shape.NoFrame)
+        self.scroll_hourly.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
+        self.scroll_hourly.setWidget(self.page_hourly)
+        self.stack.addWidget(self.scroll_hourly)
 
         # Page 1: Climate Normals (ERA5)
         self.climate_widget = ClimateNormsWidget()
