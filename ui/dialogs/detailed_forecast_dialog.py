@@ -215,6 +215,11 @@ class HourlySplineChartWidget(QWidget):
         self.update()
 
     @staticmethod
+    def _day_night_labels(lang: str = "ru") -> tuple[str, str]:
+        """Localized Day / Night labels for the scrub tooltip of the daily chart."""
+        return t("forecast_legend_day", _lang=lang), t("forecast_legend_night", _lang=lang)
+
+    @staticmethod
     def _build_spline_path(coords: list[tuple[float, float]]) -> QPainterPath:
         path = QPainterPath()
         if not coords:
@@ -629,10 +634,11 @@ class HourlySplineChartWidget(QWidget):
             painter.setFont(QFont("Sans Serif", 8, QFont.Weight.Bold))
             t_day_fmt = format_temp(p.get("day_temp"), unit=self._temp_unit, show_sign=True)
             t_night_fmt = format_temp(p.get("night_temp"), unit=self._temp_unit, show_sign=True)
+            day_lbl, night_lbl = self._day_night_labels(self._lang)
             painter.setPen(day_text_color)
-            painter.drawText(QRectF(tt_x + 8, tt_y + 42, 68, 16), Qt.AlignmentFlag.AlignLeft, f"День: {t_day_fmt}")
+            painter.drawText(QRectF(tt_x + 8, tt_y + 42, 68, 16), Qt.AlignmentFlag.AlignLeft, f"{day_lbl}: {t_day_fmt}")
             painter.setPen(night_text_color)
-            painter.drawText(QRectF(tt_x + 78, tt_y + 42, 68, 16), Qt.AlignmentFlag.AlignLeft, f"Ночь: {t_night_fmt}")
+            painter.drawText(QRectF(tt_x + 78, tt_y + 42, 68, 16), Qt.AlignmentFlag.AlignLeft, f"{night_lbl}: {t_night_fmt}")
 
     @staticmethod
     def _wind_arrow(deg: float | int) -> str:

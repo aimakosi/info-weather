@@ -941,6 +941,27 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
         self.assertEqual(dlg.lbl_baro_title.text(), "24h Barometric Trend")
         self.assertIn("1/3", dlg.lbl_screen_badge.text())
         dlg.close()
+    def test_daily_scrub_tooltip_day_night_labels_follow_language(self):
+        """Regression: 'Day/Night' labels in the X-days tooltip must not stay in Russian."""
+        from ui.dialogs.detailed_forecast_dialog import HourlySplineChartWidget
+
+        chart = HourlySplineChartWidget()
+
+        # English UI: tooltip labels must be English
+        self.assertEqual(chart._day_night_labels("en"), ("Day", "Night"))
+        # Russian and Ukrainian too
+        self.assertEqual(chart._day_night_labels("ru"), ("День", "Ночь"))
+        self.assertEqual(chart._day_night_labels("uk"), ("День", "Ніч"))
+
+        # The chart must use the language passed with the daily points
+        chart.update_daily_points(
+            daily_points=[{"day": "Wed", "date": "11.11", "day_temp": 3.0, "night_temp": -2.0}],
+            temp_unit="celsius",
+            lang="en",
+        )
+        self.assertEqual(chart._lang, "en")
+        self.assertEqual(chart._day_night_labels(chart._lang), ("Day", "Night"))
+
     def test_landmark_day_only_and_location_binding(self):
         # 1. Day theme: photo background is removed; seasonal or classic light theme used instead
         self.cfg.set("skin", {"theme_mode": "day"})
