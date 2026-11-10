@@ -12,7 +12,7 @@ import json
 import os
 import threading
 import time
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Callable
 
@@ -21,6 +21,7 @@ from core.logging import get_logger
 logger = get_logger("core.geomagnetic")
 
 NOAA_KP_INDEX_URL = "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json"
+NOAA_KP_FORECAST_URL = "https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json"
 CACHE_TTL_SECONDS = 3600.0  # 1 hour cache TTL
 
 # Default cache directory
@@ -31,6 +32,7 @@ if os.name == "nt":
         DEFAULT_GEOMAGNETIC_CACHE_DIR = Path(local_app_data) / "info-weather" / "cache"
 
 GEOMAGNETIC_CACHE_FILE = DEFAULT_GEOMAGNETIC_CACHE_DIR / "geomagnetic.json"
+GEOMAGNETIC_FORECAST_CACHE_FILE = DEFAULT_GEOMAGNETIC_CACHE_DIR / "geomagnetic_forecast.json"
 
 
 @dataclass
@@ -96,6 +98,88 @@ def classify_kp_index(kp: float) -> tuple[int, str, str, str]:
     return level, "geomagnetic_extreme_storm", "#7c3aed", "G5"
 
 
+@dataclass
+class KpForecastPoint:
+    """One 3-hour Kp-index bin (observed, estimated, or predicted)."""
+
+    time_tag: str = ""
+    kp_index: float = 0.0
+    observed: str = "predicted"  # "observed" | "estimated" | "predicted"
+
+    @property
+    def is_forecast(self) -> bool:
+        return self.observed != "observed"
+
+    @property
+    def level(self) -> int:
+        return classify_kp_index(self.kp_index)[0]
+
+    @property
+    def status_key(self) -> str:
+        return classify_kp_index(self.kp_index)[1]
+
+    @property
+    def color(self) -> str:
+        return classify_kp_index(self.kp_index)[2]
+
+    @property
+    def noaa_scale(self) -> str:
+        return classify_kp_index(self.kp_index)[3]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "time_tag": self.time_tag,
+            "kp_index": self.kp_index,
+            "observed": self.observed,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> KpForecastPoint:
+        try:
+            kp = float(data.get("kp_index", 0.0))
+        except (TypeError, ValueError):
+            kp = 0.0
+        return cls(
+            time_tag=str(data.get("time_tag", "")),
+            kp_index=kp,
+            observed=str(data.get("observed", "predicted")),
+        )
+
+
+@dataclass
+class GeomagneticForecast:
+    """Multi-day Kp-index forecast series from NOAA SWPC."""
+
+    points: list[KpForecastPoint] = field(default_factory=list)
+    cached_at: float = 0.0
+    is_cached: bool = False
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "points": [p.to_dict() for p in self.points],
+            "cached_at": self.cached_at,
+            "is_cached": self.is_cached,
+        }
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> GeomagneticForecast:
+        raw_points = data.get("points", [])
+        points = [KpForecastPoint.from_dict(p) for p in raw_points if isinstance(p, dict)]
+        return cls(
+            points=points,
+            cached_at=float(data.get("cached_at", 0.0)),
+            is_cached=bool(data.get("is_cached", True)),
+        )
+
+    @property
+    def forecast_points(self) -> list[KpForecastPoint]:
+        """Only the predicted/estimated bins (not yet observed)."""
+        return [p for p in self.points if p.is_forecast]
+
+    def max_kp(self) -> float:
+        return max((p.kp_index for p in self.forecast_points), default=0.0)
+
+
 # In-memory singleton state
 _cached_activity: GeomagneticActivity | None = None
 _fetch_lock = threading.Lock()
@@ -137,7 +221,7 @@ def fetch_geomagnetic_activity_sync(
 
     data = http_client.fetch_json(
         NOAA_KP_INDEX_URL,
-        headers={"User-Agent": "info-weather-app/1.0 (space-weather)"},
+        extra_headers={"User-Agent": "info-weather-app/1.0 (space-weather)"},
         timeout=timeout,
     )
 
@@ -269,3 +353,169 @@ def get_geomagnetic_activity(
     )
     _cached_activity = default_activity
     return default_activity
+
+
+# ------------------------------------------------------------------------
+# Kp-index forecast (3-day, 3-hour bins)
+# ------------------------------------------------------------------------
+
+_cached_forecast: GeomagneticForecast | None = None
+_forecast_fetch_lock = threading.Lock()
+_is_fetching_forecast = False
+
+
+def _read_forecast_disk_cache() -> GeomagneticForecast | None:
+    try:
+        if GEOMAGNETIC_FORECAST_CACHE_FILE.is_file():
+            with open(GEOMAGNETIC_FORECAST_CACHE_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            return GeomagneticForecast.from_dict(data)
+    except Exception as e:
+        logger.debug("Failed to read geomagnetic forecast disk cache: %s", e)
+    return None
+
+
+def _write_forecast_disk_cache(forecast: GeomagneticForecast) -> None:
+    try:
+        GEOMAGNETIC_FORECAST_CACHE_FILE.parent.mkdir(parents=True, exist_ok=True)
+        tmp_file = GEOMAGNETIC_FORECAST_CACHE_FILE.with_suffix(".tmp")
+        with open(tmp_file, "w", encoding="utf-8") as f:
+            json.dump(forecast.to_dict(), f, indent=2)
+        tmp_file.replace(GEOMAGNETIC_FORECAST_CACHE_FILE)
+    except Exception as e:
+        logger.debug("Failed to write geomagnetic forecast disk cache: %s", e)
+
+
+def fetch_geomagnetic_forecast_sync(
+    timeout: float = 6.0,
+    http_client: Any | None = None,
+) -> GeomagneticForecast:
+    """Synchronously fetch the 3-day Kp-index forecast from NOAA SWPC."""
+    global _cached_forecast
+
+    if http_client is None:
+        from core.http import get_default_http_client
+        http_client = get_default_http_client()
+
+    data = http_client.fetch_json(
+        NOAA_KP_FORECAST_URL,
+        extra_headers={"User-Agent": "info-weather-app/1.0 (space-weather)"},
+        timeout=timeout,
+    )
+
+    points: list[KpForecastPoint] = []
+    if isinstance(data, list):
+        for row in data:
+            if not isinstance(row, dict):
+                continue
+            raw_kp = row.get("kp", row.get("Kp"))
+            if raw_kp is None:
+                continue
+            try:
+                kp_val = float(raw_kp)
+            except (TypeError, ValueError):
+                continue
+            points.append(
+                KpForecastPoint(
+                    time_tag=str(row.get("time_tag", "")),
+                    kp_index=round(kp_val, 2),
+                    observed=str(row.get("observed", "predicted")),
+                )
+            )
+
+    if not points:
+        raise ValueError("No Kp forecast entries found in NOAA SWPC response")
+
+    forecast = GeomagneticForecast(
+        points=points,
+        cached_at=time.time(),
+        is_cached=False,
+    )
+    _cached_forecast = forecast
+    _write_forecast_disk_cache(forecast)
+    logger.info("Updated geomagnetic forecast: %d bins (%d forecast)", len(points), len(forecast.forecast_points))
+    return forecast
+
+
+def _forecast_background_worker(
+    on_complete: Callable[[GeomagneticForecast], None] | None = None,
+    http_client: Any | None = None,
+) -> None:
+    global _is_fetching_forecast
+    try:
+        forecast = fetch_geomagnetic_forecast_sync(http_client=http_client)
+        if on_complete:
+            try:
+                on_complete(forecast)
+            except Exception as e:
+                logger.debug("Error in geomagnetic forecast on_complete callback: %s", e)
+    except Exception as e:
+        logger.debug("Geomagnetic forecast background fetch failed: %s", e)
+    finally:
+        with _forecast_fetch_lock:
+            _is_fetching_forecast = False
+
+
+def fetch_geomagnetic_forecast_async(
+    on_complete: Callable[[GeomagneticForecast], None] | None = None,
+    http_client: Any | None = None,
+) -> None:
+    """Asynchronously fetch NOAA Kp forecast in a background daemon thread."""
+    global _is_fetching_forecast
+    with _forecast_fetch_lock:
+        if _is_fetching_forecast:
+            return
+        _is_fetching_forecast = True
+
+    thread = threading.Thread(
+        target=_forecast_background_worker,
+        args=(on_complete, http_client),
+        daemon=True,
+        name="GeomagneticForecastThread",
+    )
+    thread.start()
+
+
+def get_geomagnetic_forecast(
+    force_sync: bool = False,
+    on_updated: Callable[[GeomagneticForecast], None] | None = None,
+    http_client: Any | None = None,
+) -> GeomagneticForecast:
+    """Get the Kp-index forecast series.
+
+    Returns cached data immediately and triggers a background refresh when the
+    cache is older than CACHE_TTL_SECONDS.
+    """
+    global _cached_forecast
+
+    now = time.time()
+    # 1. In-memory cache
+    if _cached_forecast is not None and (now - _cached_forecast.cached_at) < CACHE_TTL_SECONDS:
+        return _cached_forecast
+
+    # 2. Disk cache
+    disk_cached = _read_forecast_disk_cache()
+    if disk_cached is not None:
+        _cached_forecast = disk_cached
+        if (now - disk_cached.cached_at) < CACHE_TTL_SECONDS:
+            return disk_cached
+        if force_sync:
+            try:
+                return fetch_geomagnetic_forecast_sync(http_client=http_client)
+            except Exception:
+                return disk_cached
+        fetch_geomagnetic_forecast_async(on_complete=on_updated, http_client=http_client)
+        return disk_cached
+
+    # 3. No cache available
+    if force_sync:
+        try:
+            return fetch_geomagnetic_forecast_sync(http_client=http_client)
+        except Exception as e:
+            logger.warning("Failed to fetch initial geomagnetic forecast: %s", e)
+    else:
+        fetch_geomagnetic_forecast_async(on_complete=on_updated, http_client=http_client)
+
+    default_forecast = GeomagneticForecast(points=[], cached_at=now, is_cached=False)
+    _cached_forecast = default_forecast
+    return default_forecast

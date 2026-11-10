@@ -1131,6 +1131,16 @@ BUILTIN_STRINGS: dict[str, dict[str, str]] = {
         "uk": "Барометричний графік",
         "en": "Barometric Trend",
     },
+    "chart_geomagnetic_title": {
+        "ru": "Геомагнитная активность (Kp)",
+        "uk": "Геомагнітна активність (Kp)",
+        "en": "Geomagnetic Activity (Kp)",
+    },
+    "chart_geomagnetic_peak": {
+        "ru": "Пик",
+        "uk": "Пік",
+        "en": "Peak",
+    },
     "forecast_tab_24h": {
         "ru": "24ч.",
         "uk": "24 год.",

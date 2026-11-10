@@ -8,7 +8,7 @@ with a modern segmented pill switcher.
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from core.i18n import get_month_name, get_weekday_name, set_language, t
@@ -786,6 +786,101 @@ class BarometerChartWidget(QWidget):
                 painter.drawText(QRectF(cx - 24, h - 18, 48, 16), Qt.AlignmentFlag.AlignCenter, t_lbl)
 
 
+class GeomagneticChartWidget(QWidget):
+    """Kp-index bar chart: 3-hour bins (24h) or daily maxima (X days)."""
+
+    def __init__(self, parent: QWidget | None = None) -> None:
+        super().__init__(parent)
+        self.setMinimumHeight(130)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        self._bars: list[dict[str, Any]] = []
+        self._is_light = False
+
+    def set_theme_light(self, is_light: bool) -> None:
+        self._is_light = is_light
+        self.update()
+
+    def update_bars(self, bars: list[dict[str, Any]], is_light: bool = False) -> None:
+        self._bars = bars
+        self._is_light = is_light
+        self.update()
+
+    def paintEvent(self, event: Any) -> None:
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+
+        w = self.width()
+        h = self.height()
+
+        if not self._bars:
+            painter.setPen(QColor(148, 163, 184))
+            painter.drawText(self.rect(), Qt.AlignmentFlag.AlignCenter, t("weather_no_data"))
+            return
+
+        pad_l = 30.0
+        pad_r = 12.0
+        pad_t = 16.0
+        pad_b = 26.0
+        plot_w = max(10.0, w - pad_l - pad_r)
+        plot_h = max(10.0, h - pad_t - pad_b)
+
+        # Kp scale is fixed 0..9
+        kp_max = 9.0
+
+        # Horizontal Kp grid lines (0, 3, 6, 9)
+        painter.setFont(QFont("Sans Serif", 8))
+        for kp_grid in (0.0, 3.0, 6.0, 9.0):
+            cy = pad_t + plot_h - (kp_grid / kp_max) * plot_h
+            painter.setPen(QColor(0, 0, 0, 15) if self._is_light else QColor(255, 255, 255, 15))
+            painter.drawLine(int(pad_l), int(cy), int(w - pad_r), int(cy))
+            painter.setPen(QColor(100, 116, 139) if self._is_light else QColor(148, 163, 184))
+            painter.drawText(QRectF(0, cy - 8, pad_l - 6, 16), Qt.AlignmentFlag.AlignRight, f"{int(kp_grid)}")
+
+        n = len(self._bars)
+        slot = plot_w / max(1, n)
+        bar_w = max(6.0, min(28.0, slot * 0.62))
+
+        show_labels = n <= 12
+        for i, bar in enumerate(self._bars):
+            kp_val = float(bar.get("kp", 0.0))
+            kp_val = max(0.0, min(kp_max, kp_val))
+            cx = pad_l + slot * (i + 0.5)
+            bh = (kp_val / kp_max) * plot_h
+            by = pad_t + plot_h - bh
+
+            bar_color = QColor(str(bar.get("color", "#22c55e")))
+            if not bar_color.isValid():
+                bar_color = QColor("#22c55e")
+
+            # Forecast bins are drawn softer than observed ones
+            if bar.get("is_forecast", False):
+                bar_color.setAlpha(210)
+
+            painter.setPen(Qt.PenStyle.NoPen)
+            painter.setBrush(bar_color)
+            painter.drawRoundedRect(QRectF(cx - bar_w / 2.0, by, bar_w, bh), 3, 3)
+
+            # Kp value above each bar
+            painter.setFont(QFont("Sans Serif", 7, QFont.Weight.Bold))
+            painter.setPen(QColor(100, 116, 139) if self._is_light else QColor(148, 163, 184))
+            painter.drawText(
+                QRectF(cx - 20, by - 15, 40, 14),
+                Qt.AlignmentFlag.AlignCenter,
+                f"{kp_val:.1f}",
+            )
+
+            # Time / day label below
+            if show_labels:
+                painter.setFont(QFont("Sans Serif", 8))
+                painter.setPen(QColor(100, 116, 139) if self._is_light else QColor(148, 163, 184))
+                painter.drawText(
+                    QRectF(cx - 24, h - 18, 48, 16),
+                    Qt.AlignmentFlag.AlignCenter,
+                    str(bar.get("label", "")),
+                )
+
+
 class ClimateNormsWidget(QWidget):
     """Screen 2: Copernicus ERA5 30-Year Climate Normals vs Current Weather."""
 
@@ -1243,6 +1338,39 @@ class DetailedForecastDialogQt(QDialog):
         l_fb.addWidget(self.baro_widget)
         l_hourly.addWidget(self.frame_baro)
 
+        # Geomagnetic forecast box (NOAA SWPC Kp-index)
+        self.frame_geomag = QFrame()
+        self.frame_geomag.setObjectName("DetailedCard")
+        l_fg = QVBoxLayout(self.frame_geomag)
+        l_fg.setContentsMargins(14, 12, 14, 10)
+        l_fg.setSpacing(6)
+
+        row_geomag_hdr = QHBoxLayout()
+        self.lbl_geomag_title = QLabel(t("chart_geomagnetic_title"))
+        self.lbl_geomag_title.setStyleSheet("font-size: 13px; font-weight: bold;")
+        row_geomag_hdr.addWidget(self.lbl_geomag_title)
+        row_geomag_hdr.addStretch(1)
+
+        self.lbl_geomag_max = QLabel("—")
+        self.lbl_geomag_max.setFixedHeight(22)
+        self.lbl_geomag_max.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lbl_geomag_max.setStyleSheet("""
+            background-color: rgba(100, 116, 139, 0.20);
+            color: #94a3b8;
+            font-weight: bold;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 11px;
+            border: 1px solid rgba(100, 116, 139, 0.40);
+        """)
+        row_geomag_hdr.addWidget(self.lbl_geomag_max)
+
+        l_fg.addLayout(row_geomag_hdr)
+
+        self.geomag_widget = GeomagneticChartWidget()
+        l_fg.addWidget(self.geomag_widget)
+        l_hourly.addWidget(self.frame_geomag)
+
         self.stack.addWidget(self.page_hourly)
 
         # Page 1: Climate Normals (ERA5)
@@ -1453,6 +1581,8 @@ class DetailedForecastDialogQt(QDialog):
             self.lbl_legend_day.setText("● " + t("forecast_legend_day"))
         if hasattr(self, "lbl_legend_night"):
             self.lbl_legend_night.setText("● " + t("forecast_legend_night"))
+        if hasattr(self, "lbl_geomag_title"):
+            self.lbl_geomag_title.setText(t("chart_geomagnetic_title"))
 
         self._update_screen_badge()
         self.btn_close.setToolTip(t("btn_close"))
@@ -1675,6 +1805,114 @@ class DetailedForecastDialogQt(QDialog):
                         border-radius: 11px;
                         border: 1px solid rgba(100, 116, 139, 0.40);
                     """)
+
+        self._apply_geomagnetic_data(lang=lang, is_light=is_light)
+
+    def _apply_geomagnetic_data(self, lang: str = "ru", is_light: bool = False) -> None:
+        """Render NOAA SWPC Kp-index forecast for the active period (24h vs X days)."""
+        from core.geomagnetic import get_geomagnetic_forecast
+
+        def _on_forecast_ready(forecast: Any) -> None:
+            try:
+                from ui.qt_compat import QTimer
+                QTimer.singleShot(0, lambda: self._render_geomagnetic(forecast, lang, is_light))
+            except Exception:
+                pass
+
+        forecast = get_geomagnetic_forecast(on_updated=_on_forecast_ready)
+        self._render_geomagnetic(forecast, lang, is_light)
+
+    def _render_geomagnetic(self, forecast: Any, lang: str, is_light: bool) -> None:
+        """Build Kp bars (3-hour bins for 24h, daily maxima for X days) and the summary pill."""
+        if not hasattr(self, "geomag_widget"):
+            return
+
+        points = getattr(forecast, "points", []) or []
+        if not points:
+            self.geomag_widget.update_bars([], is_light=is_light)
+            self.lbl_geomag_max.setText("—")
+            return
+
+        from core.geomagnetic import classify_kp_index
+
+        # NOAA time_tags are UTC. Show the window from the current 3-hour bin
+        # forward, never historical observations. Daily grouping uses local
+        # calendar days so it lines up with the temperature chart.
+        offset_sec = self._data.utc_offset_seconds if self._data else 0
+        offset_sec = offset_sec or 0
+        now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+        cur_bin = now_utc.replace(minute=0, second=0, microsecond=0)
+        cur_bin = cur_bin.replace(hour=(cur_bin.hour // 3) * 3)
+
+        def _parse_tag(tag: str) -> datetime | None:
+            try:
+                return datetime.strptime(tag[:19], "%Y-%m-%dT%H:%M:%S")
+            except (ValueError, TypeError):
+                return None
+
+        upcoming: list[tuple[datetime, Any]] = []
+        for p in points:
+            dt = _parse_tag(p.time_tag or "")
+            if dt is not None and dt >= cur_bin:
+                upcoming.append((dt, p))
+
+        bars: list[dict[str, Any]] = []
+        if self._temp_press_period == "daily":
+            # Daily maxima grouped by local calendar day, from today forward
+            by_day: dict[str, float] = {}
+            for dt, p in upcoming:
+                local_dt = dt + timedelta(seconds=offset_sec)
+                day_key = local_dt.strftime("%Y-%m-%d")
+                by_day[day_key] = max(by_day.get(day_key, 0.0), float(p.kp_index))
+
+            for day_key in sorted(by_day.keys()):
+                kp_val = by_day[day_key]
+                _, status_key, color, _scale = classify_kp_index(kp_val)
+                try:
+                    day_dt = datetime.strptime(day_key, "%Y-%m-%d")
+                    label = get_weekday_name(day_dt.weekday(), short=True, lang=lang)
+                except Exception:
+                    label = day_key[5:].replace("-", ".")
+                bars.append({
+                    "label": label,
+                    "kp": kp_val,
+                    "color": color,
+                    "status_key": status_key,
+                    "is_forecast": True,
+                })
+        else:
+            # 24h mode: up to 8 three-hour bins starting from the current one
+            for dt, p in upcoming[:8]:
+                kp_val = float(p.kp_index)
+                _, status_key, color, _scale = classify_kp_index(kp_val)
+                local_dt = dt + timedelta(seconds=offset_sec)
+                bars.append({
+                    "label": local_dt.strftime("%H:%M"),
+                    "kp": kp_val,
+                    "color": color,
+                    "status_key": status_key,
+                    "is_forecast": p.is_forecast,
+                })
+
+        self.geomag_widget.update_bars(bars, is_light=is_light)
+
+        # Summary pill: peak Kp over the shown window with its classification
+        peak_kp = max((b["kp"] for b in bars), default=0.0)
+        _level, status_key, color, noaa_scale = classify_kp_index(peak_kp)
+        status_desc = t(status_key, _lang=lang)
+        self.lbl_geomag_max.setText(f"{t('chart_geomagnetic_peak', _lang=lang)}: {peak_kp:.1f} ({status_desc})")
+        self.lbl_geomag_max.setStyleSheet(f"""
+            background-color: rgba(100, 116, 139, 0.20);
+            color: {color};
+            font-weight: bold;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 11px;
+            border: 1px solid rgba(100, 116, 139, 0.40);
+        """)
+        self.lbl_geomag_max.setToolTip(
+            f"{t('chart_geomagnetic_title', _lang=lang)} — {status_desc} ({noaa_scale}, Kp {peak_kp:.1f})"
+        )
 
     def update_data(self, data: WeatherForecastData) -> None:
         self._data = data

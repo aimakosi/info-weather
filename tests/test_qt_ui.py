@@ -950,6 +950,51 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
         self.assertEqual(dlg.lbl_baro_title.text(), "24h Barometric Trend")
         self.assertIn("1/3", dlg.lbl_screen_badge.text())
         dlg.close()
+
+    def test_geomagnetic_forecast_on_temp_press_screens(self):
+        """Kp forecast chart must render on both the 24h and the X-days screens."""
+        from unittest.mock import patch
+
+        import core.geomagnetic as gm
+
+        fake_points = [
+            gm.KpForecastPoint(time_tag="2026-11-10T00:00:00", kp_index=1.67, observed="observed"),
+            gm.KpForecastPoint(time_tag="2026-11-10T03:00:00", kp_index=3.67, observed="estimated"),
+            gm.KpForecastPoint(time_tag="2026-11-10T06:00:00", kp_index=5.33, observed="predicted"),
+            gm.KpForecastPoint(time_tag="2026-11-11T06:00:00", kp_index=2.0, observed="predicted"),
+            gm.KpForecastPoint(time_tag="2026-11-12T06:00:00", kp_index=4.0, observed="predicted"),
+        ]
+        fake_forecast = gm.GeomagneticForecast(points=fake_points, cached_at=1.0)
+
+        with patch("core.geomagnetic.get_geomagnetic_forecast", return_value=fake_forecast):
+            dlg = DetailedForecastDialogQt(parent=None, config_manager=self.cfg, data=self.data)
+
+            # 24h mode: chart exists, has bars, and the peak pill is populated
+            self.assertTrue(hasattr(dlg, "geomag_widget"))
+            self.assertEqual(dlg._temp_press_period, "24h")
+            self.assertGreater(len(dlg.geomag_widget._bars), 0)
+            self.assertLessEqual(len(dlg.geomag_widget._bars), 8)
+            self.assertIn("Kp", dlg.lbl_geomag_title.text())
+            self.assertNotEqual(dlg.lbl_geomag_max.text(), "—")
+
+            # X-days mode: daily maxima with weekday labels
+            dlg.set_temp_press_period("daily")
+            self.assertEqual(dlg._temp_press_period, "daily")
+            self.assertGreater(len(dlg.geomag_widget._bars), 0)
+            self.assertLessEqual(len(dlg.geomag_widget._bars), 5)
+
+            # Bars carry classification color + status key
+            bar = dlg.geomag_widget._bars[0]
+            self.assertIn("kp", bar)
+            self.assertIn("color", bar)
+            self.assertIn("status_key", bar)
+
+            # Paint must not crash
+            pix = QPixmap(700, 200)
+            dlg.geomag_widget.render(pix)
+            self.assertFalse(pix.isNull())
+            dlg.close()
+
     def test_daily_scrub_tooltip_day_night_labels_follow_language(self):
         """Regression: 'Day/Night' labels in the X-days tooltip must not stay in Russian."""
         from ui.dialogs.detailed_forecast_dialog import HourlySplineChartWidget

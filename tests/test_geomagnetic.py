@@ -15,8 +15,11 @@ app = QApplication.instance() or QApplication(["test_geomagnetic"])
 # Qt widgets below need an existing QApplication instance (created above)
 from core.geomagnetic import (  # noqa: E402
     GeomagneticActivity,
+    GeomagneticForecast,
+    KpForecastPoint,
     classify_kp_index,
     fetch_geomagnetic_activity_sync,
+    fetch_geomagnetic_forecast_sync,
     get_geomagnetic_activity,
 )
 from models.weather import WeatherForecastData  # noqa: E402
@@ -99,6 +102,58 @@ class TestGeomagnetic(unittest.TestCase):
                 self.assertEqual(act.level, 3)
                 self.assertEqual(act.status_key, "geomagnetic_unsettled")
                 self.assertTrue(test_cache_file.is_file())
+
+    @patch("core.http.HttpClient.fetch_json")
+    def test_fetch_geomagnetic_forecast_sync(self, mock_fetch_json):
+        mock_fetch_json.return_value = [
+            {"time_tag": "2026-11-10T00:00:00", "kp": 1.67, "observed": "observed"},
+            {"time_tag": "2026-11-10T03:00:00", "kp": 3.67, "observed": "estimated"},
+            {"time_tag": "2026-11-10T06:00:00", "kp": 5.33, "observed": "predicted"},
+            {"time_tag": "2026-11-10T09:00:00", "kp": 2.0, "observed": "predicted"},
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            test_cache_file = Path(tmp_dir) / "geomagnetic_forecast.json"
+            with patch("core.geomagnetic.GEOMAGNETIC_FORECAST_CACHE_FILE", test_cache_file):
+                fc = fetch_geomagnetic_forecast_sync(timeout=2.0)
+
+                self.assertEqual(len(fc.points), 4)
+                # observed bin is not a forecast, the other three are
+                self.assertEqual(len(fc.forecast_points), 3)
+                self.assertFalse(fc.points[0].is_forecast)
+                self.assertTrue(fc.points[1].is_forecast)
+                # Peak of the forecast window is the 5.33 bin -> G1
+                self.assertAlmostEqual(fc.max_kp(), 5.33)
+                self.assertEqual(fc.forecast_points[1].noaa_scale, "G1")
+                self.assertEqual(fc.forecast_points[1].status_key, "geomagnetic_minor_storm")
+                self.assertTrue(test_cache_file.is_file())
+
+                # Round-trip serialization keeps the series intact
+                restored = GeomagneticForecast.from_dict(fc.to_dict())
+                self.assertEqual(len(restored.points), 4)
+                self.assertEqual(restored.points[2].kp_index, 5.33)
+
+    @patch("core.http.HttpClient.fetch_json")
+    def test_geomagnetic_forecast_uses_extra_headers_kwarg(self, mock_fetch_json):
+        """Regression: fetch_json takes extra_headers=, not headers= (silent TypeError)."""
+        mock_fetch_json.return_value = [
+            {"time_tag": "2026-11-10T00:00:00", "kp": 1.0, "observed": "predicted"},
+        ]
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            test_cache_file = Path(tmp_dir) / "geomagnetic_forecast.json"
+            with patch("core.geomagnetic.GEOMAGNETIC_FORECAST_CACHE_FILE", test_cache_file):
+                fetch_geomagnetic_forecast_sync(timeout=2.0)
+
+        _, kwargs = mock_fetch_json.call_args
+        self.assertIn("extra_headers", kwargs)
+        self.assertNotIn("headers", kwargs)
+
+    def test_kp_forecast_point_classification(self):
+        p = KpForecastPoint(time_tag="2026-11-10T06:00:00", kp_index=6.0, observed="predicted")
+        self.assertEqual(p.level, 6)
+        self.assertEqual(p.status_key, "geomagnetic_moderate_storm")
+        self.assertEqual(p.noaa_scale, "G2")
+        self.assertTrue(p.is_forecast)
 
     def test_astronomy_block_geomagnetic_toggle(self):
         # 1. Enabled by default
