@@ -29,7 +29,7 @@ DEFAULT_RETRIES = 1
 DEFAULT_DNS_TIMEOUT = 5.0
 DEFAULT_PREFER_IPV4 = True
 DEFAULT_TOTAL_FETCH_TIMEOUT = 30.0
-DEFAULT_USER_AGENT = "info-weather/0.1.0 (Linux; KDE Plasma; contact: aimakosi@users.noreply.github.com)"
+DEFAULT_USER_AGENT = "info-weather/0.2.0 (Linux; KDE Plasma; contact: aimakosi@users.noreply.github.com)"
 DEFAULT_MIN_REQUEST_INTERVAL = 1.0  # секунды между запросами к одному хосту
 
 

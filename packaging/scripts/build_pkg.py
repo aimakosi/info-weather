@@ -273,13 +273,37 @@ def build_pkg(
     makepkg_tool = shutil.which("makepkg")
     if use_makepkg and makepkg_tool:
         print(f"    [+] Building binary package using system makepkg ({makepkg_tool})...")
+        # Remove stale binaries so the glob below cannot pick a previous release
+        for old in arch_packaging_dir.glob(f"{pkg_name}-*.pkg.tar.*"):
+            old.unlink()
+
+        # Ensure zstd package compression even when the distro default is gzip
+        # (matches the release artifact naming, e.g. info-weather-0.2.0-1-any.pkg.tar.zst)
         cmd = [makepkg_tool, "-f", "--nodeps", "--noconfirm"]
-        subprocess.run(cmd, cwd=arch_packaging_dir, check=True)
-        for f in arch_packaging_dir.glob("*.pkg.tar.*"):
+        if shutil.which("zstd"):
+            tmp_conf = arch_packaging_dir / ".makepkg-release.conf"
+            base_conf = Path("/etc/makepkg.conf")
+            tmp_conf.write_text(
+                (base_conf.read_text(encoding="utf-8") if base_conf.is_file() else "")
+                + "\nPKGEXT='.pkg.tar.zst'\n",
+                encoding="utf-8",
+            )
+            cmd += ["--config", str(tmp_conf)]
+        try:
+            subprocess.run(cmd, cwd=arch_packaging_dir, check=True)
+        finally:
+            tmp_conf = arch_packaging_dir / ".makepkg-release.conf"
+            if tmp_conf.is_file():
+                tmp_conf.unlink()
+
+        built = sorted(
+            arch_packaging_dir.glob(f"{pkg_name}-{pkg_ver}-{release}-*.pkg.tar.*"),
+            key=lambda p: p.stat().st_mtime,
+        )
+        for f in built:
             dst = out_dir / f.name
             shutil.copy2(f, dst)
             binary_pkg_path = dst
-            break
     elif use_makepkg:
         print("    [!] makepkg не найден — бинарный пакет собирается на Arch:")
         print(f"        cd {arch_dir} && makepkg -si")
