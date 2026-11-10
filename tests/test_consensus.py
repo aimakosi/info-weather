@@ -19,6 +19,7 @@ def make_mock_source(
     fetched_at: float = 1000.0,
     is_basic: bool = False,
     precip_prob: int = 0,
+    daily_dates: list[str] | None = None,
 ) -> SourceForecast:
     current = CurrentPoint(
         temp=temp,
@@ -45,12 +46,13 @@ def make_mock_source(
     ]
     daily = [
         DailySummary(
-            date_str="2026-10-14",
+            date_str=date_str,
             temp_min=temp - 4.0,
             temp_max=temp + 4.0,
             weather_code=weather_code,
             precipitation_probability_max=precip_prob,
         )
+        for date_str in (daily_dates or ["2026-10-14"])
     ]
     return SourceForecast(
         source_name=name,
@@ -144,6 +146,33 @@ class TestConsensus(unittest.TestCase):
         self.assertEqual(fc.consensus_level, "S1")
         self.assertEqual(fc.current.temp, 18.0)
         self.assertEqual(fc.sources, ["open_meteo"])
+
+    def test_stale_source_extends_daily_horizon_only(self):
+        # Fresh wttr has 3 days; a cached longer-horizon source may fill the
+        # remaining days, but must not change current conditions.
+        dates = ["2026-10-14", "2026-10-15", "2026-10-16", "2026-10-17", "2026-10-18"]
+        fresh = make_mock_source(
+            "wttr", temp=8.0, fetched_at=19950.0, is_basic=True, daily_dates=dates[:3]
+        )
+        stale = make_mock_source(
+            "open_meteo", temp=12.0, fetched_at=10000.0, daily_dates=dates
+        )
+
+        fc = merge_source_forecasts(
+            [fresh, stale],
+            lat=50.0,
+            lon=70.0,
+            now_ts=20000.0,
+            max_consensus_age_seconds=7200.0,
+        )
+
+        self.assertEqual(fc.consensus_level, "S1")
+        self.assertEqual(fc.current.temp, 8.0)
+        self.assertEqual(fc.sources, ["wttr"])
+        self.assertEqual([d.date_str for d in fc.daily], dates)
+        self.assertTrue(fc.daily[3].low_confidence)
+        self.assertTrue(fc.daily[4].low_confidence)
+        self.assertEqual(fc.daily[3].sources, ["open_meteo"])
 
     def test_three_way_categorical_tie_prefers_open_meteo(self):
         s1 = make_mock_source("open_meteo", temp=15.0, weather_code=61)

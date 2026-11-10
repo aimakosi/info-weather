@@ -141,6 +141,19 @@ class TestModularBlocks(unittest.TestCase):
             self.assertIsNotNone(first_col.get("max_label"))
             self.assertIsNotNone(first_col.get("min_label"))
 
+    def test_daily_block_shows_available_days_when_horizon_short(self):
+        # A three-day horizon must still show all three days (including today)
+        # instead of skipping the first one and leaving two blank columns.
+        self.data.daily = self.data.daily[:3]
+        db = DailyBlock(options={"days": 5, "horizontal": True}, scale=1.0)
+        db.update(self.data)
+
+        self.assertFalse(db.rows[0]["container"].isHidden())
+        self.assertFalse(db.rows[2]["container"].isHidden())
+        self.assertTrue(db.rows[3]["container"].isHidden())
+        self.assertTrue(db.rows[4]["container"].isHidden())
+        self.assertIn("15.10", db.rows[0]["day_label"].text())
+
     def test_weather_icon_resolution_not_all_sun(self):
         from ui.utils import discover_icon_themes, get_weather_icon_path
 

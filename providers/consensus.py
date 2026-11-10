@@ -52,6 +52,12 @@ from providers.base import (
 
 SOURCE_PRIORITY = ["open_meteo", "met_norway", "wttr"]
 
+# Cached provider responses may still extend the daily horizon when the only
+# fresh source is a short-horizon service such as wttr.in (3 days).  They are
+# never used for current conditions or for days already covered by a fresh
+# source, and the resulting days are marked as low confidence.
+DEFAULT_MAX_DAILY_EXTENSION_AGE_SECONDS = 24 * 3600.0
+
 
 def calc_median(items: list[tuple[float, str]]) -> tuple[float, list[str]]:
     """
@@ -125,6 +131,7 @@ def merge_source_forecasts(
     country: str = "",
     now_ts: float | None = None,
     max_consensus_age_seconds: float = 7200.0,  # 2 hours default
+    max_daily_extension_age_seconds: float = DEFAULT_MAX_DAILY_EXTENSION_AGE_SECONDS,
     lang: str = "ru",
     tz_name: str = "",
 ) -> WeatherForecastData:
@@ -133,15 +140,23 @@ def merge_source_forecasts(
     """
     now = now_ts or datetime.now(timezone.utc).timestamp()
 
-    # 1. Freshness filter
+    # 1. Freshness filter.  Stale sources are kept separately only to extend
+    # the daily horizon beyond a short fresh source (for example, when only
+    # wttr.in is reachable and it returns just three days).
     fresh_sources: list[SourceForecast] = []
+    stale_sources: list[SourceForecast] = []
     for s in sources:
         age = now - s.fetched_at
         if age <= max_consensus_age_seconds:
             fresh_sources.append(s)
+        elif age <= max_daily_extension_age_seconds:
+            stale_sources.append(s)
 
     # Sort fresh sources by priority order
     fresh_sources.sort(
+        key=lambda s: SOURCE_PRIORITY.index(s.source_name) if s.source_name in SOURCE_PRIORITY else 99
+    )
+    stale_sources.sort(
         key=lambda s: SOURCE_PRIORITY.index(s.source_name) if s.source_name in SOURCE_PRIORITY else 99
     )
 
@@ -284,14 +299,6 @@ def merge_source_forecasts(
     # ------------------------------------------------------------------------
     # Merge Daily Summaries
     # ------------------------------------------------------------------------
-    daily_by_date: dict[str, list[tuple[DailySummary, str]]] = defaultdict(list)
-    for s in active_sources:
-        for ds in s.daily:
-            daily_by_date[ds.date_str].append((ds, s.source_name))
-
-    merged_daily: list[DailyForecast] = []
-    days_detailed: list[DayDetailedForecast] = []
-
     dt_now_utc = datetime.fromtimestamp(now, timezone.utc)
     utc_offset = get_geo_timezone_offset_seconds(lat, lon, tz_name)
     utc_offset_hours = utc_offset / 3600.0
@@ -299,8 +306,33 @@ def merge_source_forecasts(
     dt_local = dt_now_utc + timedelta(seconds=utc_offset)
     today_str = dt_local.strftime("%Y-%m-%d")
 
-    for d_idx, d_str in enumerate(sorted(daily_by_date.keys())):
-        ds_list = daily_by_date[d_str]
+    daily_by_date: dict[str, list[tuple[DailySummary, str]]] = defaultdict(list)
+    for s in active_sources:
+        for ds in s.daily:
+            daily_by_date[ds.date_str].append((ds, s.source_name))
+
+    # A short-horizon fresh source (wttr.in) must not leave the widget with
+    # only two visible days.  Use cached longer-horizon provider responses for
+    # dates that no fresh source covers, but never let them override a fresh
+    # day or supply the current conditions.
+    extension_by_date: dict[str, list[tuple[DailySummary, str]]] = defaultdict(list)
+    if fresh_sources and stale_sources:
+        for s in stale_sources:
+            for ds in s.daily:
+                if ds.date_str >= today_str and ds.date_str not in daily_by_date:
+                    extension_by_date[ds.date_str].append((ds, s.source_name))
+
+    all_daily_dates = sorted(set(daily_by_date) | set(extension_by_date))
+    has_extended_days = False
+
+    merged_daily: list[DailyForecast] = []
+    days_detailed: list[DayDetailedForecast] = []
+
+    for d_idx, d_str in enumerate(all_daily_dates):
+        is_extended = d_str not in daily_by_date
+        ds_list = extension_by_date[d_str] if is_extended else daily_by_date[d_str]
+        if is_extended:
+            has_extended_days = True
         d_srcs = [src for _, src in ds_list]
 
         d_mins = [(ds.temp_min, src) for ds, src in ds_list if ds.temp_min is not None]
@@ -339,7 +371,7 @@ def merge_source_forecasts(
         is_today = (d_str == today_str)
         day_label = t("weather_today", _lang=lang) if is_today else w_name
 
-        is_low = (len(min_srcs) < 2)
+        is_low = is_extended or (len(min_srcs) < 2)
         icon_info = WMO_INFO.get(code_val, {})
         icon_name_val = icon_info.get("icon_day", "clear-day.svg")
 
@@ -491,6 +523,8 @@ def merge_source_forecasts(
 
     if is_basic:
         status_text += " [Базовый режим]" if lang == "ru" else " [Basic mode]"
+    if has_extended_days:
+        status_text += " [прогноз продлён из кэша]" if lang == "ru" else " [extended from cache]"
 
     return WeatherForecastData(
         city_name=city_name,

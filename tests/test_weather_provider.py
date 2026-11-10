@@ -6,6 +6,7 @@ import shutil
 import tempfile
 import time
 import unittest
+from datetime import date, timedelta
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -15,8 +16,14 @@ from providers.base import CurrentPoint, DailySummary, HourlyPoint, SearchResult
 from providers.weather import WeatherProvider
 
 
-def make_test_source(name: str, temp: float, fetched_at: float | None = None) -> SourceForecast:
+def make_test_source(
+    name: str,
+    temp: float,
+    fetched_at: float | None = None,
+    daily_dates: list[str] | None = None,
+) -> SourceForecast:
     ts = fetched_at if fetched_at is not None else time.time()
+    dates = daily_dates or ["2026-10-14"]
     return SourceForecast(
         source_name=name,
         fetched_at=ts,
@@ -51,13 +58,14 @@ def make_test_source(name: str, temp: float, fetched_at: float | None = None) ->
         ],
         daily=[
             DailySummary(
-                date_str="2026-10-14",
+                date_str=date_str,
                 temp_min=temp - 4.0,
                 temp_max=temp + 4.0,
                 weather_code=0,
                 precipitation_sum=0.0,
                 precipitation_probability_max=0,
             )
+            for date_str in dates
         ],
         coverage={"temperature", "humidity", "pressure_msl", "wind_speed", "weather_code"},
         depth_days=7,
@@ -191,6 +199,47 @@ class TestWeatherProvider(unittest.TestCase):
         # ...and still use the source that completed in time.
         self.assertEqual(fc.consensus_level, "S1")
         self.assertEqual(fc.source_name, "open_meteo")
+
+    def test_failed_provider_cached_daily_extends_short_fresh_horizon(self):
+        """A cached long-horizon source must fill days missing from a fresh short source."""
+        today = date.today()
+        all_dates = [(today + timedelta(days=i)).isoformat() for i in range(7)]
+        stale_ts = time.time() - 3 * 3600.0
+
+        cached = make_test_source(
+            "open_meteo",
+            temp=10.0,
+            fetched_at=stale_ts,
+            daily_dates=all_dates,
+        )
+        self.cache_manager.save_source_response(
+            "open_meteo", 55.75, 37.61, cached.to_dict(), fetched_at=stale_ts
+        )
+
+        # Only wttr.in responds, and it has just a three-day horizon.
+        self.mock_om.fetch_forecast.return_value = None
+        self.mock_met.fetch_forecast.return_value = None
+        self.mock_wttr.fetch_forecast.return_value = make_test_source(
+            "wttr",
+            temp=14.0,
+            daily_dates=all_dates[:3],
+        )
+
+        fc = self.provider.fetch_forecast(
+            lat=55.75,
+            lon=37.61,
+            city_name="Москва",
+            country="Россия",
+            force_refresh=True,
+        )
+
+        self.assertEqual(fc.consensus_level, "S1")
+        self.assertEqual(fc.current.temp, 14.0)
+        self.assertGreaterEqual(len(fc.daily), 7)
+        extended = [d for d in fc.daily if d.date_str not in all_dates[:3]]
+        self.assertTrue(extended)
+        self.assertTrue(all(d.low_confidence for d in extended))
+        self.assertIn("продлён", fc.status_text)
 
     def test_fresh_cache_avoids_network(self):
         # Pre-populate cache with fresh forecast

@@ -342,6 +342,29 @@ class WeatherProvider:
             logger.debug("Fetch cancelled after gathering futures")
             raise InterruptedError("Weather fetch cancelled")
 
+        # Providers that failed this round may still have a usable cached
+        # response.  The consensus merger uses such responses only to extend
+        # the daily horizon beyond a short fresh source (for example wttr.in),
+        # never for current conditions or days already covered by fresh data.
+        if source_forecasts:
+            fresh_names = {sf.source_name for sf in source_forecasts}
+            attempted_names = {name for name, _ in fetch_tasks}
+            try:
+                cached_sources = self.cache_manager.get_replay_sources(lat, lon)
+            except Exception as e:
+                logger.debug("Failed to load cached source responses: %s", e)
+                cached_sources = {}
+            for src_name, entry in cached_sources.items():
+                if src_name not in attempted_names or src_name in fresh_names:
+                    continue
+                data = entry.get("data")
+                if not isinstance(data, dict):
+                    continue
+                try:
+                    source_forecasts.append(SourceForecast.from_dict(data))
+                except Exception as e:
+                    logger.debug("Failed to deserialize cached source '%s': %s", src_name, e)
+
         # 4. Consensus Synthesis (S3 / S2 / S1)
         max_consensus_age = 7200.0  # 2 hours default
         if self.config_manager:

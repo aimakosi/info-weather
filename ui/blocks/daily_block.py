@@ -139,7 +139,13 @@ class DailyBlockWidget(QWidget):
     def update(self, data: WeatherForecastData) -> None:
         """Update daily columns with weather forecast data."""
         days_count = int(self.options.get("days", 5))
-        daily_list = data.daily[1:days_count + 1] if len(data.daily) > 1 else data.daily
+        # Normally the strip shows the next N days (today is already in the
+        # header).  If the provider horizon is too short, show every available
+        # day including today instead of leaving most columns blank.
+        if len(data.daily) > days_count:
+            daily_list = data.daily[1:days_count + 1]
+        else:
+            daily_list = data.daily[:days_count]
 
         for idx, row in enumerate(self.rows):
             if idx < len(daily_list):
