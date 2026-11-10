@@ -27,6 +27,49 @@ from ui.blocks.astronomy_block import AstronomyBlockWidget  # noqa: E402
 
 
 class TestGeomagnetic(unittest.TestCase):
+    def setUp(self):
+        """Isolate module globals and disk cache for every test.
+
+        Background fetch threads started by one test must not leak into the
+        next one: they mutate _cached_activity/_is_fetching and used to race
+        the async-callback test.
+        """
+        import core.geomagnetic as gm
+
+        self._gm = gm
+        self._saved_state = (
+            gm._cached_activity,
+            gm._cached_forecast,
+            gm._is_fetching,
+            gm._is_fetching_forecast,
+        )
+        gm._cached_activity = None
+        gm._cached_forecast = None
+        gm._is_fetching = False
+        gm._is_fetching_forecast = False
+
+        self._tmp_dir = tempfile.TemporaryDirectory(prefix="geomag_test_")
+        tmp = Path(self._tmp_dir.name)
+        self._cache_patchers = [
+            patch("core.geomagnetic.GEOMAGNETIC_CACHE_FILE", tmp / "geomagnetic.json"),
+            patch("core.geomagnetic.GEOMAGNETIC_FORECAST_CACHE_FILE", tmp / "geomagnetic_forecast.json"),
+        ]
+        for p in self._cache_patchers:
+            p.start()
+
+    def tearDown(self):
+        for p in self._cache_patchers:
+            p.stop()
+        self._tmp_dir.cleanup()
+
+        gm = self._gm
+        (
+            gm._cached_activity,
+            gm._cached_forecast,
+            gm._is_fetching,
+            gm._is_fetching_forecast,
+        ) = self._saved_state
+
     def test_classify_kp_index(self):
         # Quiet
         level, key, color, scale = classify_kp_index(1.0)
@@ -156,18 +199,20 @@ class TestGeomagnetic(unittest.TestCase):
         self.assertTrue(p.is_forecast)
 
     def test_astronomy_block_geomagnetic_toggle(self):
-        # 1. Enabled by default
-        block = AstronomyBlockWidget(options={"show_moon": True, "show_geomagnetic": True})
-        self.assertTrue(hasattr(block, "geomagnetic_item"))
-        data = WeatherForecastData(city_name="Москва", lat=55.75, lon=37.61)
-        block.update(data)
-        self.assertFalse(block.geomagnetic_item["container"].isHidden())
-        self.assertNotEqual(block.geomagnetic_item["val_label"].text(), "—")
+        # No background fetch threads: this test only exercises the toggle.
+        with patch("core.geomagnetic.fetch_geomagnetic_activity_async"):
+            # 1. Enabled by default
+            block = AstronomyBlockWidget(options={"show_moon": True, "show_geomagnetic": True})
+            self.assertTrue(hasattr(block, "geomagnetic_item"))
+            data = WeatherForecastData(city_name="Москва", lat=55.75, lon=37.61)
+            block.update(data)
+            self.assertFalse(block.geomagnetic_item["container"].isHidden())
+            self.assertNotEqual(block.geomagnetic_item["val_label"].text(), "—")
 
-        # 2. Disabled via options
-        block_off = AstronomyBlockWidget(options={"show_moon": True, "show_geomagnetic": False})
-        block_off.update(data)
-        self.assertTrue(block_off.geomagnetic_item["container"].isHidden())
+            # 2. Disabled via options
+            block_off = AstronomyBlockWidget(options={"show_moon": True, "show_geomagnetic": False})
+            block_off.update(data)
+            self.assertTrue(block_off.geomagnetic_item["container"].isHidden())
 
     def test_get_geomagnetic_activity_async_callback(self):
         import core.geomagnetic as gm
@@ -195,7 +240,7 @@ class TestGeomagnetic(unittest.TestCase):
 
                     # Wait for background thread
                     import time
-                    for _ in range(20):
+                    for _ in range(100):
                         if received:
                             break
                         time.sleep(0.05)
