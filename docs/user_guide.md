@@ -150,7 +150,7 @@ The settings window is organized into logical tabs and positions itself next to 
 ### "Providers" Tab
 - **Data sources:** Open-Meteo, MET Norway (yr.no), wttr.in.
 - **Consensus mode:** automatic synthesis of an agreed forecast (temperature median, majority voting for phenomena).
-- **Network parameters:** HTTP request timeout, DNS timeout, retry count, IPv4 preference over IPv6.
+- **Network parameters:** HTTP request timeout, retry count, overall update timeout. DNS timeout and IPv4 preference are hidden behind the "Advanced" toggle.
 
 ### "Notifications" Tab
 - Alerts about rain/snow starting within the next hour.

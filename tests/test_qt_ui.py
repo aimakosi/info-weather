@@ -577,6 +577,15 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
         self.assertEqual(dlg.spin_net_fetch.value(), 30.0)
         self.assertTrue(dlg.chk_prefer_ipv4.isChecked())
 
+        # DNS timeout / IPv4 preference live behind the collapsed "Advanced"
+        # toggle; the main group keeps timeout, retries and overall timeout.
+        self.assertFalse(dlg.btn_net_advanced.isChecked())
+        self.assertTrue(dlg.adv_net_widget.isHidden())
+        dlg.btn_net_advanced.setChecked(True)
+        self.assertFalse(dlg.adv_net_widget.isHidden())
+        dlg.btn_net_advanced.setChecked(False)
+        self.assertTrue(dlg.adv_net_widget.isHidden())
+
         dlg.spin_net_timeout.setValue(4.5)
         dlg.spin_net_dns.setValue(0.0)
         dlg.spin_net_retries.setValue(3)

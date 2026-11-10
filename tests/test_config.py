@@ -138,6 +138,50 @@ class TestConfigManager(unittest.TestCase):
         self.assertEqual(reloaded.get("app_language"), "ru")
         self.assertEqual(reloaded.get("update_interval_minutes"), 60)
 
+    def test_network_values_out_of_range_reset_to_default(self):
+        """Проверка сброса сетевых значений вне допустимого диапазона (например, таймаут 1 с)."""
+        data = {
+            "schema_version": CONFIG_SCHEMA_VERSION,
+            "network": {
+                "timeout_seconds": 1.0,      # ниже минимума 2 с -> дефолт 8 с
+                "dns_timeout_seconds": 45.0,  # выше максимума 30 с -> дефолт 5 с
+                "retries": 9,                 # выше максимума 5 -> дефолт 1
+                "fetch_timeout_seconds": 2.0,  # ниже минимума 3 с -> дефолт 30 с
+                "prefer_ipv4": False,
+            },
+        }
+        with open(self.config_path, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+
+        cfg = ConfigManager(self.config_path)
+        network = cfg.get("network")
+        self.assertEqual(network["timeout_seconds"], 8.0)
+        self.assertEqual(network["dns_timeout_seconds"], 5.0)
+        self.assertEqual(network["retries"], 1)
+        self.assertEqual(network["fetch_timeout_seconds"], 30.0)
+        self.assertFalse(network["prefer_ipv4"])
+
+    def test_network_values_in_range_are_kept(self):
+        """Проверка сохранения корректных сетевых значений."""
+        data = {
+            "schema_version": CONFIG_SCHEMA_VERSION,
+            "network": {
+                "timeout_seconds": 4.5,
+                "dns_timeout_seconds": 0.0,
+                "retries": 3,
+                "fetch_timeout_seconds": 45.0,
+            },
+        }
+        with open(self.config_path, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+
+        cfg = ConfigManager(self.config_path)
+        network = cfg.get("network")
+        self.assertEqual(network["timeout_seconds"], 4.5)
+        self.assertEqual(network["dns_timeout_seconds"], 0.0)
+        self.assertEqual(network["retries"], 3)
+        self.assertEqual(network["fetch_timeout_seconds"], 45.0)
+
 
 if __name__ == "__main__":
     unittest.main()

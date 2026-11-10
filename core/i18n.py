@@ -934,9 +934,9 @@ BUILTIN_STRINGS: dict[str, dict[str, str]] = {
         "en": "Network",
     },
     "prov_network_desc": {
-        "ru": "Таймауты, повторы и предпочтение IPv4. Изменения применяются сразу.",
-        "uk": "Таймаути, повтори та перевага IPv4. Зміни застосовуються одразу.",
-        "en": "Timeouts, retries, and IPv4 preference. Changes apply immediately.",
+        "ru": "Таймауты и повторы запросов. Изменения применяются сразу.",
+        "uk": "Таймаути та повтори запитів. Зміни застосовуються одразу.",
+        "en": "Request timeouts and retries. Changes apply immediately.",
     },
     "opt_net_timeout": {
         "ru": "Таймаут запроса (сек):",
@@ -967,6 +967,11 @@ BUILTIN_STRINGS: dict[str, dict[str, str]] = {
         "ru": "Сначала IPv4 (обход проблем с IPv6)",
         "uk": "Спочатку IPv4 (обхід проблем з IPv6)",
         "en": "Prefer IPv4 (works around broken IPv6)",
+    },
+    "opt_net_advanced": {
+        "ru": "Расширенное",
+        "uk": "Розширене",
+        "en": "Advanced",
     },
     # Notifications Tab
     "notif_master": {

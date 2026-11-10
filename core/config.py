@@ -21,6 +21,28 @@ logger = get_logger("core.config")
 
 CONFIG_SCHEMA_VERSION = 1
 
+# Допустимые диапазоны сетевых параметров (минимум, максимум, дефолт).
+# Значения вне диапазона сбрасываются в дефолт: например, таймаут запроса в
+# 1 секунду обрывает TLS-рукопожатие и оставляет виджет на коротком
+# прогнозе запасного источника.
+NETWORK_BOUNDS: dict[str, tuple[float, float, float]] = {
+    "timeout_seconds": (2.0, 60.0, 8.0),
+    "dns_timeout_seconds": (0.0, 30.0, 5.0),
+    "retries": (0.0, 5.0, 1.0),
+    "fetch_timeout_seconds": (3.0, 300.0, 30.0),
+}
+
+
+def _bounded_number(value: Any, lo: float, hi: float, default: float) -> float:
+    """Return value as float within [lo, hi], or default when invalid/out of range."""
+    try:
+        num = float(value)
+    except (TypeError, ValueError):
+        return default
+    if not (lo <= num <= hi):
+        return default
+    return num
+
 # Дефолты «как у меня» (FR-14, эталон привычного информера пользователя)
 DEFAULT_CONFIGURATION: dict[str, Any] = {
     "schema_version": CONFIG_SCHEMA_VERSION,
@@ -333,6 +355,16 @@ class ConfigManager:
                 daily_sec["horizontal"] = True
                 if "days" in daily_sec and isinstance(daily_sec["days"], (int, float)):
                     daily_sec["days"] = min(max(1, int(daily_sec["days"])), 5)
+
+        # Sanitize network transport settings: out-of-range values (e.g. a 1 s
+        # request timeout) are reset to the sane default instead of silently
+        # breaking every provider fetch.
+        net_sec = result.get("network")
+        if isinstance(net_sec, dict):
+            for key, (lo, hi, default) in NETWORK_BOUNDS.items():
+                val = _bounded_number(net_sec.get(key), lo, hi, default)
+                net_sec[key] = int(val) if key == "retries" else val
+            net_sec["prefer_ipv4"] = bool(net_sec.get("prefer_ipv4", True))
 
         return result
 

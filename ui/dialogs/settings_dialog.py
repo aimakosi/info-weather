@@ -1284,7 +1284,7 @@ class SettingsDialogQt(QDialog):
         grid.addWidget(lbl_net_desc, 0, 0, 1, 3)
 
         self.spin_net_timeout = QDoubleSpinBox()
-        self.spin_net_timeout.setRange(1.0, 60.0)
+        self.spin_net_timeout.setRange(2.0, 60.0)
         self.spin_net_timeout.setDecimals(1)
         self.spin_net_timeout.setSingleStep(0.5)
         self.spin_net_timeout.setValue(_net_num("timeout_seconds", 8.0))
@@ -1296,6 +1296,50 @@ class SettingsDialogQt(QDialog):
             lambda: self.spin_net_timeout.setValue(float(net_defaults.get("timeout_seconds", 8.0))),
         )
 
+        self.spin_net_retries = QSpinBox()
+        self.spin_net_retries.setRange(0, 5)
+        self.spin_net_retries.setValue(int(_net_num("retries", 1)))
+        self.spin_net_retries.valueChanged.connect(
+            lambda v: self._set_network_value("retries", int(v))
+        )
+        self._add_setting_row(
+            grid, 2, t("opt_net_retries"), self.spin_net_retries,
+            lambda: self.spin_net_retries.setValue(int(net_defaults.get("retries", 1))),
+        )
+
+        self.spin_net_fetch = QDoubleSpinBox()
+        self.spin_net_fetch.setRange(3.0, 300.0)
+        self.spin_net_fetch.setDecimals(0)
+        self.spin_net_fetch.setSingleStep(5.0)
+        self.spin_net_fetch.setValue(_net_num("fetch_timeout_seconds", 30.0))
+        self.spin_net_fetch.valueChanged.connect(
+            lambda v: self._set_network_value("fetch_timeout_seconds", round(float(v), 1))
+        )
+        self._add_setting_row(
+            grid, 3, t("opt_net_fetch_timeout"), self.spin_net_fetch,
+            lambda: self.spin_net_fetch.setValue(float(net_defaults.get("fetch_timeout_seconds", 30.0))),
+        )
+
+        # Advanced section (DNS / IPv4) folded behind a toggle button: these
+        # are niche knobs for broken resolvers / broken IPv6 and only clutter
+        # the main network settings.
+        self.btn_net_advanced = QPushButton(f"▸  {t('opt_net_advanced')}")
+        self.btn_net_advanced.setCheckable(True)
+        self.btn_net_advanced.setChecked(False)
+        self.btn_net_advanced.setFlat(True)
+        self.btn_net_advanced.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_net_advanced.setStyleSheet("text-align: left; padding: 2px;")
+        grid.addWidget(self.btn_net_advanced, 4, 0, 1, 3)
+
+        adv_widget = QWidget()
+        adv_widget.setObjectName("NetAdvanced")
+        self.adv_net_widget = adv_widget
+        adv_grid = QGridLayout(adv_widget)
+        adv_grid.setContentsMargins(0, 0, 0, 0)
+        adv_grid.setHorizontalSpacing(8)
+        adv_grid.setVerticalSpacing(6)
+        adv_grid.setColumnStretch(1, 1)
+
         self.spin_net_dns = QDoubleSpinBox()
         self.spin_net_dns.setRange(0.0, 30.0)
         self.spin_net_dns.setDecimals(1)
@@ -1306,32 +1350,8 @@ class SettingsDialogQt(QDialog):
             lambda v: self._set_network_value("dns_timeout_seconds", round(float(v), 1))
         )
         self._add_setting_row(
-            grid, 2, t("opt_net_dns_timeout"), self.spin_net_dns,
+            adv_grid, 0, t("opt_net_dns_timeout"), self.spin_net_dns,
             lambda: self.spin_net_dns.setValue(float(net_defaults.get("dns_timeout_seconds", 5.0))),
-        )
-
-        self.spin_net_retries = QSpinBox()
-        self.spin_net_retries.setRange(0, 5)
-        self.spin_net_retries.setValue(int(_net_num("retries", 1)))
-        self.spin_net_retries.valueChanged.connect(
-            lambda v: self._set_network_value("retries", int(v))
-        )
-        self._add_setting_row(
-            grid, 3, t("opt_net_retries"), self.spin_net_retries,
-            lambda: self.spin_net_retries.setValue(int(net_defaults.get("retries", 1))),
-        )
-
-        self.spin_net_fetch = QDoubleSpinBox()
-        self.spin_net_fetch.setRange(1.0, 300.0)
-        self.spin_net_fetch.setDecimals(0)
-        self.spin_net_fetch.setSingleStep(5.0)
-        self.spin_net_fetch.setValue(_net_num("fetch_timeout_seconds", 30.0))
-        self.spin_net_fetch.valueChanged.connect(
-            lambda v: self._set_network_value("fetch_timeout_seconds", round(float(v), 1))
-        )
-        self._add_setting_row(
-            grid, 4, t("opt_net_fetch_timeout"), self.spin_net_fetch,
-            lambda: self.spin_net_fetch.setValue(float(net_defaults.get("fetch_timeout_seconds", 30.0))),
         )
 
         self.chk_prefer_ipv4 = QCheckBox(t("opt_net_prefer_ipv4"))
@@ -1341,15 +1361,25 @@ class SettingsDialogQt(QDialog):
                 "prefer_ipv4", bool(state == Qt.CheckState.Checked.value)
             )
         )
-        grid.addWidget(self.chk_prefer_ipv4, 5, 0, 1, 2)
-        grid.addWidget(
+        adv_grid.addWidget(self.chk_prefer_ipv4, 1, 0, 1, 2)
+        adv_grid.addWidget(
             self._make_reset_button(
                 lambda: self.chk_prefer_ipv4.setChecked(
                     bool(net_defaults.get("prefer_ipv4", True))
                 )
             ),
-            5, 2,
+            1, 2,
         )
+
+        grid.addWidget(adv_widget, 5, 0, 1, 3)
+        adv_widget.setVisible(False)
+
+        def _toggle_advanced(checked: bool) -> None:
+            adv_widget.setVisible(checked)
+            arrow = "▾" if checked else "▸"
+            self.btn_net_advanced.setText(f"{arrow}  {t('opt_net_advanced')}")
+
+        self.btn_net_advanced.toggled.connect(_toggle_advanced)
         layout.addWidget(grp_net)
 
         scroll.setWidget(container)

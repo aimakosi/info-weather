@@ -153,11 +153,16 @@ Each block is controlled by a separate key with an `"enabled"` parameter (`true`
 - **`distance`**: `"km"` (kilometers) or `"mi"` (miles).
 
 ### Network and Resilience (`network`)
-- **`timeout_seconds`** (`float`): timeout of a single HTTP request (seconds).
-- **`dns_timeout_seconds`** (`float`): DNS resolution time limit.
-- **`retries`** (`integer`): number of retries on failure.
+- **`timeout_seconds`** (`float`): timeout of a single HTTP request (seconds). Range `2.0`–`60.0`, default `8.0`.
+- **`dns_timeout_seconds`** (`float`): DNS resolution time limit (`0` disables the limit). Range `0.0`–`30.0`, default `5.0`.
+- **`retries`** (`integer`): number of retries on failure. Range `0`–`5`, default `1`.
 - **`prefer_ipv4`** (`boolean`): IPv4 connection preference.
-- **`fetch_timeout_seconds`** (`float`): maximum total time of one consensus collection cycle.
+- **`fetch_timeout_seconds`** (`float`): maximum total time of one consensus collection cycle. Range `3.0`–`300.0`, default `30.0`.
+
+Values outside these ranges are reset to the default when the config is loaded.
+In the settings dialog `retries`, `timeout_seconds` and `fetch_timeout_seconds` are shown in
+the main "Network" group; `dns_timeout_seconds` and `prefer_ipv4` are folded into the
+"Advanced" toggle.
 
 ### Window Behavior (`window_behavior` and `window_position`)
 - **`lock_position`** (`boolean`): prevent accidental mouse movement of the widget.
