@@ -30,7 +30,7 @@ try:
     VERSION = pkg_version("info-weather")
 except PackageNotFoundError:
     # Running from a source checkout without installation — keep in sync with pyproject.toml.
-    VERSION = "0.2.0"
+    VERSION = "0.2.1"
 
 
 def print_cli_forecast(

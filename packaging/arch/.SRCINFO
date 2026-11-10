@@ -1,6 +1,6 @@
 pkgbase = info-weather
 	pkgdesc = Modern desktop weather widget for Linux (KDE Plasma) with consensus providers
-	pkgver = 0.2.0
+	pkgver = 0.2.1
 	pkgrel = 1
 	url = https://github.com/aimakosi/info-weather
 	install = info-weather.install
@@ -12,7 +12,7 @@ pkgbase = info-weather
 	optdepends = kwin: for desktop pinning rules on KDE Plasma
 	optdepends = qt5-tools: for qdbus rule reconfigure in KDE Plasma 5
 	optdepends = qt6-tools: for qdbus6 rule reconfigure in KDE Plasma 6
-	source = info-weather-0.2.0.tar.gz
-	sha256sums = 04fbc77e66bc65a8697b0e134a5274ba930821e8c933aa4269144a6606a25915
+	source = info-weather-0.2.1.tar.gz
+	sha256sums = 2cde8bbe539bfae11c2e483985116c37b1e9caab59e463870b43fe6a0f512a1c
 
 pkgname = info-weather

@@ -68,7 +68,7 @@
 Download the latest `.deb` from [GitHub Releases](https://github.com/aimakosi/info-weather/releases) and install:
 
 ```bash
-sudo apt install ./info-weather_0.2.0-1_all.deb
+sudo apt install ./info-weather_0.2.1-1_all.deb
 ```
 
 ### Quick start (install script, any distro)
@@ -88,7 +88,7 @@ cd info-weather
 Download the latest `.pkg.tar.zst` from [GitHub Releases](https://github.com/aimakosi/info-weather/releases) and install:
 
 ```bash
-sudo pacman -U info-weather-0.2.0-1-any.pkg.tar.zst
+sudo pacman -U info-weather-0.2.1-1-any.pkg.tar.zst
 ```
 
 Or build from the AUR-ready source tarball and `PKGBUILD` (`packaging/arch/`):
