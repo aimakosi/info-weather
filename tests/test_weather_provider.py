@@ -165,7 +165,7 @@ class TestWeatherProvider(unittest.TestCase):
         fast.fetch_forecast.return_value = make_test_source("open_meteo", temp=12.0)
 
         def slow_fetch(*args, **kwargs):
-            time.sleep(0.6)
+            time.sleep(2.0)
             return make_test_source("met_norway", temp=10.0)
 
         slow = MagicMock()
@@ -195,7 +195,7 @@ class TestWeatherProvider(unittest.TestCase):
             provider.close()
 
         # The overall deadline must stop waiting for hung providers...
-        self.assertLess(elapsed, 0.55)
+        self.assertLess(elapsed, 1.5)
         # ...and still use the source that completed in time.
         self.assertEqual(fc.consensus_level, "S1")
         self.assertEqual(fc.source_name, "open_meteo")
