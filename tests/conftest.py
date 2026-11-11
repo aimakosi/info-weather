@@ -13,6 +13,7 @@ verifies the async callback path explicitly with mocked clients.
 
 from __future__ import annotations
 
+import gc
 from unittest.mock import patch
 
 import pytest
@@ -49,3 +50,34 @@ def _no_network(request: pytest.FixtureRequest):
     finally:
         for p in patches:
             p.stop()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _qt_widget_cleanup():
+    """Destroy leftover top-level widgets while Qt is still fully alive.
+
+    PySide6 6.12 can segfault during interpreter shutdown when visible
+    top-level widgets survive until then (shiboken then deletes native objects
+    in an arbitrary order, crashing after pytest has already reported success).
+    Closing and deleting them deterministically keeps the process exit status
+    clean.
+    """
+    yield
+
+    try:
+        from ui.qt_compat import QApplication, QtCore
+    except ImportError:
+        return
+
+    app = QApplication.instance()
+    if app is None:
+        return
+
+    for widget in app.topLevelWidgets():
+        widget.close()
+        widget.deleteLater()
+    app.processEvents()
+    QApplication.sendPostedEvents(None, QtCore.QEvent.Type.DeferredDelete)
+    app.processEvents()
+    gc.collect()
+    app.processEvents()
