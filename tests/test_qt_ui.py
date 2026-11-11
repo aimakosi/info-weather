@@ -6,7 +6,7 @@ import os
 import shutil
 import tempfile
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -1065,9 +1065,27 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
 
     def test_detailed_dialog_variant3_glanceable_rail(self):
         """Variant 3: Right-hand glanceable rail with live metrics and tab switching."""
-        dlg = DetailedForecastDialogQt(parent=None, config_manager=self.cfg, data=self.data)
-        dlg.show()
-        app.processEvents()
+        from unittest.mock import patch
+
+        import core.geomagnetic as gm
+
+        now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+        fake_forecast = gm.GeomagneticForecast(
+            points=[
+                gm.KpForecastPoint(
+                    time_tag=(now + timedelta(hours=offset)).strftime("%Y-%m-%dT%H:%M:%S"),
+                    kp_index=kp,
+                    observed="predicted",
+                )
+                for offset, kp in ((0, 2.0), (3, 3.7), (6, 5.3))
+            ],
+            cached_at=1.0,
+        )
+        with patch("core.geomagnetic.get_geomagnetic_forecast", return_value=fake_forecast):
+            dlg = DetailedForecastDialogQt(parent=None, config_manager=self.cfg, data=self.data)
+            dlg.show()
+            app.processEvents()
+        self.addCleanup(dlg.close)
 
         # 1. Tab rail presence and structure
         self.assertTrue(hasattr(dlg, "tab_rail"))
