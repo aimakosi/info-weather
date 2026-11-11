@@ -20,6 +20,7 @@ from ui.qt_compat import (
     Qt,
     QTimer,
     QWidget,
+    Signal,
 )
 from ui.utils import get_weather_icon_path
 
@@ -27,11 +28,15 @@ from ui.utils import get_weather_icon_path
 class AstronomyBlockWidget(QWidget):
     """Horizontal astronomical strip showing sunrise, sunset, day length, and moon phase."""
 
+    clicked = Signal()
+
     def __init__(self, options: dict[str, Any] | None = None, scale: float = 1.0, parent: QWidget | None = None):
         super().__init__(parent)
         self.options = options or {"show_moon": True}
         self.scale = scale
         self.widget = self
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._press_pos = None
 
         # Compact astronomy strip with clearly visible icons and text
         self.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
@@ -231,6 +236,23 @@ class AstronomyBlockWidget(QWidget):
             self.geomagnetic_item["val_label"].setStyleSheet(f"color: {geo.color};")
         else:
             self.geomagnetic_item["val_label"].setStyleSheet("")
+
+
+    def mousePressEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._press_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton and getattr(self, "_press_pos", None) is not None:
+            cur_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+            drag_dist = (cur_pos - self._press_pos).manhattanLength()
+            self._press_pos = None
+            if drag_dist <= 6:
+                self.clicked.emit()
+                event.accept()
+                return
+        super().mouseReleaseEvent(event)
 
 
 AstronomyBlock = AstronomyBlockWidget

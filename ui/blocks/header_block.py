@@ -9,18 +9,22 @@ from core.i18n import format_date_str, get_weekday_name, t
 from core.units import format_temp
 from data.wmo_conditions import get_condition_text
 from models.weather import WeatherForecastData
-from ui.qt_compat import QHBoxLayout, QLabel, QPixmap, Qt, QVBoxLayout, QWidget
+from ui.qt_compat import QHBoxLayout, QLabel, QPixmap, Qt, QVBoxLayout, QWidget, Signal
 from ui.utils import get_weather_icon_path
 
 
 class HeaderBlockWidget(QWidget):
     """Now weather block: date, city, current temperature, large icon, and condition."""
 
+    clicked = Signal()
+
     def __init__(self, options: dict[str, Any] | None = None, scale: float = 1.0, parent: QWidget | None = None):
         super().__init__(parent)
         self.options = options or {}
         self.scale = scale
-        self.widget = self  # Compatibility with block wrapper access
+        self.widget = self
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._press_pos = None
 
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, max(2, int(4 * scale)), 0, 0)
@@ -127,6 +131,23 @@ class HeaderBlockWidget(QWidget):
         self.lbl_temp.setToolTip(feels_tip)
         self.lbl_icon.setToolTip(f"{cond_text} ({feels_tip})" if cond_text else feels_tip)
         self.lbl_cond.setToolTip(cond_text)
+
+
+    def mousePressEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._press_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton and getattr(self, "_press_pos", None) is not None:
+            cur_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+            drag_dist = (cur_pos - self._press_pos).manhattanLength()
+            self._press_pos = None
+            if drag_dist <= 6:
+                self.clicked.emit()
+                event.accept()
+                return
+        super().mouseReleaseEvent(event)
 
 
 HeaderBlock = HeaderBlockWidget

@@ -420,7 +420,7 @@ class WeatherWidgetWindowQt(QWidget):
         wind_cfg["arrow_color"] = str(skin_cfg.get("wind_arrow_color", "#f97316") or "#f97316")
         if wind_cfg.get("enabled", True):
             blk_wind = WindBlockWidget(options=wind_cfg, scale=scale)
-            blk_wind.clicked.connect(lambda: self.open_detailed_dialog(screen_index=2))
+            blk_wind.clicked.connect(lambda: self.open_detailed_dialog(screen_index=4))
             self.blocks.append(blk_wind)
             deck_layout.addWidget(self._wrap_offset(blk_wind, wind_cfg.get("offset_x", 0), wind_cfg.get("offset_y", 0), scale))
             has_deck = True
@@ -434,6 +434,7 @@ class WeatherWidgetWindowQt(QWidget):
         today_cfg["title"] = today_title
         if today_cfg.get("enabled", False):
             blk_today = DayPeriodsBlockWidget(options=today_cfg, scale=scale)
+            blk_today.clicked.connect(lambda: self.open_detailed_dialog(screen_index=0, period="24h"))
             self.blocks.append(blk_today)
             deck_layout.addWidget(self._wrap_offset(blk_today, today_cfg.get("offset_x", 0), today_cfg.get("offset_y", 0), scale))
             has_deck = True
@@ -446,6 +447,7 @@ class WeatherWidgetWindowQt(QWidget):
         now_cfg["date_format"] = date_format
         if now_cfg.get("enabled", True):
             blk_now = HeaderBlockWidget(options=now_cfg, scale=scale)
+            blk_now.clicked.connect(lambda: self.open_detailed_dialog(screen_index=0, period="24h"))
             self.blocks.append(blk_now)
             deck_layout.addWidget(self._wrap_offset(blk_now, now_cfg.get("offset_x", 0), now_cfg.get("offset_y", 0), scale))
             has_deck = True
@@ -458,6 +460,7 @@ class WeatherWidgetWindowQt(QWidget):
         add_cfg["pressure_unit"] = str(units_cfg.get("pressure", "mmHg"))
         if add_cfg.get("enabled", False):
             blk_add = AdditionalInfoBlockWidget(options=add_cfg, scale=scale)
+            blk_add.clicked.connect(lambda idx=1: self.open_detailed_dialog(screen_index=idx))
             self.blocks.append(blk_add)
             deck_layout.addWidget(self._wrap_offset(blk_add, add_cfg.get("offset_x", 0), add_cfg.get("offset_y", 0), scale))
             has_deck = True
@@ -473,6 +476,7 @@ class WeatherWidgetWindowQt(QWidget):
         tom_cfg["title"] = tom_title
         if tom_cfg.get("enabled", True):
             blk_tom = DayPeriodsBlockWidget(options=tom_cfg, scale=scale)
+            blk_tom.clicked.connect(lambda: self.open_detailed_dialog(screen_index=0, period="daily"))
             self.blocks.append(blk_tom)
             deck_layout.addWidget(self._wrap_offset(blk_tom, tom_cfg.get("offset_x", 0), tom_cfg.get("offset_y", 0), scale))
             has_deck = True
@@ -496,6 +500,7 @@ class WeatherWidgetWindowQt(QWidget):
             astro_section_l.setSpacing(1)
 
             blk_astro = AstronomyBlockWidget(options=astro_cfg, scale=scale)
+            blk_astro.clicked.connect(lambda: self.open_detailed_dialog(screen_index=3))
             self.blocks.append(blk_astro)
             astro_section_l.addWidget(
                 self._wrap_offset(
@@ -534,6 +539,7 @@ class WeatherWidgetWindowQt(QWidget):
             d_opts["weekend_color"] = weekend_color
             d_opts["date_format"] = date_format
             blk_daily = DailyBlockWidget(options=d_opts, scale=scale)
+            blk_daily.clicked.connect(lambda: self.open_detailed_dialog(screen_index=0, period="daily"))
             self.blocks.append(blk_daily)
             self.container_layout.addWidget(self._wrap_offset(blk_daily, daily_cfg.get("offset_x", 0), daily_cfg.get("offset_y", 0), scale))
 
@@ -1016,7 +1022,8 @@ class WeatherWidgetWindowQt(QWidget):
     # -------------------------------------------------------------------------
     # Dialogs
     # -------------------------------------------------------------------------
-    def open_detailed_dialog(self, screen_index: int = 0) -> None:
+    def open_detailed_dialog(self, screen_index: int | bool = 0, period: str | None = None) -> None:
+        idx = 0 if isinstance(screen_index, bool) else int(screen_index)
         if not self.detailed_dialog:
             self.detailed_dialog = DetailedForecastDialogQt(
                 parent=None,
@@ -1025,7 +1032,9 @@ class WeatherWidgetWindowQt(QWidget):
             )
         elif self._last_data:
             self.detailed_dialog.update_data(self._last_data)
-        self.detailed_dialog.set_screen(screen_index)
+        self.detailed_dialog.set_screen(idx)
+        if period and hasattr(self.detailed_dialog, "set_temp_press_period"):
+            self.detailed_dialog.set_temp_press_period(period)
         self.detailed_dialog.show()
         self.detailed_dialog.raise_()
         self.detailed_dialog.activateWindow()

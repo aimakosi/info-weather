@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/aimakosi/info-weather/actions/workflows/ci.yml/badge.svg)](https://github.com/aimakosi/info-weather/actions/workflows/ci.yml)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 
 ---
 
@@ -23,13 +23,16 @@
    - Frameless floating desktop widget.
    - A dedicated KWin rule (`packaging/kde/info-weather.kwinrule`) keeps the widget from being minimized by **Meta+D** ("Show Desktop").
 
-4. **Detailed analytical forecast (3 full-screen sections)**
-   - A deep weather analysis window with click-switchable sections:
-     1. **Temperature & Pressure**:
-        - **24h** tab: hourly temperature spline with feels-like temperature, precipitation and a 24-hour barometer.
-        - **X days** tab: two independent spline curves — **Day max.** (amber-orange) and **Night min.** (blue) with weather icons, `● Day` / `● Night` legend, an interactive scrubber and a daily pressure chart.
-     2. **Climate Normals & Comfort**: comparison with the monthly ERA5 climate normals and temperature anomaly assessment.
-     3. **Wind Rose**: an interactive 16-point wind rose with radial speed accumulation (24h / X days), Beaufort scale, prevailing direction and current gusts.
+4. **Detailed analytical forecast (5 full-screen sections with Right Glanceable Rail)**
+   - Deep weather analysis dialog featuring **Variant 3: Glanceable Analytics Rail & Contextual Smart Horizon**:
+     - Right vertical rail with 5 interactive tabs displaying live metric previews at a glance (`🌡️`, `⏱️`, `⚡`, `🌍`, `🧭`).
+     - Five dedicated full-screen sections:
+       1. **Temperature**: hourly spline (24h) or dual Day/Night curves (X days) with icons and legend.
+       2. **Barometric Pressure**: barogram with tendency indicator (rising / steady / falling) and 760 mmHg norm line.
+       3. **Geomagnetic Activity**: NOAA SWPC Kp-index forecast with 3-hour bins / daily maxima and storm level (G0–G5).
+       4. **Climate Normals & Comfort**: Copernicus ERA5 30-year comparison and 12-month annual profile.
+       5. **Wind Rose**: interactive 16-point wind rose with Beaufort scale gradation and dominant wind summary.
+     - Keyboard navigation: 1–5 or F1–F5 to jump to sections, Up/Down to cycle, Esc to close.
 
 5. **Themes, icon sets and live effects**
    - Theme modes: **By Sun (auto_solar)** with automatic day/night calculation using NOAA formulas, **Day (Light)** and **Night (Dark)**.
@@ -61,14 +64,14 @@
 ## 🚀 Installation
 
 ### Requirements
-- Python >= 3.10
+- Python >= 3.11
 - PySide6 >= 6.5 (`pip install PySide6`, or on Debian/Ubuntu: `python3-pyside6.qtwidgets python3-pyside6.qtsvg`)
 
 ### From packages (Debian / Ubuntu)
 Download the latest `.deb` from [GitHub Releases](https://github.com/aimakosi/info-weather/releases) and install:
 
 ```bash
-sudo apt install ./info-weather_0.2.1-1_all.deb
+sudo apt install ./info-weather_0.3.0-1_all.deb
 ```
 
 ### Quick start (install script, any distro)
@@ -88,7 +91,7 @@ cd info-weather
 Download the latest `.pkg.tar.zst` from [GitHub Releases](https://github.com/aimakosi/info-weather/releases) and install:
 
 ```bash
-sudo pacman -U info-weather-0.2.1-1-any.pkg.tar.zst
+sudo pacman -U info-weather-0.3.0-1-any.pkg.tar.zst
 ```
 
 Or build from the AUR-ready source tarball and `PKGBUILD` (`packaging/arch/`):

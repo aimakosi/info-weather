@@ -1041,6 +1041,31 @@ BUILTIN_STRINGS: dict[str, dict[str, str]] = {
         "uk": "24г Прогноз і тиск",
         "en": "24h Forecast & Barometer",
     },
+    "switch_temperature": {
+        "ru": "Температура",
+        "uk": "Температура",
+        "en": "Temperature",
+    },
+    "switch_pressure": {
+        "ru": "Давление",
+        "uk": "Тиск",
+        "en": "Pressure",
+    },
+    "switch_geomagnetic": {
+        "ru": "Геомагнитная",
+        "uk": "Геомагнітна",
+        "en": "Geomagnetic",
+    },
+    "switch_prev_pane": {
+        "ru": "Предыдущее подокно",
+        "uk": "Попереднє підокно",
+        "en": "Previous pane",
+    },
+    "switch_next_pane": {
+        "ru": "Следующее подокно",
+        "uk": "Наступне підокно",
+        "en": "Next pane",
+    },
     "switch_climate_norms": {
         "ru": "Климатические нормы (ERA5)",
         "uk": "Кліматичні норми (ERA5)",
@@ -1052,9 +1077,14 @@ BUILTIN_STRINGS: dict[str, dict[str, str]] = {
         "en": "Wind Rose",
     },
     "switch_screen_hint": {
-        "ru": "ЛКМ для переключения экранов (1/3 → 2/3 → 3/3)",
-        "uk": "ЛКМ для перемикання екранів (1/3 → 2/3 → 3/3)",
-        "en": "LMB to cycle screens (1/3 → 2/3 → 3/3)",
+        "ru": "Кнопки ▲/▼ для переключения подокон (1/5 → 5/5)",
+        "uk": "Кнопки ▲/▼ для перемикання підокон (1/5 → 5/5)",
+        "en": "Use ▲/▼ to switch panes (1/5 → 5/5)",
+    },
+    "detailed_tabs_header": {
+        "ru": "Разделы",
+        "uk": "Розділи",
+        "en": "Sections",
     },
     "wind_period_1h": {
         "ru": "1 час",

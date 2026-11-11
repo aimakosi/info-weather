@@ -848,35 +848,49 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
         window.close()
 
     def test_detailed_forecast_dialog(self):
-        # 1. Direct dialog creation and page structure
+        # 1. Direct dialog creation and pane structure (one type per pane)
         dlg = DetailedForecastDialogQt(parent=None, config_manager=self.cfg, data=self.data)
-        self.assertEqual(dlg.stack.count(), 3)
+        self.assertEqual(dlg.stack.count(), 5)
         self.assertEqual(dlg.stack.currentIndex(), 0)
-        self.assertIn("1/3", dlg.lbl_screen_badge.text())
+        self.assertIn("1/5", dlg.lbl_screen_badge.text())
 
-        # 2. Screen switching via next_screen / LMB: 0 -> 1 -> 2 -> 0
-        dlg.next_screen()
-        self.assertEqual(dlg.stack.currentIndex(), 1)
-        self.assertIn("2/3", dlg.lbl_screen_badge.text())
+        # 2. Pane switching via ▲/▼: 0 -> 1 -> ... -> 4 -> wrap to 0
+        expected_badges = ["1/5", "2/5", "3/5", "4/5", "5/5"]
+        for step in range(1, 5):
+            dlg._last_switch_ts = 0.0
+            dlg.next_screen()
+            self.assertEqual(dlg.stack.currentIndex(), step)
+            self.assertIn(expected_badges[step], dlg.lbl_screen_badge.text())
 
+        # Wrap-around forward
         dlg._last_switch_ts = 0.0
         dlg.next_screen()
-        self.assertEqual(dlg.stack.currentIndex(), 2)
-        self.assertIn("3/3", dlg.lbl_screen_badge.text())
+        self.assertEqual(dlg.stack.currentIndex(), 0)
+
+        # Backward (prev_screen) wraps to the last pane
+        dlg._last_switch_ts = 0.0
+        dlg.prev_screen()
+        self.assertEqual(dlg.stack.currentIndex(), 4)
+        self.assertIn("5/5", dlg.lbl_screen_badge.text())
         self.assertIn("Роза ветров", dlg.lbl_screen_badge.text())
 
-        # Reset debounce timestamp and cycle back to 0
-        dlg._last_switch_ts = 0.0
-        dlg.next_screen()
-        self.assertEqual(dlg.stack.currentIndex(), 0)
-        self.assertIn("1/3", dlg.lbl_screen_badge.text())
-
-        # Backward compatibility pill shim
+        # Backward pill shim compatibility
         dlg.pill_toggle.set_index(2)
         self.assertEqual(dlg.stack.currentIndex(), 2)
         self.assertEqual(dlg.pill_toggle.current_index(), 2)
         dlg.pill_toggle.set_index(0)
         self.assertEqual(dlg.stack.currentIndex(), 0)
+
+        # 2b. The shared 24h/X-days bar is only shown on the first three panes
+        dlg.show()
+        app.processEvents()
+        for idx in (0, 1, 2):
+            dlg.set_screen(idx)
+            self.assertTrue(dlg.period_bar.isVisible(), f"bar hidden on pane {idx}")
+        for idx in (3, 4):
+            dlg.set_screen(idx)
+            self.assertFalse(dlg.period_bar.isVisible(), f"bar shown on pane {idx}")
+        dlg.set_screen(0)
 
         # 3. Screen 1: Spline & Barometer points start from current local hour and span 24 hours
         self.assertEqual(len(dlg.spline_widget._points), 24)
@@ -952,16 +966,16 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
         self.assertIn("Detailed Forecast", dlg.windowTitle())
         self.assertEqual(dlg.lbl_spline_title.text(), "Temperature Spline (24h)")
         self.assertEqual(dlg.lbl_baro_title.text(), "24h Barometric Trend")
-        self.assertIn("1/3", dlg.lbl_screen_badge.text())
+        self.assertIn("1/5", dlg.lbl_screen_badge.text())
+        self.assertEqual(dlg.lbl_screen_badge.text(), "1/5 • Temperature")
         dlg.close()
 
     def test_detailed_dialog_does_not_clip_charts(self):
-        """Regression: adding the geomagnetic card must not squeeze the charts.
+        """Static window sizing: every pane fits and switching never resizes.
 
-        The Temperature & Pressure page stacks spline, barometer and
-        geomagnetic cards vertically; a fixed 620 px window height clipped
-        them. The dialog now sizes to content, so every card must be at
-        least its minimum height and fully inside the window.
+        The dialog is sized once to the tallest pane (header + optional
+        24h/X-days bar + card), so no pane is ever clipped and the window
+        size stays identical across all five panes.
         """
         dlg = DetailedForecastDialogQt(
             parent=None, config_manager=self.cfg, data=self.data
@@ -969,33 +983,40 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
         dlg.show()
         app.processEvents()
 
-        for frame in (dlg.frame_spline, dlg.frame_baro, dlg.frame_geomag):
-            min_h = frame.minimumSizeHint().height()
+        # The minimum equals the content size: the window cannot shrink
+        # enough to clip a pane.
+        self.assertEqual(dlg.minimumSize(), dlg.size())
+
+        # Static size: switching panes must not resize the window.
+        sizes = set()
+        for idx in range(dlg.stack.count()):
+            dlg.set_screen(idx)
+            app.processEvents()
+            sizes.add((dlg.width(), dlg.height()))
+            # The visible pane must be at least its minimum height.
+            pane = dlg.stack.currentWidget()
             self.assertGreaterEqual(
-                frame.height(),
-                min_h,
-                f"{frame.objectName() or 'card'} clipped: {frame.height()} < {min_h}",
+                pane.height(),
+                pane.minimumSizeHint().height(),
+                f"pane {idx} clipped: {pane.height()} < {pane.minimumSizeHint().height()}",
             )
+        self.assertEqual(
+            sizes,
+            {(dlg.width(), dlg.height())},
+            f"window size changed across panes: {sizes}",
+        )
 
-        # The last card must be fully inside the window on a big enough
-        # screen; on small screens the window is capped and the scroll area
-        # must take over instead of clipping.
-        bottom = dlg.frame_geomag.mapTo(dlg, dlg.frame_geomag.rect().bottomLeft()).y()
-        if bottom <= dlg.height():
-            self.assertFalse(dlg.scroll_hourly.verticalScrollBar().isVisible())
-        else:
-            self.assertTrue(dlg.scroll_hourly.verticalScrollBar().isVisible())
-
-        # The page is scrollable, so shrinking the window degrades to
-        # scrolling instead of hiding content.
-        self.assertTrue(dlg.scroll_hourly.widget() is dlg.page_hourly)
-
-        # Shrinking must not clip: the scroll area takes over.
-        dlg.resize(dlg.width(), 520)
+        # Shrinking below the content size is refused by the minimum, so
+        # cards stay at least their minimum height.
+        min_size = dlg.minimumSize()
+        dlg.resize(min_size.width() // 2, min_size.height() // 2)
         app.processEvents()
-        self.assertTrue(dlg.scroll_hourly.verticalScrollBar().isVisible())
+        self.assertGreaterEqual(dlg.width(), min_size.width())
+        self.assertGreaterEqual(dlg.height(), min_size.height())
         for frame in (dlg.frame_spline, dlg.frame_baro, dlg.frame_geomag):
-            self.assertGreaterEqual(frame.height(), frame.minimumSizeHint().height())
+            self.assertGreaterEqual(
+                frame.height(), frame.minimumSizeHint().height()
+            )
         dlg.close()
 
     def test_geomagnetic_forecast_on_temp_press_screens(self):
@@ -1041,6 +1062,71 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
             dlg.geomag_widget.render(pix)
             self.assertFalse(pix.isNull())
             dlg.close()
+
+    def test_detailed_dialog_variant3_glanceable_rail(self):
+        """Variant 3: Right-hand glanceable rail with live metrics and tab switching."""
+        dlg = DetailedForecastDialogQt(parent=None, config_manager=self.cfg, data=self.data)
+        dlg.show()
+        app.processEvents()
+
+        # 1. Tab rail presence and structure
+        self.assertTrue(hasattr(dlg, "tab_rail"))
+        self.assertEqual(dlg.tab_rail.objectName(), "GlanceableTabRail")
+        self.assertEqual(len(dlg.tabs), 5)
+
+        # 2. Initial state: tab 0 is active, others inactive
+        self.assertTrue(dlg.tabs[0]._is_active)
+        for i in range(1, 5):
+            self.assertFalse(dlg.tabs[i]._is_active)
+
+        # 3. Live metrics populated on all 5 tabs
+        # Tab 0: Temperature
+        self.assertIn("°", dlg.tabs[0].lbl_metric.text())
+        # Tab 1: Pressure
+        self.assertTrue(any(sym in dlg.tabs[1].lbl_metric.text() for sym in ("мм", "hPa", "гПа", "↗", "↘", "→")))
+        # Tab 2: Geomagnetic
+        self.assertIn("Kp", dlg.tabs[2].lbl_metric.text())
+        # Tab 3: Climate
+        self.assertTrue(len(dlg.tabs[3].lbl_metric.text()) > 0)
+        # Tab 4: Wind rose
+        self.assertTrue(any(u in dlg.tabs[4].lbl_metric.text() for u in ("м/с", "m/s", "km/h", "mph")))
+
+        # 4. Interactive tab clicks switch screens
+        for target_idx in (1, 3, 4, 2, 0):
+            dlg.tabs[target_idx].clicked.emit(target_idx)
+            app.processEvents()
+            self.assertEqual(dlg.stack.currentIndex(), target_idx)
+            self.assertTrue(dlg.tabs[target_idx]._is_active)
+            for other_idx in range(5):
+                if other_idx != target_idx:
+                    self.assertFalse(dlg.tabs[other_idx]._is_active)
+
+        # 5. Keyboard shortcuts (1-5, Up/Down)
+        from PySide6.QtGui import QKeyEvent
+        # Key 2 -> Screen 1 (Pressure)
+        event_k2 = QKeyEvent(QtCore.QEvent.Type.KeyPress, Qt.Key.Key_2, Qt.KeyboardModifier.NoModifier, "2")
+        dlg.keyPressEvent(event_k2)
+        self.assertEqual(dlg.stack.currentIndex(), 1)
+        self.assertTrue(dlg.tabs[1]._is_active)
+
+        # Key 5 -> Screen 4 (Wind rose)
+        event_k5 = QKeyEvent(QtCore.QEvent.Type.KeyPress, Qt.Key.Key_5, Qt.KeyboardModifier.NoModifier, "5")
+        dlg.keyPressEvent(event_k5)
+        self.assertEqual(dlg.stack.currentIndex(), 4)
+        self.assertTrue(dlg.tabs[4]._is_active)
+
+        # 6. Theme synchronization (Day vs Night)
+        self.cfg.set("skin", {"theme_mode": "day"})
+        dlg._apply_dialog_theme()
+        for tab in dlg.tabs:
+            self.assertTrue(tab._is_light)
+
+        self.cfg.set("skin", {"theme_mode": "night"})
+        dlg._apply_dialog_theme()
+        for tab in dlg.tabs:
+            self.assertFalse(tab._is_light)
+
+        dlg.close()
 
     def test_daily_scrub_tooltip_day_night_labels_follow_language(self):
         """Regression: 'Day/Night' labels in the X-days tooltip must not stay in Russian."""
@@ -1168,6 +1254,128 @@ class TestQtDialogsAndWidgetWindow(unittest.TestCase):
         self.assertEqual(dlg.combo_seasonal_mode.count(), 5)
         self.assertIsNotNone(dlg.lbl_seasonal_preview.pixmap())
         dlg.close()
+        window.close()
+
+
+    def test_contextual_block_clicks(self):
+        """Test clicking on widget blocks contextually opens corresponding detailed forecast screens."""
+        self.cfg.set("view_blocks", {
+            "wind": {"enabled": True},
+            "today": {"enabled": True},
+            "now": {"enabled": True},
+            "additional_info": {"enabled": True},
+            "tomorrow": {"enabled": True},
+            "astronomy": {"enabled": True},
+            "daily": {"enabled": True},
+        })
+        window = WeatherWidgetWindowQt(provider=self.provider, config_manager=self.cfg)
+        window._build_blocks()
+
+        from ui.blocks.additional_info_block import AdditionalInfoBlockWidget
+        from ui.blocks.astronomy_block import AstronomyBlockWidget
+        from ui.blocks.daily_block import DailyBlockWidget
+        from ui.blocks.day_periods_block import DayPeriodsBlockWidget
+        from ui.blocks.header_block import HeaderBlockWidget
+        from ui.blocks.wind_block import WindBlockWidget
+
+        blk_wind = next((b for b in window.blocks if isinstance(b, WindBlockWidget)), None)
+        blk_today = next((b for b in window.blocks if isinstance(b, DayPeriodsBlockWidget) and b.options.get("mode") == "today"), None)
+        blk_now = next((b for b in window.blocks if isinstance(b, HeaderBlockWidget)), None)
+        blk_add = next((b for b in window.blocks if isinstance(b, AdditionalInfoBlockWidget)), None)
+        blk_tom = next((b for b in window.blocks if isinstance(b, DayPeriodsBlockWidget) and b.options.get("mode") == "tomorrow"), None)
+        blk_astro = next((b for b in window.blocks if isinstance(b, AstronomyBlockWidget)), None)
+        blk_daily = next((b for b in window.blocks if isinstance(b, DailyBlockWidget)), None)
+
+        self.assertIsNotNone(blk_wind)
+        self.assertIsNotNone(blk_today)
+        self.assertIsNotNone(blk_now)
+        self.assertIsNotNone(blk_add)
+        self.assertIsNotNone(blk_tom)
+        self.assertIsNotNone(blk_astro)
+        self.assertIsNotNone(blk_daily)
+
+        # 1. Wind Block -> Screen 4 (Wind Rose)
+        blk_wind.clicked.emit()
+        self.assertIsNotNone(window.detailed_dialog)
+        self.assertEqual(window.detailed_dialog.stack.currentIndex(), 4)
+
+        # 2. Additional Info Block -> Screen 1 (Barometric Pressure)
+        blk_add.clicked.emit(1)
+        self.assertEqual(window.detailed_dialog.stack.currentIndex(), 1)
+
+        # 3. Astronomy Block -> Screen 3 (Climate Normals ERA5)
+        blk_astro.clicked.emit()
+        self.assertEqual(window.detailed_dialog.stack.currentIndex(), 3)
+
+        # 4. Daily Forecast Block -> Screen 0 (Temperature) + Daily period
+        blk_daily.clicked.emit()
+        self.assertEqual(window.detailed_dialog.stack.currentIndex(), 0)
+        self.assertEqual(window.detailed_dialog._temp_press_period, "daily")
+
+        # 5. Header / Now Block -> Screen 0 (Temperature) + 24h period
+        blk_now.clicked.emit()
+        self.assertEqual(window.detailed_dialog.stack.currentIndex(), 0)
+        self.assertEqual(window.detailed_dialog._temp_press_period, "24h")
+
+        # 6. Today Block -> Screen 0 + 24h period
+        blk_today.clicked.emit()
+        self.assertEqual(window.detailed_dialog.stack.currentIndex(), 0)
+        self.assertEqual(window.detailed_dialog._temp_press_period, "24h")
+
+        # 7. Tomorrow Block -> Screen 0 + Daily period
+        blk_tom.clicked.emit()
+        self.assertEqual(window.detailed_dialog.stack.currentIndex(), 0)
+        self.assertEqual(window.detailed_dialog._temp_press_period, "daily")
+
+        # 8. Drag vs Click gesture verification on DailyBlockWidget
+        clicked_events = []
+        blk_daily.clicked.connect(lambda: clicked_events.append(True))
+
+        # Simulate Drag (distance = 25 > 6)
+        press_ev = QMouseEvent(
+            QtCore.QEvent.Type.MouseButtonPress,
+            QtCore.QPointF(10.0, 10.0),
+            QtCore.QPointF(10.0, 10.0),
+            Qt.MouseButton.LeftButton,
+            Qt.MouseButton.LeftButton,
+            Qt.KeyboardModifier.NoModifier,
+        )
+        blk_daily.mousePressEvent(press_ev)
+        release_ev = QMouseEvent(
+            QtCore.QEvent.Type.MouseButtonRelease,
+            QtCore.QPointF(30.0, 25.0),
+            QtCore.QPointF(30.0, 25.0),
+            Qt.MouseButton.LeftButton,
+            Qt.MouseButton.NoButton,
+            Qt.KeyboardModifier.NoModifier,
+        )
+        blk_daily.mouseReleaseEvent(release_ev)
+        self.assertEqual(len(clicked_events), 0, "Dragging must not trigger clicked signal")
+        self.assertFalse(release_ev.isAccepted(), "Drag release must not be accepted by block so window can handle drag")
+
+        # Simulate Click (distance = 2 <= 6)
+        press_ev2 = QMouseEvent(
+            QtCore.QEvent.Type.MouseButtonPress,
+            QtCore.QPointF(10.0, 10.0),
+            QtCore.QPointF(10.0, 10.0),
+            Qt.MouseButton.LeftButton,
+            Qt.MouseButton.LeftButton,
+            Qt.KeyboardModifier.NoModifier,
+        )
+        blk_daily.mousePressEvent(press_ev2)
+        release_ev2 = QMouseEvent(
+            QtCore.QEvent.Type.MouseButtonRelease,
+            QtCore.QPointF(11.0, 11.0),
+            QtCore.QPointF(11.0, 11.0),
+            Qt.MouseButton.LeftButton,
+            Qt.MouseButton.NoButton,
+            Qt.KeyboardModifier.NoModifier,
+        )
+        blk_daily.mouseReleaseEvent(release_ev2)
+        self.assertEqual(len(clicked_events), 1, "Click must trigger clicked signal")
+        self.assertTrue(release_ev2.isAccepted(), "Click release must be accepted by block")
+
+        window.detailed_dialog.close()
         window.close()
 
 

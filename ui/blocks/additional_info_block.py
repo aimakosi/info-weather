@@ -20,18 +20,23 @@ from core.units import (
     mmhg_to_hpa,
 )
 from models.weather import WeatherForecastData
-from ui.qt_compat import QHBoxLayout, QLabel, QPixmap, Qt, QVBoxLayout, QWidget
+from ui.qt_compat import QHBoxLayout, QLabel, QPixmap, Qt, QVBoxLayout, QWidget, Signal
 from ui.utils import get_weather_icon_path, is_light_theme_widget, render_colored_icon
 
 
 class AdditionalInfoBlockWidget(QWidget):
     """Vertical compact list of additional meteorological indicators."""
 
+    clicked = Signal(int)
+
     def __init__(self, options: dict[str, Any] | None = None, scale: float = 1.0, parent: QWidget | None = None):
         super().__init__(parent)
         self.options = options or {}
         self.scale = scale
         self.widget = self
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._press_pos = None
+        self._press_local = None
         self._icons_light: bool | None = None
 
         spacing = max(2, int(4 * scale))
@@ -159,6 +164,29 @@ class AdditionalInfoBlockWidget(QWidget):
             self.extra_row["container"].setVisible(True)
         else:
             self.extra_row["container"].setVisible(False)
+
+
+    def mousePressEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._press_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+            self._press_local = event.position().toPoint() if hasattr(event, "position") else event.pos()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton and getattr(self, "_press_pos", None) is not None:
+            cur_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+            drag_dist = (cur_pos - self._press_pos).manhattanLength()
+            self._press_pos = None
+            if drag_dist <= 6:
+                target_screen = 1  # Barometric Pressure
+                if getattr(self, "_press_local", None) is not None and hasattr(self, "wind_row"):
+                    wind_rect = self.wind_row["container"].geometry()
+                    if wind_rect.contains(self._press_local):
+                        target_screen = 4  # Wind Rose
+                self.clicked.emit(target_screen)
+                event.accept()
+                return
+        super().mouseReleaseEvent(event)
 
 
 AdditionalInfoBlock = AdditionalInfoBlockWidget

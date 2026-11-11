@@ -22,6 +22,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import tomllib
 from pathlib import Path
 
 
@@ -47,10 +48,6 @@ def load_project_metadata(project_root: Path) -> dict[str, str]:
     }
 
     if pyproject_path.is_file():
-        try:
-            import tomllib
-        except ModuleNotFoundError:  # Python < 3.11
-            import tomli as tomllib
         with open(pyproject_path, "rb") as f:
             data = tomllib.load(f)
             proj = data.get("project", {})
@@ -354,7 +351,7 @@ def build_deb(
             f"Section: x11\n"
             f"Priority: optional\n"
             f"Architecture: {arch}\n"
-            f"Depends: python3 (>= 3.10), python3-pyside6.qtwidgets, python3-pyside6.qtsvg, python3-pil\n"
+            f"Depends: python3 (>= 3.11), python3-pyside6.qtwidgets, python3-pyside6.qtsvg, python3-pil\n"
             f"Recommends: kwin-common | kwin-x11 | kwin-wayland\n"
             f"Suggests: qdbus-qt5 | qdbus-qt6\n"
             f"Maintainer: {meta['maintainer']}\n"

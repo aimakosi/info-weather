@@ -22,6 +22,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import tomllib
 from pathlib import Path
 
 
@@ -47,10 +48,6 @@ def load_project_metadata(project_root: Path) -> dict[str, str]:
     }
 
     if pyproject_path.is_file():
-        try:
-            import tomllib
-        except ModuleNotFoundError:  # Python < 3.11
-            import tomli as tomllib
         with open(pyproject_path, "rb") as f:
             data = tomllib.load(f)
             proj = data.get("project", {})
@@ -166,7 +163,7 @@ def generate_pkgbuild(
         f"arch=('any')\n"
         f"url=\"{meta['homepage']}\"\n"
         f"license=('GPL-3.0-or-later')\n"
-        f"depends=('python>=3.10' 'pyside6' 'python-pillow')\n"
+        f"depends=('python>=3.11' 'pyside6' 'python-pillow')\n"
         f"optdepends=(\n"
         f"    'kwin: for desktop pinning rules on KDE Plasma'\n"
         f"    'qt5-tools: for qdbus rule reconfigure in KDE Plasma 5'\n"
@@ -218,7 +215,7 @@ def generate_pkgbuild(
         f"\tinstall = {pkg_name}.install\n"
         f"\tarch = any\n"
         f"\tlicense = GPL-3.0-or-later\n"
-        f"\tdepends = python>=3.10\n"
+        f"\tdepends = python>=3.11\n"
         f"\tdepends = pyside6\n"
         f"\tdepends = python-pillow\n"
         f"\toptdepends = kwin: for desktop pinning rules on KDE Plasma\n"

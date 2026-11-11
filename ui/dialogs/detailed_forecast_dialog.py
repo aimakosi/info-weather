@@ -31,12 +31,10 @@ from ui.qt_compat import (
     QHBoxLayout,
     QLabel,
     QLinearGradient,
-    QMouseEvent,
     QPainter,
     QPainterPath,
     QPen,
     QPixmap,
-    QPoint,
     QPushButton,
     QRectF,
     QScrollArea,
@@ -159,7 +157,9 @@ class HourlySplineChartWidget(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setMinimumHeight(240)
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        # Expanding vertically: fills the pane's static height instead of
+        # leaving the extra space to the title label above.
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.setMouseTracking(True)
 
         self._mode = "hourly"  # "hourly" or "daily"
@@ -655,7 +655,7 @@ class BarometerChartWidget(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setMinimumHeight(150)
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         self._points: list[float] = []
         self._time_labels: list[str] = []
@@ -792,7 +792,7 @@ class GeomagneticChartWidget(QWidget):
     def __init__(self, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self.setMinimumHeight(130)
-        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
 
         self._bars: list[dict[str, Any]] = []
         self._is_light = False
@@ -1134,7 +1134,166 @@ class ClimateNormsWidget(QWidget):
         self.table_layout.addStretch(1)
 
 
+
+class GlanceableTab(QFrame):
+    """Interactive glanceable tab button for the right-hand analytics rail.
+
+    Displays:
+    - Left: Icon (e.g. 🌡️, ⏱️, ⚡, 🌍, 🧭)
+    - Center/Right: Vertical text block:
+        - Title (localized section name)
+        - Live Glanceable Metric (e.g. "+18°C (+12°..+21°)", "754 мм ↗", "Kp 2.0 (Штиль)")
+    """
+
+    clicked = QtCore.Signal(int)
+
+    def __init__(
+        self,
+        index: int,
+        icon_char: str,
+        title: str,
+        initial_metric: str = "—",
+        parent: QWidget | None = None,
+    ) -> None:
+        super().__init__(parent)
+        self._index = index
+        self._icon_char = icon_char
+        self._title = title
+        self._metric = initial_metric
+        self._is_active = False
+        self._is_light = False
+
+        self.setObjectName("GlanceableTab")
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setFixedHeight(54)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(10, 6, 10, 6)
+        layout.setSpacing(10)
+
+        # Icon
+        self.lbl_icon = QLabel(self._icon_char, self)
+        self.lbl_icon.setObjectName("GlanceableTabIcon")
+        self.lbl_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.lbl_icon.setFixedWidth(24)
+        self.lbl_icon.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
+        layout.addWidget(self.lbl_icon)
+
+        # Text column
+        v_box = QVBoxLayout()
+        v_box.setContentsMargins(0, 0, 0, 0)
+        v_box.setSpacing(2)
+
+        self.lbl_title = QLabel(self._title, self)
+        self.lbl_title.setObjectName("GlanceableTabTitle")
+        self.lbl_title.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
+        v_box.addWidget(self.lbl_title)
+
+        self.lbl_metric = QLabel(self._metric, self)
+        self.lbl_metric.setObjectName("GlanceableTabMetric")
+        self.lbl_metric.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
+        v_box.addWidget(self.lbl_metric)
+
+        layout.addLayout(v_box, 1)
+
+        self._update_styles()
+
+    def mousePressEvent(self, event: Any) -> None:
+        if hasattr(event, "button") and event.button() == Qt.MouseButton.LeftButton:
+            self.clicked.emit(self._index)
+        super().mousePressEvent(event)
+
+    def set_active(self, active: bool) -> None:
+        if self._is_active != active:
+            self._is_active = active
+            self._update_styles()
+
+    def set_theme_light(self, is_light: bool) -> None:
+        self._is_light = is_light
+        self._update_styles()
+
+    def update_content(self, title: str | None = None, metric: str | None = None) -> None:
+        if title is not None and title != self._title:
+            self._title = title
+            self.lbl_title.setText(title)
+        if metric is not None and metric != self._metric:
+            self._metric = metric
+            self.lbl_metric.setText(metric)
+
+    def _update_styles(self) -> None:
+        if self._is_active:
+            self.setStyleSheet("""
+                QFrame#GlanceableTab {
+                    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                        stop:0 #0284c7, stop:1 #38bdf8);
+                    border: 1px solid rgba(255, 255, 255, 0.40);
+                    border-radius: 10px;
+                }
+                QLabel#GlanceableTabIcon {
+                    font-size: 18px;
+                    background: transparent;
+                }
+                QLabel#GlanceableTabTitle {
+                    color: #ffffff;
+                    font-weight: bold;
+                    font-size: 12px;
+                    background: transparent;
+                }
+                QLabel#GlanceableTabMetric {
+                    color: #f0f9ff;
+                    font-weight: 600;
+                    font-size: 11px;
+                    background: transparent;
+                }
+            """)
+        else:
+            if self._is_light:
+                bg = "rgba(0, 0, 0, 0.03)"
+                bg_hover = "rgba(0, 0, 0, 0.07)"
+                border = "rgba(0, 0, 0, 0.08)"
+                border_hover = "rgba(2, 132, 199, 0.40)"
+                col_title = "#0f172a"
+                col_metric = "#475569"
+            else:
+                bg = "rgba(255, 255, 255, 0.04)"
+                bg_hover = "rgba(255, 255, 255, 0.08)"
+                border = "rgba(255, 255, 255, 0.08)"
+                border_hover = "rgba(56, 189, 248, 0.40)"
+                col_title = "#f8fafc"
+                col_metric = "#94a3b8"
+
+            self.setStyleSheet(f"""
+                QFrame#GlanceableTab {{
+                    background-color: {bg};
+                    border: 1px solid {border};
+                    border-radius: 10px;
+                }}
+                QFrame#GlanceableTab:hover {{
+                    background-color: {bg_hover};
+                    border: 1px solid {border_hover};
+                }}
+                QLabel#GlanceableTabIcon {{
+                    font-size: 18px;
+                    background: transparent;
+                }}
+                QLabel#GlanceableTabTitle {{
+                    color: {col_title};
+                    font-weight: 600;
+                    font-size: 12px;
+                    background: transparent;
+                }}
+                QLabel#GlanceableTabMetric {{
+                    color: {col_metric};
+                    font-size: 11px;
+                    background: transparent;
+                }}
+            """)
+
+
 class DetailedForecastDialogQt(QDialog):
+
     """Detailed weather forecast dialog with 2 focused views switched via LMB click."""
 
     def __init__(
@@ -1157,59 +1316,82 @@ class DetailedForecastDialogQt(QDialog):
         self._time_labels_daily: list[str] = []
 
         self.setWindowTitle(t("detailed_title", city=data.city_name if data else "—"))
-        self.resize(760, 620)
-        self.setMinimumSize(640, 520)
+        # Fallback bounds until _fit_static_size() computes the real static size.
+        self.setMinimumSize(880, 520)
 
-        self._press_pos: QPoint | None = None
         self._last_switch_ts: float = 0.0
+        self._static_size_fitted: bool = False
 
         self._build_ui()
-        self._fit_to_content()
+        self._fit_static_size()
         if self._data:
             self.update_data(self._data)
+            # Live data can raise the panes' minimum heights (e.g. the wind
+            # rose with real observations); re-fit so nothing gets clipped.
+            self._fit_static_size()
 
-    def _fit_to_content(self) -> None:
-        """Resize the window so the stacked pages are not clipped.
+    def _fit_static_size(self) -> None:
+        """Size the window once to the tallest pane so switching never resizes it.
 
-        The Temperature & Pressure page stacks three charts vertically
-        (spline, barometer, geomagnetic), which no longer fits the legacy
-        fixed 620 px height: the charts were squeezed below their minimums
-        and cut off. Measure the tallest page directly (unwrapping scroll
-        areas, whose own minimum is deliberately tiny), size the window to
-        it, and cap by the available screen — the scroll area keeps the
-        window usable when it cannot grow that tall.
+        Each pane holds a single card; the shared 24h/X-days bar adds height
+        only on the temperature, pressure and geomagnetic panes. Rather than
+        re-deriving the layout arithmetic by hand (which drifts a few pixels
+        off and clips the tallest pane), measure the layout's own minimum in
+        both bar states and take the worst case, so the window is static and
+        no pane is ever clipped. The user can enlarge it, but not shrink
+        below content.
         """
         lay = self.layout()
         if lay is None:
             return
+        bar = getattr(self, "period_bar", None)
 
-        # Height of the tallest page content.
-        stack_h = 0
-        for i in range(self.stack.count()):
-            page = self.stack.widget(i)
-            content = page.widget() if isinstance(page, QScrollArea) else page
-            if content is not None:
-                stack_h = max(stack_h, content.minimumSizeHint().height())
-        if stack_h <= 0:
+        def _measure(bar_visible: bool) -> int:
+            if bar is not None:
+                bar.setVisible(bar_visible)
+            lay.invalidate()
+            lay.activate()
+            return lay.minimumSize().height()
+
+        # Bar hidden: QStackedWidget.minimumSizeHint covers EVERY pane, so
+        # this is the requirement of the climate / wind-rose panes.
+        hidden_h = _measure(False)
+        # Bar visible: the layout minimum again counts every pane inside the
+        # stack; subtract that and add only the panes that really show the
+        # bar, otherwise the bar's height would be charged to panes that
+        # never display it.
+        shown_h = _measure(True)
+        stack_min = self.stack.minimumSizeHint().height()
+        bar_pane_max = max(
+            (
+                self.stack.widget(i).minimumSizeHint().height()
+                for i in self._period_bar_panes
+                if i < self.stack.count()
+            ),
+            default=0,
+        )
+        with_bar_h = max(0, shown_h - stack_min) + bar_pane_max
+
+        # Restore visibility for the pane that is actually current.
+        if bar is not None:
+            bar.setVisible(self.stack.currentIndex() in self._period_bar_panes)
+            lay.invalidate()
+            lay.activate()
+
+        needed_h = max(hidden_h, with_bar_h)
+        needed_w = max(880, lay.minimumSize().width())
+        if needed_h <= 0:
             return
 
-        margins = lay.contentsMargins()
-        header_h = max(
-            (w.sizeHint().height() for w in self._header_widgets),
-            default=30,
-        )
-        # A few spare pixels keep the scroll viewport from showing a 1 px
-        # scrollbar when the window is exactly content-sized.
-        needed_h = margins.top() + header_h + lay.spacing() + stack_h + margins.bottom() + 6
-
-        height = needed_h
-        screen = self.screen()
-        if screen is not None:
-            avail = screen.availableGeometry()
-            # Leave a margin so the title bar and bottom edge stay reachable.
-            height = min(height, max(520, avail.height() - 60))
-
-        self.resize(max(760, self.width()), height)
+        # Static: minimum equals content size, so the window cannot shrink
+        # enough to clip a pane. The first fit sets the exact size; later
+        # fits (after live data) only grow, so a manual enlargement sticks.
+        self.setMinimumSize(needed_w, needed_h)
+        if self._static_size_fitted:
+            self.resize(max(self.width(), needed_w), max(self.height(), needed_h))
+        else:
+            self._static_size_fitted = True
+            self.resize(needed_w, needed_h)
 
     def _get_forecast_days_count(self) -> int:
         """Read configured multi-day forecast length from Options."""
@@ -1263,9 +1445,25 @@ class DetailedForecastDialogQt(QDialog):
 
         header_row.addStretch(1)
 
+        # ▲/▼ pane switcher (replaces the old click-anywhere cycling)
+        self.btn_pane_prev = QPushButton("▲")
+        self.btn_pane_prev.setObjectName("BtnPaneNav")
+        self.btn_pane_prev.setToolTip(t("switch_prev_pane"))
+        self.btn_pane_prev.setFixedSize(30, 30)
+        self.btn_pane_prev.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_pane_prev.clicked.connect(self.prev_screen)
+        header_row.addWidget(self.btn_pane_prev)
+
+        self.btn_pane_next = QPushButton("▼")
+        self.btn_pane_next.setObjectName("BtnPaneNav")
+        self.btn_pane_next.setToolTip(t("switch_next_pane"))
+        self.btn_pane_next.setFixedSize(30, 30)
+        self.btn_pane_next.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.btn_pane_next.clicked.connect(self.next_screen)
+        header_row.addWidget(self.btn_pane_next)
+
         self.lbl_screen_badge = QLabel("")
         self.lbl_screen_badge.setObjectName("ScreenBadge")
-        self.lbl_screen_badge.setCursor(Qt.CursorShape.PointingHandCursor)
         header_row.addWidget(self.lbl_screen_badge)
 
         self.btn_close = QPushButton("✕")
@@ -1276,28 +1474,11 @@ class DetailedForecastDialogQt(QDialog):
         self.btn_close.clicked.connect(self.accept)
         header_row.addWidget(self.btn_close)
 
-        # Kept for _fit_to_content(): the header contributes to the window
-        # height that the stacked pages need.
-        self._header_widgets = [
-            self.lbl_city_title,
-            self.lbl_cond_summary,
-            self.lbl_screen_badge,
-            self.btn_close,
-        ]
-
         main_layout.addLayout(header_row)
 
-        # 2. Stacked Pages (switched by clicking LMB anywhere on the window)
-        self.stack = QStackedWidget()
-
-        # Page 0: Temperature & Pressure with 24h vs X Days switcher
-        self.page_hourly = QWidget()
-        l_hourly = QVBoxLayout(self.page_hourly)
-        l_hourly.setContentsMargins(0, 0, 0, 0)
-        l_hourly.setSpacing(10)
-
-        # Period switcher bar (analogous to Wind Rose period selector)
-        self.period_bar = QFrame(self.page_hourly)
+        # 2. Shared period switcher (24h / X days): used by the temperature,
+        # pressure and geomagnetic panes; hidden on climate / wind-rose panes.
+        self.period_bar = QFrame()
         self.period_bar.setObjectName("TempPressPeriodBar")
         p_layout = QHBoxLayout(self.period_bar)
         p_layout.setContentsMargins(0, 0, 0, 0)
@@ -1322,7 +1503,17 @@ class DetailedForecastDialogQt(QDialog):
         self.btn_period_daily.clicked.connect(lambda: self.set_temp_press_period("daily"))
         p_layout.addWidget(self.btn_period_daily)
 
-        l_hourly.addWidget(self.period_bar)
+        # 3. Stacked panes: one information type per pane, switched by ▲/▼ or right-side tabs.
+        self.stack = QStackedWidget()
+        self.stack.setObjectName("DetailStack")
+        self._period_bar_panes = (0, 1, 2)  # panes that use the period bar
+
+        # Pane 0: Temperature
+        self.pane_temperature = QWidget()
+        self.pane_temperature.setObjectName("DetailPane")
+        l_temp = QVBoxLayout(self.pane_temperature)
+        l_temp.setContentsMargins(0, 0, 0, 0)
+        l_temp.setSpacing(0)
 
         # Spline box
         self.frame_spline = QFrame()
@@ -1350,8 +1541,16 @@ class DetailedForecastDialogQt(QDialog):
         l_fs.addLayout(row_spline_hdr)
 
         self.spline_widget = HourlySplineChartWidget()
-        l_fs.addWidget(self.spline_widget)
-        l_hourly.addWidget(self.frame_spline)
+        l_fs.addWidget(self.spline_widget, 1)
+        l_temp.addWidget(self.frame_spline, 1)
+        self.stack.addWidget(self.pane_temperature)
+
+        # Pane 1: Pressure
+        self.pane_pressure = QWidget()
+        self.pane_pressure.setObjectName("DetailPane")
+        l_press = QVBoxLayout(self.pane_pressure)
+        l_press.setContentsMargins(0, 0, 0, 0)
+        l_press.setSpacing(0)
 
         # Barometer box
         self.frame_baro = QFrame()
@@ -1388,8 +1587,16 @@ class DetailedForecastDialogQt(QDialog):
         l_fb.addLayout(row_baro_hdr)
 
         self.baro_widget = BarometerChartWidget()
-        l_fb.addWidget(self.baro_widget)
-        l_hourly.addWidget(self.frame_baro)
+        l_fb.addWidget(self.baro_widget, 1)
+        l_press.addWidget(self.frame_baro, 1)
+        self.stack.addWidget(self.pane_pressure)
+
+        # Pane 2: Geomagnetic
+        self.pane_geomagnetic = QWidget()
+        self.pane_geomagnetic.setObjectName("DetailPane")
+        l_geo = QVBoxLayout(self.pane_geomagnetic)
+        l_geo.setContentsMargins(0, 0, 0, 0)
+        l_geo.setSpacing(0)
 
         # Geomagnetic forecast box (NOAA SWPC Kp-index)
         self.frame_geomag = QFrame()
@@ -1421,34 +1628,75 @@ class DetailedForecastDialogQt(QDialog):
         l_fg.addLayout(row_geomag_hdr)
 
         self.geomag_widget = GeomagneticChartWidget()
-        l_fg.addWidget(self.geomag_widget)
-        l_hourly.addWidget(self.frame_geomag)
+        l_fg.addWidget(self.geomag_widget, 1)
+        l_geo.addWidget(self.frame_geomag, 1)
+        self.stack.addWidget(self.pane_geomagnetic)
 
-        # The page stacks three charts vertically (~800 px). Wrap it in a
-        # scroll area so shrinking the window scrolls instead of clipping
-        # the temperature/pressure charts.
-        self.scroll_hourly = QScrollArea()
-        self.scroll_hourly.setWidgetResizable(True)
-        self.scroll_hourly.setFrameShape(QFrame.Shape.NoFrame)
-        self.scroll_hourly.setHorizontalScrollBarPolicy(
-            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
-        )
-        self.scroll_hourly.setWidget(self.page_hourly)
-        self.stack.addWidget(self.scroll_hourly)
-
-        # Page 1: Climate Normals (ERA5)
+        # Pane 3: Climate Normals (ERA5)
         self.climate_widget = ClimateNormsWidget()
+        self.climate_widget.setObjectName("DetailPane")
         self.stack.addWidget(self.climate_widget)
 
-        # Page 2: 16-ray Stacked Wind Rose
+        # Pane 4: 16-ray Stacked Wind Rose
         self.wind_rose_widget = FullWindRoseWidget(parent=self, config_manager=self.config_manager)
+        self.wind_rose_widget.setObjectName("DetailPane")
         self.stack.addWidget(self.wind_rose_widget)
 
-        main_layout.addWidget(self.stack, 1)
+        # Plain QWidgets only paint a stylesheet background with this flag;
+        # without it the system palette (light) shows through in dark theme.
+        for i in range(self.stack.count()):
+            self.stack.widget(i).setAttribute(
+                Qt.WidgetAttribute.WA_StyledBackground, True
+            )
 
+        # 2. Body: Left Column (Period Bar + Stacked Panes) and Right Glanceable Rail
+        body_layout = QHBoxLayout()
+        body_layout.setContentsMargins(0, 0, 0, 0)
+        body_layout.setSpacing(12)
+
+        left_col = QVBoxLayout()
+        left_col.setContentsMargins(0, 0, 0, 0)
+        left_col.setSpacing(10)
+        left_col.addWidget(self.period_bar)
+        left_col.addWidget(self.stack, 1)
+        body_layout.addLayout(left_col, 1)
+
+        # Right Column: Glanceable Tab Rail (Variant 3)
+        self.tab_rail = QFrame()
+        self.tab_rail.setObjectName("GlanceableTabRail")
+        self.tab_rail.setFixedWidth(210)
+        self.tab_rail.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Expanding)
+        rail_layout = QVBoxLayout(self.tab_rail)
+        rail_layout.setContentsMargins(8, 8, 8, 8)
+        rail_layout.setSpacing(8)
+
+        self.lbl_rail_header = QLabel(t("detailed_tabs_header", default="РАЗДЕЛЫ").upper(), self.tab_rail)
+        self.lbl_rail_header.setObjectName("RailHeader")
+        self.lbl_rail_header.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        rail_layout.addWidget(self.lbl_rail_header)
+
+        self.tabs: list[GlanceableTab] = []
+        tab_defs = [
+            (0, "🌡️", t("switch_temperature")),
+            (1, "⏱️", t("switch_pressure")),
+            (2, "⚡", t("switch_geomagnetic")),
+            (3, "🌍", t("switch_climate_norms")),
+            (4, "🧭", t("switch_wind_rose")),
+        ]
+        for idx, icon, title in tab_defs:
+            tab = GlanceableTab(index=idx, icon_char=icon, title=title, parent=self.tab_rail)
+            tab.clicked.connect(self.set_screen)
+            rail_layout.addWidget(tab)
+            self.tabs.append(tab)
+
+        rail_layout.addStretch(1)
+        body_layout.addWidget(self.tab_rail, 0)
+
+        main_layout.addLayout(body_layout, 1)
+
+        self._update_tab_rail_active(0)
         self._update_screen_badge()
         self._apply_dialog_theme()
-        self._install_click_filter(self)
 
     @property
     def pill_toggle(self) -> Any:
@@ -1466,7 +1714,7 @@ class DetailedForecastDialogQt(QDialog):
         return _PillShim(self)
 
     def next_screen(self) -> None:
-        """Cycle to the next screen view."""
+        """Cycle to the next pane (▼)."""
         import time
         now = time.time()
         if now - self._last_switch_ts < 0.2:
@@ -1475,81 +1723,78 @@ class DetailedForecastDialogQt(QDialog):
         next_idx = (self.stack.currentIndex() + 1) % max(1, self.stack.count())
         self.set_screen(next_idx)
 
+    def prev_screen(self) -> None:
+        """Cycle to the previous pane (▲)."""
+        import time
+        now = time.time()
+        if now - self._last_switch_ts < 0.2:
+            return
+        self._last_switch_ts = now
+        count = max(1, self.stack.count())
+        prev_idx = (self.stack.currentIndex() - 1) % count
+        self.set_screen(prev_idx)
+
     def set_screen(self, index: int) -> None:
-        """Switch stacked page to specified index."""
+        """Switch stacked pane to the specified index."""
         if 0 <= index < self.stack.count():
             self.stack.setCurrentIndex(index)
+            # The 24h/X-days toggle only applies to temperature, pressure and
+            # geomagnetic panes; hide it on climate / wind-rose panes.
+            if hasattr(self, "period_bar"):
+                self.period_bar.setVisible(index in self._period_bar_panes)
             self._update_screen_badge()
+            self._update_tab_rail_active(index)
+
+    def _update_tab_rail_active(self, active_index: int) -> None:
+        if hasattr(self, "tabs"):
+            for idx, tab in enumerate(self.tabs):
+                tab.set_active(idx == active_index)
+
+    def keyPressEvent(self, event: Any) -> None:
+        key = event.key()
+        if key in (Qt.Key.Key_1, Qt.Key.Key_F1):
+            self.set_screen(0)
+            event.accept()
+        elif key in (Qt.Key.Key_2, Qt.Key.Key_F2):
+            self.set_screen(1)
+            event.accept()
+        elif key in (Qt.Key.Key_3, Qt.Key.Key_F3):
+            self.set_screen(2)
+            event.accept()
+        elif key in (Qt.Key.Key_4, Qt.Key.Key_F4):
+            self.set_screen(3)
+            event.accept()
+        elif key in (Qt.Key.Key_5, Qt.Key.Key_F5):
+            self.set_screen(4)
+            event.accept()
+        elif key in (Qt.Key.Key_Up, Qt.Key.Key_PageUp):
+            self.prev_screen()
+            event.accept()
+        elif key in (Qt.Key.Key_Down, Qt.Key.Key_PageDown):
+            self.next_screen()
+            event.accept()
+        elif key == Qt.Key.Key_Escape:
+            self.accept()
+            event.accept()
+        else:
+            super().keyPressEvent(event)
 
     def _on_tab_switched(self, index: int) -> None:
         self.set_screen(index)
 
     def _update_screen_badge(self) -> None:
         idx = self.stack.currentIndex()
-        if idx == 0:
-            label = f"1/3 • {t('switch_hourly_forecast')}"
-        elif idx == 1:
-            label = f"2/3 • {t('switch_climate_norms')}"
-        else:
-            label = f"3/3 • {t('switch_wind_rose')}"
-        self.lbl_screen_badge.setText(label)
+        labels = [
+            t("switch_temperature"),
+            t("switch_pressure"),
+            t("switch_geomagnetic"),
+            t("switch_climate_norms"),
+            t("switch_wind_rose"),
+        ]
+        label = labels[idx] if 0 <= idx < len(labels) else ""
+        total = max(1, self.stack.count())
+        self.lbl_screen_badge.setText(f"{idx + 1}/{total} • {label}")
         self.lbl_screen_badge.setToolTip(t("switch_screen_hint"))
-
-    def _install_click_filter(self, obj: QtCore.QObject | None = None) -> None:
-        """Recursively installs click listener for screen cycling on LMB."""
-        if obj is None:
-            obj = self
-        if hasattr(self, "btn_close") and obj == self.btn_close:
-            return
-        try:
-            obj.removeEventFilter(self)
-            obj.installEventFilter(self)
-        except Exception:
-            pass
-        for child in obj.children():
-            self._install_click_filter(child)
-
-    def eventFilter(self, watched: QtCore.QObject, event: QtCore.QEvent) -> bool:
-        try:
-            has_close = hasattr(self, "btn_close") and self.btn_close is not None
-            is_interactive = (
-                (has_close and (watched == self.btn_close or self.btn_close.isAncestorOf(watched)))
-                or isinstance(watched, QPushButton)
-                or (hasattr(self, "period_bar") and (watched == self.period_bar or self.period_bar.isAncestorOf(watched)))
-                or (hasattr(self, "wind_rose_widget") and self.wind_rose_widget.is_interactive_control(watched))
-            )
-            if event.type() == QtCore.QEvent.Type.MouseButtonPress:
-                if isinstance(event, QMouseEvent) and event.button() == Qt.MouseButton.LeftButton:
-                    if not is_interactive:
-                        self._press_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
-            elif event.type() == QtCore.QEvent.Type.MouseButtonRelease:
-                if isinstance(event, QMouseEvent) and event.button() == Qt.MouseButton.LeftButton:
-                    if not is_interactive:
-                        cur_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
-                        drag_dist = (cur_pos - self._press_pos).manhattanLength() if self._press_pos is not None else 0
-                        self._press_pos = None
-                        if drag_dist <= 8:
-                            self.next_screen()
-                            return True
-        except (RuntimeError, ReferenceError):
-            pass
-        return super().eventFilter(watched, event)
-
-    def mousePressEvent(self, event: QMouseEvent) -> None:
-        if event.button() == Qt.MouseButton.LeftButton:
-            self._press_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
-        super().mousePressEvent(event)
-
-    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
-        if event.button() == Qt.MouseButton.LeftButton:
-            cur_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
-            drag_dist = (cur_pos - self._press_pos).manhattanLength() if self._press_pos is not None else 0
-            self._press_pos = None
-            if drag_dist <= 8:
-                self.next_screen()
-                event.accept()
-                return
-        super().mouseReleaseEvent(event)
 
     def set_temp_press_period(self, period: str) -> None:
         """Switch between 24h hourly and multi-day daily views for temperature and pressure."""
@@ -1647,6 +1892,20 @@ class DetailedForecastDialogQt(QDialog):
         if hasattr(self, "lbl_geomag_title"):
             self.lbl_geomag_title.setText(t("chart_geomagnetic_title"))
 
+        tab_titles = [
+            t("switch_temperature"),
+            t("switch_pressure"),
+            t("switch_geomagnetic"),
+            t("switch_climate_norms"),
+            t("switch_wind_rose"),
+        ]
+        if hasattr(self, "tabs"):
+            for idx, tab in enumerate(self.tabs):
+                if idx < len(tab_titles):
+                    tab.update_content(title=tab_titles[idx])
+        if hasattr(self, "lbl_rail_header"):
+            self.lbl_rail_header.setText(t("detailed_tabs_header", default="Разделы").upper())
+
         self._update_screen_badge()
         self.btn_close.setToolTip(t("btn_close"))
         self.climate_widget.retranslate_ui()
@@ -1676,7 +1935,33 @@ class DetailedForecastDialogQt(QDialog):
         self.wind_rose_widget.set_theme_light(is_light)
         self.spline_widget.set_theme_light(is_light)
         self.baro_widget.set_theme_light(is_light)
+        self.geomag_widget.set_theme_light(is_light)
         self._update_period_bar_styles()
+
+        if hasattr(self, "tabs"):
+            for tab in self.tabs:
+                tab.set_theme_light(is_light)
+
+        bg_rail = "#f8fafc" if is_light else "#0b1220"
+        border_rail = "#e2e8f0" if is_light else "rgba(255, 255, 255, 0.08)"
+        rail_hdr_col = "#64748b" if is_light else "#94a3b8"
+
+        if hasattr(self, "tab_rail"):
+            self.tab_rail.setStyleSheet(f"""
+                QFrame#GlanceableTabRail {{
+                    background-color: {bg_rail};
+                    border-left: 1px solid {border_rail};
+                    border-radius: 0px 12px 12px 0px;
+                }}
+                QLabel#RailHeader {{
+                    color: {rail_hdr_col};
+                    font-size: 11px;
+                    font-weight: 700;
+                    letter-spacing: 1px;
+                    background: transparent;
+                    padding: 2px 4px;
+                }}
+            """)
 
         bg_dlg = "#ffffff" if is_light else "#0f172a"
         color_text = "#0f172a" if is_light else "#f8fafc"
@@ -1686,11 +1971,20 @@ class DetailedForecastDialogQt(QDialog):
         badge_color = "#0284c7" if is_light else "#38bdf8"
         badge_border = "rgba(2, 132, 199, 0.30)" if is_light else "rgba(56, 189, 248, 0.35)"
         badge_hover = "rgba(2, 132, 199, 0.22)" if is_light else "rgba(56, 189, 248, 0.25)"
+        nav_bg = "rgba(0, 0, 0, 0.05)" if is_light else "rgba(255, 255, 255, 0.08)"
+        nav_border = "rgba(0, 0, 0, 0.12)" if is_light else "rgba(255, 255, 255, 0.15)"
+        nav_hover = "rgba(0, 0, 0, 0.10)" if is_light else "rgba(255, 255, 255, 0.16)"
 
         self.setStyleSheet(f"""
             QDialog {{
                 background-color: {bg_dlg};
                 color: {color_text};
+            }}
+            QStackedWidget#DetailStack {{
+                background-color: {bg_dlg};
+            }}
+            QWidget#DetailPane {{
+                background-color: {bg_dlg};
             }}
             QFrame#DetailedCard {{
                 background-color: {card_bg};
@@ -1711,6 +2005,21 @@ class DetailedForecastDialogQt(QDialog):
             }}
             QLabel#ScreenBadge:hover {{
                 background-color: {badge_hover};
+                border: 1px solid {badge_color};
+            }}
+            QPushButton#BtnPaneNav {{
+                background-color: {nav_bg};
+                border: 1px solid {nav_border};
+                border-radius: 15px;
+                color: {color_text};
+                font-size: 12px;
+                font-weight: bold;
+            }}
+            QPushButton#BtnPaneNav:hover {{
+                background-color: {nav_hover};
+            }}
+            QPushButton#BtnPaneNav:pressed {{
+                background-color: {badge_bg};
                 border: 1px solid {badge_color};
             }}
             QPushButton#BtnClose {{
@@ -1894,6 +2203,8 @@ class DetailedForecastDialogQt(QDialog):
         if not points:
             self.geomag_widget.update_bars([], is_light=is_light)
             self.lbl_geomag_max.setText("—")
+            if hasattr(self, "tabs") and len(self.tabs) > 2:
+                self.tabs[2].update_content(metric="—")
             return
 
         from core.geomagnetic import classify_kp_index
@@ -1976,6 +2287,8 @@ class DetailedForecastDialogQt(QDialog):
         self.lbl_geomag_max.setToolTip(
             f"{t('chart_geomagnetic_title', _lang=lang)} — {status_desc} ({noaa_scale}, Kp {peak_kp:.1f})"
         )
+        if hasattr(self, "tabs") and len(self.tabs) > 2:
+            self.tabs[2].update_content(metric=f"Kp {peak_kp:.1f} ({status_desc})")
 
     def update_data(self, data: WeatherForecastData) -> None:
         self._data = data
@@ -2147,7 +2460,40 @@ class DetailedForecastDialogQt(QDialog):
         self._press_vals_daily = press_vals_daily
         self._time_labels_daily = time_labels_daily
 
-        # 3. Apply active period view
+        # Update glanceable metric on Tab 0 (Temperature)
+        t_curr = data.current.temp if data.current else None
+        if t_curr is not None:
+            t_unit_cfg = str(units_cfg.get("temp", "C")).upper()
+            t_sym = f"°{t_unit_cfg}" if t_unit_cfg in ("C", "F") else "°C"
+            if self._daily_points:
+                d0 = self._daily_points[0]
+                d_max = d0.get("day_temp", 0.0)
+                d_min = d0.get("night_temp", 0.0)
+                t_metric = f"{t_curr:+0.0f}{t_sym} ({d_min:+0.0f}°..{d_max:+0.0f}°)"
+            else:
+                t_metric = f"{t_curr:+0.0f}{t_sym}"
+        else:
+            t_metric = "—"
+        if hasattr(self, "tabs") and len(self.tabs) > 0:
+            self.tabs[0].update_content(metric=t_metric)
+
+        # Update glanceable metric on Tab 1 (Pressure)
+        if self._press_vals_24:
+            p_val = self._press_vals_24[0]
+            p_delta = self._press_vals_24[-1] - self._press_vals_24[0]
+            trend_arrow = "↗" if p_delta >= 0.5 else ("↘" if p_delta <= -0.5 else "→")
+            p_unit_short = "мм" if "mm" in p_unit.lower() else ("hPa" if "hpa" in p_unit.lower() else p_unit)
+            p_metric = f"{p_val:.0f} {p_unit_short} {trend_arrow}"
+        elif self._press_vals_daily:
+            p_val = self._press_vals_daily[0]
+            p_unit_short = "мм" if "mm" in p_unit.lower() else ("hPa" if "hpa" in p_unit.lower() else p_unit)
+            p_metric = f"{p_val:.0f} {p_unit_short}"
+        else:
+            p_metric = "—"
+        if hasattr(self, "tabs") and len(self.tabs) > 1:
+            self.tabs[1].update_content(metric=p_metric)
+
+        # 3. Apply active period view (also updates geomagnetic view & Tab 2)
         self._apply_temp_press_data()
 
         if data.current:
@@ -2155,12 +2501,34 @@ class DetailedForecastDialogQt(QDialog):
             t_str = f"{data.current.temp:+0.0f}°C"
             self.lbl_cond_summary.setText(f"•   {t_str}   {c_text}")
 
-        # 4. Climate Norms (ERA5)
+        # 4. Climate Normals (ERA5) & Tab 3
         self.climate_widget.update_climate_data(data, lang=lang, is_light=is_light)
+        anom_txt = self.climate_widget.lbl_anom_val.text().strip()
+        if anom_txt:
+            anom_lbl = t("climate_norm_anomaly", _lang=lang)
+            if anom_lbl == "climate_norm_anomaly":
+                anom_lbl = "к норме"
+            clim_metric = f"{anom_txt} {anom_lbl}"
+        else:
+            clim_metric = "—"
+        if hasattr(self, "tabs") and len(self.tabs) > 3:
+            self.tabs[3].update_content(metric=clim_metric)
 
-        # 5. 16-ray Stacked Wind Rose
+        # 5. 16-ray Stacked Wind Rose & Tab 4
         self.wind_rose_widget.update_wind_data(data, is_light=is_light, lang=lang)
-        self._install_click_filter(self)
+        if data.current:
+            w_spd = getattr(data.current, "wind_speed", 0.0) or 0.0
+            w_dir = getattr(data.current, "wind_direction", 0) or 0
+            w_unit = str(units_cfg.get("wind", "m/s"))
+            cardinal = cardinal_from_degrees(w_dir, lang=lang)
+            wind_metric = f"{w_spd:.1f} {w_unit} ({cardinal})"
+        else:
+            wind_metric = "—"
+        if hasattr(self, "tabs") and len(self.tabs) > 4:
+            self.tabs[4].update_content(metric=wind_metric)
+
+        # Data may raise pane minimums; keep the static size in sync (grow-only).
+        self._fit_static_size()
 
 
 DetailedForecastDialog = DetailedForecastDialogQt

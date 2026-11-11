@@ -8,9 +8,11 @@
 1. [Installation and Launch](#installation-and-launch)
 2. [Widget Interface and Controls](#widget-interface-and-controls)
 3. [Detailed Forecast Window](#detailed-forecast-window)
-   - [Screen 1: Temperature and Pressure](#screen-1-temperature-and-pressure)
-   - [Screen 2: Climate Normals and Comfort](#screen-2-climate-normals-and-comfort)
-   - [Screen 3: Wind Rose](#screen-3-wind-rose)
+   - [Screen 1: Temperature & Precipitation](#screen-1-temperature--precipitation)
+   - [Screen 2: Barometric Pressure](#screen-2-barometric-pressure)
+   - [Screen 3: Geomagnetic Activity (Kp-index)](#screen-3-geomagnetic-activity-kp-index)
+   - [Screen 4: Climate Normals (Copernicus ERA5 1991–2020)](#screen-4-climate-normals-copernicus-era5-19912020)
+   - [Screen 5: 16-Ray Stacked Wind Rose](#screen-5-16-ray-stacked-wind-rose)
 4. [Managing Locations (Cities)](#managing-locations-cities)
 5. [Application Settings](#application-settings)
    - [General](#general-tab)
@@ -27,7 +29,7 @@
 
 ### System Requirements
 - **OS:** Linux (KDE Plasma 5/6, GNOME, XFCE and others)
-- **Python:** >= 3.10
+- **Python:** >= 3.11
 - **Libraries:** PySide6 >= 6.5 (`pip install PySide6`, or on Debian/Ubuntu: `python3-pyside6.qtwidgets python3-pyside6.qtsvg`)
 
 ### Quick Install
@@ -54,7 +56,14 @@ The widget is displayed directly on the desktop as a neat frameless translucent 
 
 ### Basic Mouse Actions
 - **Move (Drag & Drop):** press and hold the left mouse button (LMB) on an empty area of the widget and drag it to the desired position. Coordinates are saved to the configuration automatically.
-- **Detailed forecast:** click the widget once with the LMB to open the extended forecast window.
+- **Contextual Detailed Forecast:** click on any meteorological block on the widget to open the extended forecast dialog directly to the relevant analytical screen:
+  - 🧭 **Wind Block** (or wind row in additional info) → opens **Screen 5: Wind Rose**.
+  - ⏱️ **Additional Info Block** (pressure, humidity) → opens **Screen 2: Barometric Pressure**.
+  - 📅 **Daily Forecast Strip** or **Tomorrow Outlook** → opens **Screen 1: Temperature & Precipitation** in multi-day daily view.
+  - 🌤️ **Header / Current Weather** or **Today Outlook** → opens **Screen 1: Temperature & Precipitation** in 24-hour hourly view.
+  - ☀️ **Astronomy Strip** → opens **Screen 4: Climate Normals (Copernicus ERA5) & Solar Cycles**.
+  - 🖱️ **Background / Empty Space** → opens Screen 1 by default.
+  - Moving the mouse (> 6 px) engages window repositioning (drag-and-drop) without triggering clicks.
 - **Switch saved cities:** scroll the mouse wheel up or down over the widget to quickly flip through locations. A debounce timer (400 ms) protects against accidental rapid triggers.
 - **Context menu (RMB):**
   - **Detailed forecast…** — opens the analysis window.
@@ -71,37 +80,38 @@ The widget is displayed directly on the desktop as a neat frameless translucent 
 
 ## Detailed Forecast Window
 
-The detailed forecast dialog is opened by an LMB click on the widget. The window contains three full-screen analytical sections with convenient navigation by clicking the background or using the header switcher:
+The detailed forecast dialog is opened by an LMB click on the widget (or via context menu). The window features **Variant 3: "Glanceable Analytics Rail & Contextual Smart Horizon"** with a right-hand vertical rail displaying real-time live metrics and instant switching between 5 full-screen analytical sections:
 
-### Screen 1: Temperature and Pressure
-The period switcher is located at the top:
-- **"24h" (Hourly forecast):**
-  - A smooth temperature spline for the next 24 hours with data points, degree values, weather icons and feels-like temperature ("Feels like").
-  - An hourly barometric pressure chart with a short-term trend calculation (rising / steady / falling).
-- **"X days" (Multi-day forecast):**
-  - The number of days is configurable in the block options (from 3 to 10 days).
-  - **Two independent temperature curves:**
-    - **Day temperature (max):** warm amber-orange curve (`● Day`), weather icons and values above the points.
-    - **Night temperature (min):** blue curve (`● Night`) with values below the points.
-    - Between the curves, a soft translucent gradient fills the daily temperature range.
-  - **Multi-day barometer:** a pressure trend line over the days of the week with points, numeric labels and a trend indicator.
-  - **Interactive scrubber:** hovering the mouse over the chart shows a tooltip with detailed data for the selected day/hour.
+### Navigation & Controls
+- **Right Glanceable Rail:** 5 interactive tabs with live metric summaries visible without clicking:
+  - 🌡️ **Temperature:** current temperature and daily range (`+18°C (+12°..+21°)`).
+  - ⏱️ **Pressure:** current barometric pressure and trend arrow (`754 mmHg ↗`).
+  - ⚡ **Geomagnetic:** NOAA peak Kp-index and storm classification (`Kp 2.0 (Quiet)`).
+  - 🌍 **ERA5 Norms:** deviation from the 30-year climatological normal (`+2.1°C to normal`).
+  - 🧭 **Wind Rose:** wind speed and cardinal direction (`4.2 m/s (SW)`).
+- **Keyboard Shortcuts:** keys **1–5** or **F1–F5** jump directly to screens 1–5; **Up / Down** or **PageUp / PageDown** cycle screens; **Esc** closes the dialog.
+- **Header Controls:** city title, weather summary, screen badge (`1/5 • Temperature`), `▲` / `▼` navigation buttons, and close button `✕`.
+- **Theme Synchronization:** seamless automatic styling for Day (light) and Night (dark) themes with synchronized chart gradients and contrast.
 
-### Screen 2: Climate Normals and Comfort
-- Comparison of the actual temperature and precipitation with the long-term climate normals of the global **Copernicus ERA5** reanalysis (1991–2020) for the coordinates of the selected city.
-- Indicators of deviation from the norm and seasonal anomalies.
+### Screen 1: Temperature & Precipitation
+- **"24h" (Hourly forecast):** smooth Bézier temperature spline for 24 hours with weather condition icons, degree values, wind vectors and precipitation probabilities.
+- **"X days" (Multi-day forecast):** dual spline curves — **Day max.** (warm amber-orange, `● Day`) and **Night min.** (cyan-blue, `● Night`) with translucent temperature band fill and interactive scrubber.
 
-### Screen 3: Wind Rose
-- A functional **16-point wind rose** with radial speed accumulation (stacked radial wedges).
-- Time-slice switch tabs: **"24h"** and **"X days"**.
-- Wind speed gradation on the international Beaufort scale:
-  - 0–2 m/s — blue (calm)
-  - 2–4 m/s — turquoise (light)
-  - 4–6 m/s — emerald (gentle)
-  - 6–8 m/s — yellow (moderate)
-  - 8–11 m/s — orange (fresh)
-  - > 11 m/s — red (strong/gale)
-- Concentric percentage rings of time distribution, an arrow for the prevailing and current wind direction, peak gusts.
+### Screen 2: Barometric Pressure
+- Barometric trend curve with normal pressure baseline reference (760 mmHg / 1013.25 hPa).
+- Status pill indicating current pressure, numerical delta and tendency (`Rising ↗`, `Steady →`, `Falling ↘`).
+
+### Screen 3: Geomagnetic Activity (Kp-index)
+- NOAA SWPC planetary Kp-index forecast in 3-hour bins (24h) or daily maxima (X days).
+- Standard color scale: green (Kp 0–2, Quiet), yellow (Kp 3–4, Unsettled), and red (Kp ≥ 5, Storm G1–G5) with peak Kp indicator.
+
+### Screen 4: Climate Normals (Copernicus ERA5 1991–2020)
+- Comparison of actual observation against 30-year ERA5 climatological baseline.
+- Summary cards: Current Average, 30-Year Normal, Anomaly assessment, and 12-month annual profile.
+
+### Screen 5: 16-Ray Stacked Wind Rose
+- Full 16-point polar wind rose with radial speed accumulation on the international Beaufort scale.
+- Time-slice selectors, percentage distribution rings, prevailing and current wind direction, and peak gust indicators.
 
 ---
 
@@ -164,9 +174,10 @@ The settings window is organized into logical tabs and positions itself next to 
 | Action | Control |
 |---|---|
 | Move the widget | Hold LMB and drag |
-| Detailed forecast | LMB click on the widget |
-| Flip forecast screens | LMB click on the empty background of the forecast dialog |
-| Switch forecast period (24h / X days) | Click the "24h" / "X days" buttons on Screens 1 and 3 |
+| Detailed forecast | LMB click on a weather block (opens the matching section) or RMB → "Detailed forecast…" |
+| Jump to forecast section | Click a tab on the right glanceable rail, press `1`–`5` or `F1`–`F5` |
+| Cycle forecast sections | `Up` / `Down` or `PageUp` / `PageDown` |
+| Switch forecast period (24h / X days) | Click the "24h" / "X days" buttons on Screens 1–3 |
 | Interactive chart inspection | Hover the mouse over the temperature spline |
 | Switch locations (cities) | Scroll the mouse wheel over the widget |
 | Context menu | RMB click on the widget |

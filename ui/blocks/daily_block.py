@@ -18,12 +18,15 @@ from ui.qt_compat import (
     Qt,
     QVBoxLayout,
     QWidget,
+    Signal,
 )
 from ui.utils import get_weather_icon_path, is_weekend_day
 
 
 class DailyBlockWidget(QWidget):
     """Horizontal daily forecast strip matching Gis-Weather reference layout."""
+
+    clicked = Signal()
 
     def __init__(self, options: dict[str, Any] | None = None, scale: float = 1.0, parent: QWidget | None = None):
         super().__init__(parent)
@@ -32,6 +35,8 @@ class DailyBlockWidget(QWidget):
         self.horizontal = True
         self.rows: list[dict[str, Any]] = []
         self.widget = self
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._press_pos = None
 
         spacing = max(2, int(4 * scale))
         self.main_layout = QHBoxLayout(self)
@@ -206,6 +211,23 @@ class DailyBlockWidget(QWidget):
                 row["container"].setToolTip(f"{day_title}{date_suffix}: {cond_text}, {format_temp(d.min, self.options.get('temp_unit', 'celsius'))}…{format_temp(d.max, self.options.get('temp_unit', 'celsius'))}")
             else:
                 row["container"].setVisible(False)
+
+
+    def mousePressEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._press_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton and getattr(self, "_press_pos", None) is not None:
+            cur_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+            drag_dist = (cur_pos - self._press_pos).manhattanLength()
+            self._press_pos = None
+            if drag_dist <= 6:
+                self.clicked.emit()
+                event.accept()
+                return
+        super().mouseReleaseEvent(event)
 
 
 DailyBlock = DailyBlockWidget

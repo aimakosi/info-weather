@@ -400,8 +400,6 @@ class WindBlockWidget(QWidget):
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
             self._press_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
-            event.accept()
-            return
         super().mousePressEvent(event)
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:

@@ -6,12 +6,24 @@ from typing import Any
 
 from core.units import cardinal_from_degrees, format_temp
 from models.weather import WeatherForecastData
-from ui.qt_compat import QFont, QGridLayout, QHBoxLayout, QLabel, QPixmap, Qt, QVBoxLayout, QWidget
+from ui.qt_compat import (
+    QFont,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QPixmap,
+    Qt,
+    QVBoxLayout,
+    QWidget,
+    Signal,
+)
 from ui.utils import get_weather_icon_path
 
 
 class DayPeriodsBlockWidget(QWidget):
     """Outlook for 4 periods of the day: Night, Morning, Day, Evening."""
+
+    clicked = Signal()
 
     def __init__(self, options: dict[str, Any] | None = None, scale: float = 1.0, parent: QWidget | None = None):
         super().__init__(parent)
@@ -20,6 +32,8 @@ class DayPeriodsBlockWidget(QWidget):
         self.mode = self.options.get("mode", "tomorrow")
         self.header_title = self.options.get("title", "Завтра" if self.mode == "tomorrow" else "Сегодня")
         self.widget = self
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._press_pos = None
 
         main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
@@ -231,6 +245,23 @@ class DayPeriodsBlockWidget(QWidget):
         return res
 
 
+    def mousePressEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton:
+            self._press_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+        super().mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event: Any) -> None:
+        if event.button() == Qt.MouseButton.LeftButton and getattr(self, "_press_pos", None) is not None:
+            cur_pos = event.globalPosition().toPoint() if hasattr(event, "globalPosition") else event.globalPos()
+            drag_dist = (cur_pos - self._press_pos).manhattanLength()
+            self._press_pos = None
+            if drag_dist <= 6:
+                self.clicked.emit()
+                event.accept()
+                return
+        super().mouseReleaseEvent(event)
+
+
 DayPeriodsBlock = DayPeriodsBlockWidget
 
 
@@ -241,3 +272,4 @@ class TodayBlock(DayPeriodsBlockWidget):
         opts.setdefault("mode", "today")
         opts.setdefault("title", "Сегодня")
         super().__init__(options=opts, scale=scale, parent=parent)
+
