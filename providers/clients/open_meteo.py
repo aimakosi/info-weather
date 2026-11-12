@@ -69,7 +69,7 @@ class OpenMeteoClient(BaseWeatherClient):
             f"apparent_temperature_min,uv_index_max,precipitation_sum,precipitation_probability_max,"
             f"wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant"
             f"&models={model_param}&cell_selection=land{elev_param}"
-            f"&timezone=UTC&forecast_days={forecast_days}"
+            f"&timezone=UTC&forecast_days={forecast_days}&wind_speed_unit=ms"
         )
 
     def fetch_forecast(

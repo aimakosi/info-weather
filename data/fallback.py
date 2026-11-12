@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import math
 from datetime import datetime, timedelta, timezone
+from typing import Any
 
 from core.astronomy import (
     calculate_detailed_moon,
@@ -35,6 +36,64 @@ from models.weather import (
 )
 
 
+def get_adjusted_era5_monthly_norms(
+    lat: float,
+    lon: float,
+) -> list[dict[str, Any]]:
+    """
+    Compute physically realistic 12-month climate bounds from Copernicus ERA5 reference baseline.
+    Handles hemisphere season inversion (July is winter in the Southern Hemisphere)
+    and bounds latitude/continentality adjustments to prevent unrealistic runaway temperatures.
+    Returns list of 12 dicts with keys: month, temp_min, temp_max, precip_mm.
+    """
+    baseline = get_era5_baseline()
+    monthly = baseline.get("monthly", [])
+    if not monthly or len(monthly) != 12:
+        return [
+            {"month": m, "temp_min": 0, "temp_max": 10, "precip_mm": 40}
+            for m in range(1, 13)
+        ]
+
+    eff_lat = min(65.0, max(0.0, abs(lat)))
+    # Base Moscow reference is ~55°N
+    lat_diff = (55.0 - eff_lat) * 0.6
+    lat_diff = max(-15.0, min(18.0, lat_diff))
+
+    result: list[dict[str, Any]] = []
+    for m in range(1, 13):
+        # Southern Hemisphere inversion: shift reference month by 6
+        ref_m = ((m - 1 + 6) % 12) + 1 if lat < 0 else m
+        row = monthly[ref_m - 1]
+
+        cont_diff = 0.0
+        if 60.0 <= lon <= 110.0 and lat > 50.0:
+            if m in (11, 12, 1, 2):
+                cont_diff = -7.0
+            elif m in (10, 3):
+                cont_diff = -2.0
+            elif m in (6, 7, 8):
+                cont_diff = 1.0
+
+        adj_min = round(float(row.get("temp_min", 0.0)) + lat_diff + cont_diff)
+        adj_max = round(float(row.get("temp_max", 10.0)) + lat_diff + cont_diff)
+
+        # Physical clamping for terrestrial monthly normals
+        adj_min = max(-50, min(38, adj_min))
+        adj_max = max(-45, min(48, adj_max))
+        if adj_min >= adj_max:
+            adj_max = adj_min + 3
+
+        adj_precip = row.get("precip_mm", 40)
+        result.append({
+            "month": m,
+            "temp_min": adj_min,
+            "temp_max": adj_max,
+            "precip_mm": adj_precip,
+        })
+
+    return result
+
+
 def get_offline_climatology_data(
     lat: float,
     lon: float,
@@ -46,7 +105,6 @@ def get_offline_climatology_data(
     Generate an honest, non-fabricated offline forecast based on ERA5 climatology.
     Clearly marks data as offline historical baseline (S0 level).
     """
-    baseline = get_era5_baseline()
     now_utc = datetime.now(timezone.utc)
     utc_offset = get_geo_timezone_offset_seconds(lat, lon)
     utc_offset_hours = utc_offset / 3600.0
@@ -55,31 +113,10 @@ def get_offline_climatology_data(
     cur_m = today.month
     m_idx = cur_m - 1
 
-    monthly = baseline.get("monthly", [])
-    if monthly and len(monthly) == 12:
-        m_row = monthly[m_idx]
-        base_min = float(m_row.get("temp_min", 0.0))
-        base_max = float(m_row.get("temp_max", 10.0))
-    else:
-        base_min, base_max = 0.0, 10.0
-
-    # Latitude and continentality adjustments
-    lat_diff = (55.0 - lat) * 0.7
-    cont_diff = 0.0
-    if 60.0 <= lon <= 110.0 and lat > 50.0:
-        if cur_m in (11, 12, 1, 2):
-            cont_diff = -7.0
-        elif cur_m in (10, 3):
-            cont_diff = -2.0
-        elif cur_m in (6, 7, 8):
-            cont_diff = 1.0
-    elif lat < 45.0:
-        lat_diff = (55.0 - lat) * 1.1
-
-    norm_min = round(base_min + lat_diff + cont_diff)
-    norm_max = round(base_max + lat_diff + cont_diff)
-    if norm_min >= norm_max:
-        norm_max = norm_min + 4
+    monthly_adjusted = get_adjusted_era5_monthly_norms(lat, lon)
+    m_row = monthly_adjusted[m_idx]
+    norm_min = m_row["temp_min"]
+    norm_max = m_row["temp_max"]
 
     tod, is_day = determine_solar_time_of_day(lat, lon, now_utc, utc_offset_hours=utc_offset_hours)
     if tod == "night":

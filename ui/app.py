@@ -50,7 +50,11 @@ def run_qt_app(
     set_language(config_manager.get("app_language", "ru"))
 
     # Set Application Icon
-    app_icon_path = Path(__file__).parent.parent / "assets" / "icons" / "info-weather.svg"
+    icons_dir = Path(__file__).parent.parent / "assets" / "icons"
+    if sys.platform == "win32" and (icons_dir / "info-weather.ico").is_file():
+        app_icon_path = icons_dir / "info-weather.ico"
+    else:
+        app_icon_path = icons_dir / "info-weather.svg"
     if app_icon_path.is_file():
         app.setWindowIcon(QIcon(str(app_icon_path)))
 

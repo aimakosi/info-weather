@@ -13,13 +13,15 @@ from typing import Any
 
 from core.i18n import get_month_name, get_weekday_name, set_language, t
 from core.units import (
+    _norm_unit,
     cardinal_from_degrees,
     convert_pressure,
+    convert_temp,
     format_pressure,
     format_temp,
     format_wind_speed,
 )
-from data.resources import get_era5_baseline
+from data.fallback import get_adjusted_era5_monthly_norms
 from data.wmo_conditions import get_condition_text
 from models.weather import WeatherForecastData
 from ui.dialogs.wind_rose_widget import FullWindRoseWidget
@@ -1012,62 +1014,60 @@ class ClimateNormsWidget(QWidget):
             }}
         """)
 
-    def update_climate_data(self, data: WeatherForecastData, lang: str = "ru", is_light: bool = False) -> None:
+    def update_climate_data(
+        self,
+        data: WeatherForecastData,
+        lang: str = "ru",
+        is_light: bool = False,
+        temp_unit: str = "celsius",
+    ) -> None:
         self.set_theme_light(is_light)
-        baseline = get_era5_baseline()
-        monthly = baseline.get("monthly", [])
-        if not monthly:
-            return
-
         lat = data.lat or 55.0
         lon = data.lon or 37.6
         now_dt = datetime.now(timezone.utc)
         cur_m = now_dt.month
-        cur_temp = data.current.temp if data.current else 15.0
+        cur_temp_c = data.current.temp if data.current else 15.0
 
-        # Adjust ERA5 monthly baseline for target lat/lon (Copernicus 0.25° adjustment)
-        lat_diff = (55.0 - lat) * 0.7
-        cont_diff = 0.0
-        if 60.0 <= lon <= 110.0 and lat > 50.0:
-            if cur_m in (11, 12, 1, 2):
-                cont_diff = -7.0
-            elif cur_m in (10, 3):
-                cont_diff = -2.0
-            elif cur_m in (6, 7, 8):
-                cont_diff = 1.0
-        elif lat < 45.0:
-            lat_diff = (55.0 - lat) * 1.1
+        monthly_adjusted = get_adjusted_era5_monthly_norms(lat, lon)
+        if not monthly_adjusted:
+            return
+
+        cur_row = monthly_adjusted[cur_m - 1]
+        norm_min_c = cur_row["temp_min"]
+        norm_max_c = cur_row["temp_max"]
+        norm_avg_c = (norm_min_c + norm_max_c) / 2.0
 
         m_name = get_month_name(cur_m, short=False, lang=lang)
         self.lbl_month_hdr.setText(f"{m_name.capitalize()} • ERA5 (1991–2020) — {data.city_name}")
 
-        # Current month adjusted bounds
-        cur_row = monthly[cur_m - 1]
-        norm_min = round(float(cur_row.get("temp_min", 0.0)) + lat_diff + cont_diff)
-        norm_max = round(float(cur_row.get("temp_max", 10.0)) + lat_diff + cont_diff)
-        if norm_min >= norm_max:
-            norm_max = norm_min + 4
-        norm_avg = (norm_min + norm_max) / 2.0
+        cur_temp_disp = convert_temp(cur_temp_c, unit=temp_unit)
+        norm_min_disp = convert_temp(norm_min_c, unit=temp_unit)
+        norm_max_disp = convert_temp(norm_max_c, unit=temp_unit)
 
-        self.lbl_fact_title.setText(t("climate_current_temp", val=round(cur_temp)))
-        self.lbl_fact_val.setText(f"{round(cur_temp):+d}°")
+        self.lbl_fact_title.setText(t("climate_current_temp", val=cur_temp_disp, _lang=lang))
+        self.lbl_fact_val.setText(f"{cur_temp_disp:+d}°")
 
-        self.lbl_norm_title.setText(t("climate_norm_range", min=norm_min, max=norm_max))
-        self.lbl_norm_val.setText(f"{norm_min:+d}° … {norm_max:+d}°")
+        self.lbl_norm_title.setText(t("climate_norm_range", min=norm_min_disp, max=norm_max_disp, _lang=lang))
+        self.lbl_norm_val.setText(f"{norm_min_disp:+d}° … {norm_max_disp:+d}°")
 
-        diff = cur_temp - norm_avg
-        if diff >= 1.0:
-            self.lbl_anom_val.setText(t("climate_above_norm", val=diff))
+        is_f = _norm_unit(temp_unit) == "fahrenheit"
+        diff_c = cur_temp_c - norm_avg_c
+        diff_disp = round(diff_c * 1.8, 1) if is_f else round(diff_c, 1)
+        unit_sym = "°F" if is_f else "°C"
+        threshold = 1.8 if is_f else 1.0
+
+        if diff_disp >= threshold:
+            self.lbl_anom_val.setText(t("climate_above_norm", val=diff_disp, unit=unit_sym, _lang=lang))
             self.lbl_anom_val.setStyleSheet("font-size: 16px; font-weight: bold; color: #fb923c;")
-        elif diff <= -1.0:
-            self.lbl_anom_val.setText(t("climate_below_norm", val=abs(diff)))
+        elif diff_disp <= -threshold:
+            self.lbl_anom_val.setText(t("climate_below_norm", val=abs(diff_disp), unit=unit_sym, _lang=lang))
             self.lbl_anom_val.setStyleSheet("font-size: 16px; font-weight: bold; color: #38bdf8;")
         else:
-            self.lbl_anom_val.setText(t("climate_near_norm", val=diff))
+            self.lbl_anom_val.setText(t("climate_near_norm", val=diff_disp, unit=unit_sym, _lang=lang))
             self.lbl_anom_val.setStyleSheet("font-size: 16px; font-weight: bold; color: #10b981;")
 
         p_mm = cur_row.get("precip_mm", 50)
-        self.lbl_precip_norm.setText(t("climate_precip_norm", val=p_mm))
+        self.lbl_precip_norm.setText(t("climate_precip_norm", val=p_mm, _lang=lang))
 
         # Rebuild 12-month annual table
         while self.table_layout.count():
@@ -1075,15 +1075,15 @@ class ClimateNormsWidget(QWidget):
             if item.widget():
                 item.widget().deleteLater()
 
-        for idx, row in enumerate(monthly):
+        for idx, row in enumerate(monthly_adjusted):
             m_num = idx + 1
             is_active_m = (m_num == cur_m)
             m_short = get_month_name(m_num, short=True, lang=lang).capitalize()
 
-            adj_min = round(float(row.get("temp_min", 0.0)) + lat_diff + cont_diff)
-            adj_max = round(float(row.get("temp_max", 10.0)) + lat_diff + cont_diff)
-            if adj_min >= adj_max:
-                adj_max = adj_min + 4
+            adj_min_c = row["temp_min"]
+            adj_max_c = row["temp_max"]
+            adj_min_disp = convert_temp(adj_min_c, unit=temp_unit)
+            adj_max_disp = convert_temp(adj_max_c, unit=temp_unit)
             adj_precip = row.get("precip_mm", 40)
 
             row_frame = QFrame()
@@ -1105,20 +1105,20 @@ class ClimateNormsWidget(QWidget):
                 lbl_m.setStyleSheet("font-weight: bold; color: #38bdf8;" if not is_light else "font-weight: bold; color: #0284c7;")
             row_l.addWidget(lbl_m)
 
-            lbl_min_str = QLabel(f"{adj_min:+d}°")
+            lbl_min_str = QLabel(f"{adj_min_disp:+d}°")
             lbl_min_str.setFixedWidth(36)
             lbl_min_str.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
             row_l.addWidget(lbl_min_str)
 
-            # Capsule progress visualization
+            # Capsule progress visualization (thresholds based on Celsius baseline)
             bar = QWidget()
             bar.setFixedHeight(6)
             bar.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
-            bar_color = "#38bdf8" if adj_max <= 10 else ("#10b981" if adj_max <= 20 else "#fb923c")
+            bar_color = "#38bdf8" if adj_max_c <= 10 else ("#10b981" if adj_max_c <= 20 else "#fb923c")
             bar.setStyleSheet(f"background-color: {bar_color}; border-radius: 3px;")
             row_l.addWidget(bar, 1)
 
-            lbl_max_str = QLabel(f"{adj_max:+d}°")
+            lbl_max_str = QLabel(f"{adj_max_disp:+d}°")
             lbl_max_str.setFixedWidth(36)
             lbl_max_str.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
             row_l.addWidget(lbl_max_str)
@@ -2462,16 +2462,18 @@ class DetailedForecastDialogQt(QDialog):
 
         # Update glanceable metric on Tab 0 (Temperature)
         t_curr = data.current.temp if data.current else None
+        t_unit_cfg = str(units_cfg.get("temp", "C")).upper()
+        t_unit = "fahrenheit" if t_unit_cfg == "F" else "celsius"
         if t_curr is not None:
-            t_unit_cfg = str(units_cfg.get("temp", "C")).upper()
             t_sym = f"°{t_unit_cfg}" if t_unit_cfg in ("C", "F") else "°C"
+            t_curr_val = convert_temp(t_curr, unit=t_unit)
             if self._daily_points:
                 d0 = self._daily_points[0]
-                d_max = d0.get("day_temp", 0.0)
-                d_min = d0.get("night_temp", 0.0)
-                t_metric = f"{t_curr:+0.0f}{t_sym} ({d_min:+0.0f}°..{d_max:+0.0f}°)"
+                d_max_val = convert_temp(d0.get("day_temp", 0.0), unit=t_unit)
+                d_min_val = convert_temp(d0.get("night_temp", 0.0), unit=t_unit)
+                t_metric = f"{t_curr_val:+0.0f}{t_sym} ({d_min_val:+0.0f}°..{d_max_val:+0.0f}°)"
             else:
-                t_metric = f"{t_curr:+0.0f}{t_sym}"
+                t_metric = f"{t_curr_val:+0.0f}{t_sym}"
         else:
             t_metric = "—"
         if hasattr(self, "tabs") and len(self.tabs) > 0:
@@ -2498,11 +2500,11 @@ class DetailedForecastDialogQt(QDialog):
 
         if data.current:
             c_text = data.current.condition_text or ""
-            t_str = f"{data.current.temp:+0.0f}°C"
+            t_str = format_temp(data.current.temp, unit=t_unit, show_sign=True, show_unit=True)
             self.lbl_cond_summary.setText(f"•   {t_str}   {c_text}")
 
         # 4. Climate Normals (ERA5) & Tab 3
-        self.climate_widget.update_climate_data(data, lang=lang, is_light=is_light)
+        self.climate_widget.update_climate_data(data, lang=lang, is_light=is_light, temp_unit=t_unit)
         anom_txt = self.climate_widget.lbl_anom_val.text().strip()
         if anom_txt:
             anom_lbl = t("climate_norm_anomaly", _lang=lang)

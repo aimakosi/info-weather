@@ -43,6 +43,9 @@ py-modules = ["main"]
 where = ["."]
 include = ["core*", "providers*", "models*", "data*", "ui*"]
 
+[tool.setuptools.package-data]
+"*" = ["*.json"]
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"
@@ -56,3 +59,4 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+pythonpath = ["."]

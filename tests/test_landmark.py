@@ -4,7 +4,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from PIL import Image
+try:
+    from PIL import Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
 
 from core.config import ConfigManager
 from core.landmark import (
@@ -19,6 +23,8 @@ from core.landmark import (
 
 class TestLandmark(unittest.TestCase):
     def setUp(self):
+        if not HAS_PIL:
+            self.skipTest("Pillow is not installed")
         self.temp_dir = tempfile.TemporaryDirectory()
         self.test_img_path = Path(self.temp_dir.name) / "raw_landmark.jpg"
         # Create a sample 800x600 test image with colors
