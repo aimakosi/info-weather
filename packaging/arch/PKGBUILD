@@ -1,6 +1,6 @@
 # Maintainer: aimakosi <aimakosi@users.noreply.github.com>
 pkgname=info-weather
-pkgver=0.3.1
+pkgver=0.3.2
 pkgrel=1
 pkgdesc="Modern desktop weather widget for Linux (KDE Plasma) with consensus providers"
 arch=('any')
@@ -13,8 +13,8 @@ optdepends=(
     'qt6-tools: for qdbus6 rule reconfigure in KDE Plasma 6'
 )
 install="info-weather.install"
-source=("info-weather-0.3.1.tar.gz")
-sha256sums=('4cdd70112966260a4f2b62f6f29f821b4bc3f6fe4d669da74dfbe81ef8ffa6bd')
+source=("info-weather-0.3.2.tar.gz")
+sha256sums=('13b80708ebe4224ba5a3c4d2321baaaf065cc71006fb11895d32252c3f55921d')
 
 package() {
     cd "$srcdir/${pkgname}-${pkgver}"
